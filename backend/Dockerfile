@@ -31,4 +31,4 @@ RUN pnpm i --prod
 EXPOSE 3000
 
 # Start server
-CMD ["pnpm", "start"]
+CMD ["node", "/app/main.js"]

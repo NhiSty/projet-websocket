@@ -6,7 +6,7 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy project folder
+# Copy NestJS project folder
 COPY . /app
 
 # Build project
@@ -18,10 +18,16 @@ FROM node:20
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm prisma
 
 # Copy output from builder
-COPY --from=builder /app/dist/ /app/
+COPY --from=builder /app/dist/ .
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/prisma/migrations /app/prisma/migrations
+COPY --from=builder /app/prisma/schema.prisma /app/prisma/schema.prisma
+
+# Copy entrypoint
+COPY ./docker/entrypoint.sh /entrypoint.sh
 
 # Install production dependencies
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/
@@ -31,4 +37,4 @@ RUN pnpm i --prod
 EXPOSE 3000
 
 # Start server
-CMD ["node", "/app/main.js"]
+CMD ["/bin/bash", "/entrypoint.sh"]

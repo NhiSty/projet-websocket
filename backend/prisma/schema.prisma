@@ -9,3 +9,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// This model is how are represented the users in the database
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+
+  role Role @default(USER)
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  USER
+}

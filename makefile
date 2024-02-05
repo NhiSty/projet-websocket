@@ -7,7 +7,7 @@ down-dev:
 	@docker compose -f docker-compose.dev.yaml down
 
 deploy:
-	@docker compose up -d
+	@docker compose up -d --build
 
 down:
 	@docker compose down

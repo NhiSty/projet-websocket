@@ -1,15 +1,20 @@
-version: '3'
+version: "3"
 
 services:
   frontend:
     build: ./frontend
     depends_on:
       - backend
-  
+
   backend:
     build: ./backend
+    environment:
+      DATABASE_URL: "postgresql://ws_user:ws_password@db:5432/projet_ws?schema=public"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    env_file:
+      - backend/.env
 
   http:
     image: nginx:alpine
@@ -29,6 +34,12 @@ services:
       POSTGRES_DB: projet_ws
       POSTGRES_USER: ws_user
       POSTGRES_PASSWORD: ws_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ws_user -d projet_ws"]
+      interval: 10s
+      start_interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db-data:

@@ -2,7 +2,7 @@
 ### Faire un clone / semblant de kahoot avec Socket.IO
 
 ### Prérequis :
-- Avoir Docker d'allumé
+- Avoir Docker d'allumé (et la version >= Docker version 24 )
 - avoir Make d'installé
 
 ### Installation :

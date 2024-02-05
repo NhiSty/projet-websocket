@@ -12,7 +12,7 @@ COPY . /app
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Build project
+# Build NextJS project
 RUN pnpm i --frozen-lockfile && pnpm run build
 
 

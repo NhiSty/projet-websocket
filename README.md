@@ -3,6 +3,8 @@
 
 Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale liberté de proposer des fonctionnalités innovantes en expliquant les démarches dans le README du projet.
 
+- Voir le fichier `instructions.md` pour les instructions permettant de lancer.
+
 ### Exigences : 
 
 1. Interface de création de quiz : 

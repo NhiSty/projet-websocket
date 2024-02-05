@@ -41,9 +41,9 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 - [ ] Affichage des scores finaux et des bonnes réponses aux clients à la fin du quiz. 
 
 8. Dockerisation : 
-- [ ] L’ensemble de l'application doit être conteneurisé à l'aide de Docker pour faciliter le déploiement et les tests (on ne parle pas des tests u mais tests user). 
-- [ ] Fournir un Dockerfile pour l'application serveur et un fichier docker-compose.yml pour orchestrer les services nécessaires, y compris les bases de données ou les systèmes de stockage utilisés. 
-- [ ] S’assurer que l'application peut être lancée avec **une seule commande** telle que docker-compose up . Pour la correction, le prof va juste faire **1** commande pour lancer le site, il ne va pas s'amuser à mettre en place des .env etc, donc il faut deja préparer le terrain pour lui.
+- [x] L’ensemble de l'application doit être conteneurisé à l'aide de Docker pour faciliter le déploiement et les tests (on ne parle pas des tests u mais tests user). 
+- [x] Fournir un Dockerfile pour l'application serveur et un fichier docker-compose.yml pour orchestrer les services nécessaires, y compris les bases de données ou les systèmes de stockage utilisés. 
+- [x] S’assurer que l'application peut être lancée avec **une seule commande** telle que docker-compose up . Pour la correction, le prof va juste faire **1** commande pour lancer le site, il ne va pas s'amuser à mettre en place des .env etc, donc il faut deja préparer le terrain pour lui.
 
 Avec cette exigence, les tests et le déploiement sont simplifiés, offrant simplicité et cohérence à travers différents environnements, du machine locale de l'enseignant au serveur de production. 
 Dockerisation encapsule les dépendances, atténuant le syndrome "ça marche sur ma machine" et facilitant la reproductibilité et la scalabilité. 

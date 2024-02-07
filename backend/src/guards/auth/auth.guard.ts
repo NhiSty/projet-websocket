@@ -5,9 +5,13 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { Auth } from 'src/decorators/auth.decorator';
-import { AuthService } from 'src/services/auth/auth.service';
+import {
+  AuthService,
+  InvalidSessionError,
+} from 'src/services/auth/auth.service';
+import { Request } from 'express';
+import { SessionService } from 'src/services/session/session.service';
 
 /**
  * This guard is responsible for checking the authentication status of the user.
@@ -15,9 +19,9 @@ import { AuthService } from 'src/services/auth/auth.service';
 @Injectable()
 export class AuthGuard implements CanActivate {
   public constructor(
-    private authService: AuthService,
-    private jwtService: JwtService,
     private reflector: Reflector,
+    private authService: AuthService,
+    private sessionService: SessionService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -26,11 +30,11 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    const req = context.switchToHttp().getRequest();
-    const authorization = req.headers['authorization'];
+    const req: Request = context.switchToHttp().getRequest();
+    const userId = req.session.userId;
 
     if (auth === 'guest') {
-      if (authorization) {
+      if (userId) {
         return false;
       }
 
@@ -38,20 +42,18 @@ export class AuthGuard implements CanActivate {
     }
 
     if (auth === 'auth') {
-      if (!authorization) {
+      if (!userId) {
         return false;
       }
 
       try {
-        const token = authorization.split(' ')[1];
-        const payload = this.jwtService.verify(token);
-
-        req.user = await this.authService.restoreFromJwtPayload(payload);
-
+        await this.authService.loadSession(req);
         return true;
       } catch (error) {
-        if (error instanceof TokenExpiredError) {
-          throw new ForbiddenException('Token has expired');
+        if (error instanceof InvalidSessionError) {
+          throw new ForbiddenException(
+            'User not authenticated. Maybe your session has expired',
+          );
         }
         return false;
       }

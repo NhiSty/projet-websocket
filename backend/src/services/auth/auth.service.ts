@@ -3,6 +3,14 @@ import { UserService } from '../user/user.service';
 import { HashService } from '../hash/hash.service';
 import { CreateUserDto } from 'src/controllers/auth/create-user.dto';
 import { User } from '@prisma/client';
+import { Request } from 'express';
+import { SessionService } from '../session/session.service';
+
+export class InvalidSessionError extends Error {
+  public constructor() {
+    super('Invalid user session');
+  }
+}
 
 /**
  * Service responsible for authentication-related operations.
@@ -17,6 +25,7 @@ export class AuthService {
   public constructor(
     private readonly userService: UserService,
     private readonly hashService: HashService,
+    private readonly sessionService: SessionService,
   ) {}
 
   /**
@@ -47,11 +56,48 @@ export class AuthService {
   }
 
   /**
-   * Restores a user from the JWT payload.
-   * @param payload - The JWT payload.
+   * Restores a user from the session
+   * @param payload - The HTTP session.
    * @returns The restored user.
    */
-  public async restoreFromJwtPayload(payload: { sub: string }): Promise<User> {
-    return this.userService.find(payload.sub);
+  public async loadSession(request: Request): Promise<void> {
+    const userId = request.session.userId;
+    const user = await this.userService.find(userId);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    request.user = user;
+  }
+
+  /**
+   * Save a user to the session
+   * @param request - The HTTP request.
+   * @param user - The user
+   */
+  public async saveSession(
+    request: Request,
+    user: User,
+    regenerate = false,
+  ): Promise<void> {
+    request.user = user;
+
+    // If "regenerate" is true, the session will be regenerated (destroyed then recreated) to give the user a fresh new one
+    if (regenerate) {
+      await this.sessionService.regenerate(request);
+    }
+
+    request.session.userId = user.id;
+    await this.sessionService.save(request);
+  }
+
+  /**
+   * Destroy a user session
+   * @param request - The HTTP request.
+   */
+  public async destroySession(request: Request): Promise<void> {
+    request.user = null;
+    await this.sessionService.destroy(request);
   }
 }

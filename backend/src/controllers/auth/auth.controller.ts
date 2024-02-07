@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Post,
   Req,
   ValidationPipe,
@@ -9,9 +11,9 @@ import {
 import { AuthService } from 'src/services/auth/auth.service';
 import { LoginUserDto } from './login-user.dto';
 import { CreateUserDto } from './create-user.dto';
-import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { Auth, Guest } from 'src/decorators/auth.decorator';
+import { Request } from 'express';
 
 /**
  * Controller responsible for handling authentication related requests.
@@ -19,10 +21,7 @@ import { Auth, Guest } from 'src/decorators/auth.decorator';
 @Controller('/auth')
 @Guest()
 export class AuthController {
-  public constructor(
-    private authService: AuthService,
-    private jwtService: JwtService,
-  ) {}
+  public constructor(private authService: AuthService) {}
 
   /**
    * Retrieves the currently authenticated user.
@@ -31,8 +30,8 @@ export class AuthController {
    */
   @Get()
   @Auth()
-  public async me(@Req() request): Promise<User> {
-    const user = request.user as User;
+  public async me(@Req() request: Request): Promise<User> {
+    const user = request.user!;
     return {
       ...user,
       password: undefined,
@@ -40,36 +39,50 @@ export class AuthController {
   }
 
   /**
-   * Authenticates a user and generates an access token.
+   * Authenticates a user and generates a user session.
    * @param body - The login user data.
-   * @returns An object containing the access token.
+   * @returns An object containing the user data
    */
   @Post()
   public async login(
     @Body(new ValidationPipe()) body: LoginUserDto,
-  ): Promise<{ access_token: string }> {
+    @Req() request: Request,
+  ): Promise<User> {
     const user = await this.authService.login(body.username, body.password);
+    await this.authService.saveSession(request, user, true);
 
-    const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      ...user,
+      password: undefined,
     };
   }
 
   /**
-   * Registers a new user and generates an access token.
+   * Registers a new user and generates a user session.
    * @param body - The user registration data.
-   * @returns An object containing the access token.
+   * @returns An object containing the user data
    */
   @Post('register')
   public async register(
     @Body(new ValidationPipe()) body: CreateUserDto,
-  ): Promise<{ access_token: string }> {
+    @Req() request: Request,
+  ): Promise<User> {
     const user = await this.authService.register(body);
+    await this.authService.saveSession(request, user, true);
 
-    const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      ...user,
+      password: undefined,
     };
+  }
+
+  /**
+   * Logout the user
+   */
+  @Delete()
+  @Auth()
+  @HttpCode(204)
+  public async logout(@Req() request: Request): Promise<void> {
+    await this.authService.destroySession(request);
   }
 }

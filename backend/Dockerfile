@@ -1,16 +1,21 @@
 FROM node:20 as builder
 
+
 # Set working directory
 WORKDIR /app
 
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy NestJS project folder
+# Copy project folder
 COPY . /app
 
-# Build project
+ENV NODE_ENV=production
+
+# Build NestJS project
 RUN pnpm i --frozen-lockfile && pnpm run build
+
+
 
 FROM node:20
 
@@ -31,6 +36,9 @@ COPY ./docker/entrypoint.sh /entrypoint.sh
 
 # Install production dependencies
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/
+
+ENV NODE_ENV=production
+
 RUN pnpm i --prod
 
 # Expose port

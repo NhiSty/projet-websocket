@@ -20,12 +20,6 @@ services:
       POSTGRES_USER: ws_user
       POSTGRES_PASSWORD: ws_password
 
-  http:
-    image: nginx:alpine
-    volumes:
-      - ./docker/nginx-dev.conf:/etc/nginx/conf.d/default.conf
-    network_mode: "host"
-
   redis:
     image: redis:alpine
     ports:

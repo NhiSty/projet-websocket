@@ -10,10 +10,10 @@ deploy-dev: setup-dev
 	@echo "Postgres available at: postgres://ws_user:ws_password@localhost:5432/projet_ws"
 
 down-dev:
-	@docker compose -f docker-compose.dev.yaml down -v
+	@docker compose -f docker-compose.dev.yaml down
 
 setup-dev: $(BACKEND_ENV) $(FRONTEND_ENV)
-	@cd backend && pnpm install
+	@cd backend && pnpm install && pnpm prisma generate
 	@cd frontend && pnpm install
 
 # ====================================

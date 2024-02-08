@@ -1,8 +1,8 @@
 import {
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Auth } from 'src/decorators/auth.decorator';
@@ -51,7 +51,7 @@ export class AuthGuard implements CanActivate {
         return true;
       } catch (error) {
         if (error instanceof InvalidSessionError) {
-          throw new ForbiddenException(
+          throw new UnauthorizedException(
             'User not authenticated. Maybe your session has expired',
           );
         }

@@ -1,7 +1,14 @@
 export enum Role {
-  SUPERADMIN = "superadmin",
-  ADMIN = "admin",
-  USER = "user",
+  SUPERADMIN = "SUPERADMIN",
+  ADMIN = "ADMIN",
+  USER = "USER",
+}
+
+export function isInRole(user: User, role: Role | Role[]): boolean {
+  if (Array.isArray(role)) {
+    return role.includes(user.role);
+  }
+  return user.role === role;
 }
 
 export interface User {

@@ -1,19 +1,22 @@
 import { fetchUser } from "#/api/auth.http";
 import { QueryConstants } from "#/api/queryConstants";
 import { QueryClient } from "@tanstack/react-query";
-import { LoaderFunction, Outlet, redirect } from "react-router-dom";
+import { LoaderFunction, Outlet } from "react-router-dom";
 
-export function authLoader(queryClient: QueryClient): LoaderFunction<void> {
+export function authLoader(
+  queryClient: QueryClient,
+  callback: (connected: boolean) => void
+): LoaderFunction<void> {
   return async () => {
     try {
-      queryClient.prefetchQuery({
+      const value = await queryClient.fetchQuery({
         queryKey: QueryConstants.USER,
         queryFn: fetchUser,
       });
 
-      return redirect("/");
+      return callback(Boolean(value));
     } catch (error) {
-      return true;
+      return callback(false);
     }
   };
 }

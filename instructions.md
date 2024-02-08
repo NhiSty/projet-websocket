@@ -19,10 +19,9 @@
   - Développement :
     - Lancer la commande `make deploy-dev` pour lancer le projet en mode dev
     - Backend:
-      - `pnpm prisma generate`
-      - `pnpm db:deploy`
-      - `pnpm db:seed`
+      - `pnpm db:reset`
       - `pnpm run start:dev`
     - Frontend :
       - `pnpm run dev`
+      aller sur `http://localhost:3000`
     - Lancer la commande `make down-dev` pour arrêter le projet

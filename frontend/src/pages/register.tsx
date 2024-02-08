@@ -11,6 +11,7 @@ import { registerUser } from "#/api/auth.http";
 import { QueryConstants } from "#/api/queryConstants";
 import { useNavigate } from "react-router-dom";
 import { LucideLoader2, LucideLogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const schema = yup
   .object({
@@ -22,7 +23,7 @@ const schema = yup
 
 type RegisterData = yup.InferType<typeof schema>;
 
-export function RegisterForm() {
+export function Register() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
@@ -50,63 +51,70 @@ export function RegisterForm() {
   };
 
   return (
-    <form
-      className="flex flex-col gap-2 py-4"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <h2 className="text-2xl font-semibold">Register</h2>
-
-      <FormController
-        label="Username"
-        inputId="username"
-        errorMessage={errors.username}
+    <>
+      <form
+        className="flex flex-col gap-2 py-4"
+        onSubmit={handleSubmit(onSubmit)}
       >
-        <Input
-          type="text"
-          id="username"
-          placeholder="Username"
-          {...register("username", { required: true })}
-        />
-      </FormController>
+        <h2 className="text-2xl font-semibold">Register</h2>
 
-      <FormController
-        label="Password"
-        inputId="password"
-        errorMessage={errors.password}
-      >
-        <Input
-          type="password"
-          id="password"
-          placeholder="Password"
-          {...register("password", { required: true })}
-        />
-      </FormController>
+        <FormController
+          label="Username"
+          inputId="username"
+          errorMessage={errors.username}
+        >
+          <Input
+            type="text"
+            id="username"
+            placeholder="Username"
+            {...register("username", { required: true })}
+          />
+        </FormController>
 
-      <FormController
-        label="Confirm Password"
-        inputId="confirmation"
-        errorMessage={errors.confirmation}
-      >
-        <Input
-          type="password"
-          id="confirmation"
-          placeholder="Confirm password"
-          {...register("confirmation", { required: true })}
-        />
-      </FormController>
+        <FormController
+          label="Password"
+          inputId="password"
+          errorMessage={errors.password}
+        >
+          <Input
+            type="password"
+            id="password"
+            placeholder="Password"
+            {...register("password", { required: true })}
+          />
+        </FormController>
 
-      <Button
-        className="btn-primary mt-4 inline-flex gap-2"
-        type="submit"
-        disabled={!isValid || mutation.isPending}
-      >
-        Register
-        {mutation.isPending ? (
-          <LucideLoader2 className="animate-spin w-5 h-5" />
-        ) : (
-          <LucideLogIn className="w-5 h-5" />
-        )}
-      </Button>
-    </form>
+        <FormController
+          label="Confirm Password"
+          inputId="confirmation"
+          errorMessage={errors.confirmation}
+        >
+          <Input
+            type="password"
+            id="confirmation"
+            placeholder="Confirm password"
+            {...register("confirmation", { required: true })}
+          />
+        </FormController>
+
+        <Button
+          className="btn-primary mt-4 inline-flex gap-2"
+          type="submit"
+          disabled={!isValid || mutation.isPending}
+        >
+          Register
+          {mutation.isPending ? (
+            <LucideLoader2 className="animate-spin w-5 h-5" />
+          ) : (
+            <LucideLogIn className="w-5 h-5" />
+          )}
+        </Button>
+      </form>
+      <div className="flex flex-col justify-center py-2">
+        <Link className="link-hover link-secondary text-sm" to="/login">
+          Already have an account? Login
+        </Link>
+      </div>
+    </>
   );
 }

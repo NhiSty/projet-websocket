@@ -44,6 +44,7 @@ export class AuthController {
    * @returns An object containing the user data
    */
   @Post()
+  @HttpCode(200)
   public async login(
     @Body(new ValidationPipe()) body: LoginUserDto,
     @Req() request: Request,

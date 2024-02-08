@@ -1,5 +1,5 @@
 import { cn } from "#/utils/css";
-import { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 export enum TextType {
   Primary = "text-primary-content",

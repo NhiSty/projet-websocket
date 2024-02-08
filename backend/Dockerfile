@@ -10,8 +10,6 @@ RUN npm install -g pnpm
 # Copy project folder
 COPY . /app
 
-ENV NODE_ENV=production
-
 # Build NestJS project
 RUN pnpm i --frozen-lockfile && pnpm run build
 

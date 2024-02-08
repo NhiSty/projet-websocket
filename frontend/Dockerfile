@@ -1,29 +1,25 @@
 FROM node:20 as builder
 
-
-# Set working directory
+#######################################################################
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+COPY . .
+RUN npm install
+ENV NODE_ENV=production
+RUN npm run build
+RUN npm prune --production
 
-# Copy project folder
-COPY . /app
+#######################################################################
+FROM nginx
 
-# Build NextJS project
-RUN pnpm i --frozen-lockfile && NODE_ENV=production pnpm run build
+WORKDIR /usr/share/nginx/html/
 
+# nginx conf file required to handle React router
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# copy the app from the builder
+COPY --from=builder /app/dist .
 
-FROM nginx:latest
-
-# Set working directory
-WORKDIR /app
-
-COPY --from=builder /app/dist/ /usr/share/nginx/html
-
-# Expose port 3000
 EXPOSE 80
+EXPOSE 443
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
 CMD ["nginx", "-g", "daemon off;"]

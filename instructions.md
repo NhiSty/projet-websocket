@@ -11,13 +11,15 @@
 
 - Cloner le projet
 - Se rendre dans le dossier du projet
+- supprimer les .env que vous avez déjà
 - Déploiement:
   - Production :
-    - Lancer la commande `make deploy` pour lancer le projet prêt à etre utilisé
+    - Lancer la commande `make deploy` pour lancer le projet prêt à être utilisé
     - Lancer la commande `make down` pour arrêter le projet
   - Développement :
     - Lancer la commande `make deploy-dev` pour lancer le projet en mode dev
     - Backend:
+      - `pnpm prisma generate`
       - `pnpm db:deploy`
       - `pnpm db:seed`
       - `pnpm run start:dev`

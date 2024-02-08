@@ -14,6 +14,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - backend/.env
 
@@ -44,6 +46,12 @@ services:
 
   redis:
     image: redis:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      start_period: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db-data:

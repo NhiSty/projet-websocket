@@ -34,10 +34,10 @@ function NavbarUserSection({ user }: NavbarUserSectionProps): JSX.Element {
       >
         {isInRole(user, [Role.ADMIN, Role.SUPERADMIN]) && (
           <li>
-            <a>
+            <Link to="/dashboard">
               <LayoutDashboardIcon className="w-6 h-6" />
               Dashboard
-            </a>
+            </Link>
           </li>
         )}
         <li>
@@ -61,7 +61,7 @@ export function Navbar(): JSX.Element {
   const { data: user } = useUser();
 
   return (
-    <nav className="navbar bg-base-100">
+    <nav className="navbar bg-base-100 border-b border-base-200">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
           <img src={logo} alt="Wasoot logo" className="w-14 h-14 -my-2" />

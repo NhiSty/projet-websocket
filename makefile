@@ -11,6 +11,7 @@ deploy-dev: setup-dev
 
 down-dev:
 	@docker compose -f docker-compose.dev.yaml down
+	@rm $(BACKEND_ENV) $(FRONTEND_ENV)
 
 setup-dev: $(BACKEND_ENV) $(FRONTEND_ENV)
 	@cd backend && pnpm install && pnpm prisma generate
@@ -24,6 +25,7 @@ deploy: $(BACKEND_ENV) $(FRONTEND_ENV)
 
 down:
 	@docker compose down
+	@rm $(BACKEND_ENV) $(FRONTEND_ENV)
 
 # ====================================
 # Common commands

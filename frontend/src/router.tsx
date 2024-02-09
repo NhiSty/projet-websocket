@@ -6,6 +6,7 @@ import { queryClient } from "./api/api";
 import { BaseLayout } from "./layouts/BaseLayout";
 import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
+import { Dashboard, dashboardLoader } from "./pages/dashboard/dasboard";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,39 @@ const router = createBrowserRouter([
       return true;
     }),
     children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+        loader: dashboardLoader(queryClient),
+        children: [
+          {
+            path: "",
+            element: <div>General</div>,
+          },
+
+          {
+            path: "quizzes",
+            element: <div>Quizzes</div>,
+          },
+          {
+            path: "quiz/:id",
+            element: <div>Quiz</div>,
+          },
+          {
+            path: "quiz/:id/edit",
+            element: <div>Edit Quiz</div>,
+          },
+          {
+            path: "quiz/:id/results",
+            element: <div>Quiz Results</div>,
+          },
+
+          {
+            path: "admins",
+            element: <div>Admins</div>,
+          },
+        ],
+      },
       {
         path: "logout",
         element: <div>Logging out...</div>,

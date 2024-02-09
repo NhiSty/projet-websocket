@@ -10,7 +10,7 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: "postgresql://ws_user:ws_password@db:5432/projet_ws?schema=public"
-      REDIS_HOST: db
+      REDIS_HOST: redis
     depends_on:
       db:
         condition: service_healthy

@@ -16,7 +16,6 @@ export const useUser = () =>
   });
 
 export const logoutAction = (queryClient: QueryClient) => async () => {
-  console.log("Logging out");
   try {
     await logoutUser();
   } catch (e) {

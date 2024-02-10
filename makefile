@@ -31,8 +31,7 @@ down:
 # Common commands
 # ====================================
 $(BACKEND_ENV):
-	@cd backend && cp .env.example .env
-	@sed -i '' 's/APP_SECRET=/APP_SECRET=$(shell head -c 16 /dev/urandom | shasum -a 256 | cut -d" " -f1 | head -c 32)/g' backend/.env
+	@node backend/scripts/make-env.js
 
 $(FRONTEND_ENV):
 	@cd frontend && cp .env.example .env

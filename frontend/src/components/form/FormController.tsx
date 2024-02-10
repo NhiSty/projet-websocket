@@ -4,7 +4,7 @@ import { FieldError } from "react-hook-form";
 export interface FormControllerProps
   extends React.HTMLAttributes<HTMLDivElement> {
   inputId: string;
-  label: string;
+  label?: string;
   errorMessage?: FieldError;
 }
 
@@ -20,11 +20,13 @@ export function FormController({
         "input-error": Boolean(errorMessage),
       })}
     >
-      <div className="label">
-        <label className="label-text" htmlFor="email">
-          {label}
-        </label>
-      </div>
+      {label && (
+        <div className="label">
+          <label className="label-text" htmlFor="email">
+            {label}
+          </label>
+        </div>
+      )}
       {children}
 
       {errorMessage && (

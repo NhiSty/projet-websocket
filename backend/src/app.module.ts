@@ -12,6 +12,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/role/roles.guard';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { SessionService } from './services/session/session.service';
+import { AdminController } from './controllers/admin/admin.controller';
+import { SuperadminController } from './controllers/superadmin/superadmin.controller';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { SessionService } from './services/session/session.service';
       }),
     }),
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, AdminController, SuperadminController],
   providers: [
     AppService,
     DatabaseService,

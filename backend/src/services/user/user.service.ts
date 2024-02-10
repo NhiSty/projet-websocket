@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { HashService } from '../hash/hash.service';
+import { Paginated } from 'src/types/pagination';
 
 /**
  * Service responsible for managing user-related operations.
@@ -17,13 +18,19 @@ export class UserService {
    * Creates a new user with the given username and password.
    * @param username - The username of the user.
    * @param password - The password of the user.
+   * @param role - The role of the user. (Optional)
    * @returns The created user.
    */
-  public async create(username: string, password: string): Promise<User> {
+  public async create(
+    username: string,
+    password: string,
+    role?: Role,
+  ): Promise<User> {
     return this.databaseService.user.create({
       data: {
         username,
         password: await this.hashService.hash(password),
+        role,
       },
     });
   }
@@ -56,6 +63,80 @@ export class UserService {
         username: true,
         password: true,
         role: true,
+      },
+    });
+  }
+
+  /**
+   * Find users with pagination and search.
+   * @param search - The search query.
+   * @param page - The page number.
+   * @returns The found users.
+   */
+  public async findMany(
+    page: number,
+    search?: string,
+  ): Promise<Paginated<Omit<User, 'password'>>> {
+    const totalItems = await this.databaseService.user.count({
+      where: {
+        username: search && {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    const users = await this.databaseService.user.findMany({
+      take: 10,
+      skip: (page - 1) * 10,
+      where: {
+        username: search && {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      orderBy: {
+        username: 'asc',
+      },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+      },
+    });
+
+    const totalPages = Math.ceil(totalItems / 10);
+
+    return {
+      items: users,
+      totalItems,
+      totalPages,
+    };
+  }
+
+  /**
+   * Delete user
+   * @param user - The user
+   */
+  public async deleteUserFromId(user: User): Promise<void> {
+    await this.databaseService.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
+  }
+
+  /**
+   * Update user
+   * @param user - The user data
+   */
+  public async updateUser(user: User): Promise<User> {
+    return await this.databaseService.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        role: user.role,
       },
     });
   }

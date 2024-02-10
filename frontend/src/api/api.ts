@@ -35,7 +35,7 @@ export class ConflictError extends HttpError {
   }
 }
 
-export async function fetcher<T>(
+export async function fetcher<T = void>(
   url: string,
   options?: RequestInit
 ): Promise<T> {
@@ -67,6 +67,9 @@ export async function fetcher<T>(
       "An error occurred while fetching the data.",
       res.status
     );
+  }
+  if (res.status === 204) {
+    return {} as T;
   }
   return res.json();
 }

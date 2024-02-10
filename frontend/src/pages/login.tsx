@@ -8,10 +8,11 @@ import { useForm } from "react-hook-form";
 import { FormController } from "#/components/form/FormController";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "#/api/auth.http";
-import { LucideLoader2, LucideLogIn } from "lucide-react";
+import { LucideLoader2, LucideLogIn, XCircleIcon } from "lucide-react";
 import { QueryConstants } from "#/api/queryConstants";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const schema = yup
   .object({
@@ -39,9 +40,13 @@ export function Login() {
     onSuccess: (data) => {
       queryClient.setQueryData(QueryConstants.USER, data);
       navigate("/");
+      toast.success("Welcome back!");
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Invalid credentials", {
+        icon: <XCircleIcon className="w-5 h-5" />,
+      });
     },
   });
 

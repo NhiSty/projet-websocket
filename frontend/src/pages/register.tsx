@@ -10,8 +10,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { registerUser } from "#/api/auth.http";
 import { QueryConstants } from "#/api/queryConstants";
 import { useNavigate } from "react-router-dom";
-import { LucideLoader2, LucideLogIn } from "lucide-react";
+import { LucideLoader2, LucideLogIn, XCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const schema = yup
   .object({
@@ -40,9 +41,13 @@ export function Register() {
     onSuccess: (data) => {
       queryClient.setQueryData(QueryConstants.USER, data);
       navigate("/");
+      toast.success("Welcome!");
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Something went wrong", {
+        icon: <XCircleIcon className="w-5 h-5" />,
+      });
     },
   });
 

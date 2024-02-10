@@ -26,7 +26,7 @@ export function dashboardLoader(
   };
 }
 
-function DashboardHeader({ user }: { user: User }): JSX.Element {
+function DashboardHeader(): JSX.Element {
   const classNames: NavLinkProps["className"] = ({ isActive }) =>
     cn("tab", { "tab-active": isActive });
 
@@ -42,22 +42,18 @@ function DashboardHeader({ user }: { user: User }): JSX.Element {
         <NavLink role="tab" className={classNames} to="/dashboard/quizzes">
           Quizzes
         </NavLink>
-        {isInRole(user, Role.SUPERADMIN) && (
-          <NavLink role="tab" className={classNames} to="/dashboard/admins">
-            Administrators
-          </NavLink>
-        )}
+        <NavLink role="tab" className={classNames} to="/dashboard/users">
+          Users
+        </NavLink>
       </div>
     </header>
   );
 }
 
 export function Dashboard(): JSX.Element {
-  const user = useLoaderData() as User;
-
   return (
     <div className="flex flex-col">
-      <DashboardHeader user={user} />
+      <DashboardHeader />
 
       <main className="px-4 py-12 md:p-12">
         <Outlet />

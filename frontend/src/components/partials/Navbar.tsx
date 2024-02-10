@@ -41,12 +41,6 @@ function NavbarUserSection({ user }: NavbarUserSectionProps): JSX.Element {
           </li>
         )}
         <li>
-          <a>
-            <Settings2Icon className="w-6 h-6" />
-            Settings
-          </a>
-        </li>
-        <li>
           <Link to="/logout">
             <LogOutIcon className="w-6 h-6" />
             Logout

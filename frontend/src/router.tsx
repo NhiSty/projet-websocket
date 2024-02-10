@@ -7,6 +7,7 @@ import { BaseLayout } from "./layouts/BaseLayout";
 import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
 import { Dashboard, dashboardLoader } from "./pages/dashboard/dasboard";
+import { Administrators } from "./pages/dashboard/admins";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <Dashboard />,
         loader: dashboardLoader(queryClient),
+        id: "dashboard", // 'id' is used to identify the route in the 'useRouteLoaderData' hook
         children: [
           {
             path: "",
@@ -50,8 +52,8 @@ const router = createBrowserRouter([
           },
 
           {
-            path: "admins",
-            element: <div>Admins</div>,
+            path: "users",
+            element: <Administrators />,
           },
         ],
       },

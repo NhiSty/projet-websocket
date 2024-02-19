@@ -1,6 +1,6 @@
 import { Paginated } from "#/utils/pagination";
 import { fetcher } from "./api";
-import { User } from "./types";
+import { Quiz, User } from "./types";
 
 type SearchUsersResponse = Paginated<Omit<User, "password">>;
 
@@ -37,5 +37,20 @@ export const createUser = (data: CreateUser) => {
   return fetcher<void>("/admins/users", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+};
+
+type SearchQuizResponse = Paginated<Quiz>;
+
+export const searchQuiz = (search: string, page: number) => {
+  return fetcher<SearchQuizResponse>(`/quizzes?search=${search}&page=${page}`, {
+    method: "GET",
+  });
+};
+
+export const createQuiz = (name: string) => {
+  return fetcher<void>("/quizzes", {
+    method: "POST",
+    body: JSON.stringify({ name }),
   });
 };

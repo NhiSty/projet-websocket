@@ -16,3 +16,26 @@ export interface User {
   username: string;
   role: Role;
 }
+
+export interface Answer {
+  id: string;
+  answer: string;
+  correct: boolean;
+}
+
+export type QuestionType = "SINGLE" | "MULTIPLE" | "TEXT" | "BINARY";
+
+export interface Question {
+  id: string;
+  question: string;
+  duration: number;
+  type: QuestionType;
+  answers: Answer[];
+}
+
+export interface Quiz {
+  id: string;
+  name: string;
+  author: User;
+  questions: Question[];
+}

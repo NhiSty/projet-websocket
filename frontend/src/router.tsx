@@ -8,6 +8,7 @@ import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
 import { Dashboard, dashboardLoader } from "./pages/dashboard/dasboard";
 import { UsersList } from "./pages/dashboard/users";
+import { Quizzes } from "./pages/dashboard/quizzes";
 
 const router = createBrowserRouter([
   {
@@ -36,19 +37,24 @@ const router = createBrowserRouter([
 
           {
             path: "quizzes",
-            element: <div>Quizzes</div>,
-          },
-          {
-            path: "quiz/:id",
-            element: <div>Quiz</div>,
-          },
-          {
-            path: "quiz/:id/edit",
-            element: <div>Edit Quiz</div>,
-          },
-          {
-            path: "quiz/:id/results",
-            element: <div>Quiz Results</div>,
+            children: [
+              {
+                path: "",
+                element: <Quizzes />,
+              },
+              {
+                path: ":id",
+                element: <div>Quiz</div>,
+              },
+              {
+                path: ":id/edit",
+                element: <div>Edit Quiz</div>,
+              },
+              {
+                path: ":id/results",
+                element: <div>Quiz Results</div>,
+              },
+            ],
           },
 
           {

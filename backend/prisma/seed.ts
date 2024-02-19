@@ -1,25 +1,9 @@
 import { PrismaClient, Role, User } from '@prisma/client';
 import * as argon2 from 'argon2';
-import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminUser: Omit<User, 'id'> = {
-    username: 'admin',
-    password: await argon2.hash('admin'),
-    role: Role.SUPERADMIN,
-  };
-
-  await prisma.user.upsert({
-    where: { username: adminUser.username },
-    update: {},
-    create: adminUser,
-  });
-
-  console.log('Admin user created');
-  const users: Omit<User, 'id'>[] = [];
-
   await prisma.user.deleteMany({
     where: {
       OR: [
@@ -28,6 +12,15 @@ async function main() {
       ],
     },
   });
+  const users: Omit<User, 'id'>[] = [];
+
+  // Create super admin user
+  const adminUser: Omit<User, 'id'> = {
+    username: 'admin',
+    password: await argon2.hash('admin'),
+    role: Role.SUPERADMIN,
+  };
+  users.push(adminUser);
 
   // Generate 30 random users
   for (let i = 0; i < 30; i++) {

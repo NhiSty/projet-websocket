@@ -1,6 +1,6 @@
-const fs = require('fs/promises');
-const path = require('path');
-const crypto = require('crypto');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const crypto = require('node:crypto');
 
 const fromFilePath = path.join(__dirname, '../.env.example'); // Path to the source .env.example file
 const toFilePath = path.join(__dirname, '../.env'); // Path to the destination .env file

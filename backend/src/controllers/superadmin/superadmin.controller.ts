@@ -20,7 +20,7 @@ import { Auth } from 'src/decorators/auth.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserService } from 'src/services/user/user.service';
 import { AdminCreateUserDto } from './admin-create-user.dto';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { AdminUpdateUserDto } from './admin-update-user.dto';
 
 @Controller('admins/users')
@@ -44,7 +44,6 @@ export class SuperadminController {
   public async createUser(
     @Body(new ValidationPipe()) user: AdminCreateUserDto,
     @Req() request: Request,
-    @Res() response: Response,
   ) {
     const foundUser = await this.userService.findByUsername(user.username);
     if (foundUser) {
@@ -64,8 +63,6 @@ export class SuperadminController {
     }
 
     await this.userService.create(user.username, user.password, user.role);
-
-    return response.sendStatus(204);
   }
 
   @Delete(':id')
@@ -92,7 +89,7 @@ export class SuperadminController {
       throw new ForbiddenException('You cannot delete an admin');
     }
 
-    return this.userService.delete(user);
+    await this.userService.delete(user);
   }
 
   @Patch(':id')

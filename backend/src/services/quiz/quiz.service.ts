@@ -21,9 +21,13 @@ export class QuizService {
     });
   }
 
-  public async find(id: string): Promise<Quiz | null> {
+  public async find(id: string): Promise<QuizWithAuthor | null> {
     return this.databaseService.quiz.findUnique({
       where: { id },
+      include: {
+        author: { select: { id: true, username: true } },
+        questions: { include: { answers: true } },
+      },
     });
   }
 

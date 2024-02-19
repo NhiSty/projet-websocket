@@ -43,20 +43,25 @@ export const createUser = (data: CreateUser) => {
 type SearchQuizResponse = Paginated<Quiz>;
 
 export const searchQuiz = (search: string, page: number) => {
-  return fetcher<SearchQuizResponse>(`/quizzes?search=${search}&page=${page}`, {
-    method: "GET",
-  });
+  return fetcher<SearchQuizResponse>(
+    `/admins/quizzes?search=${search}&page=${page}`,
+    {
+      method: "GET",
+    }
+  );
 };
 
 export const createQuiz = (name: string) => {
-  return fetcher<{ id: string }>("/quizzes", {
+  return fetcher<{ id: string }>("/admins/quizzes", {
     method: "POST",
     body: JSON.stringify({ name }),
   });
 };
 
 export const deleteQuiz = (id: string) => {
-  return fetcher<void>(`/quizzes/${id}`, {
+  return fetcher<void>(`/admins/quizzes/${id}`, {
     method: "DELETE",
   });
 };
+
+export const fetchQuiz = (id: string) => fetcher<Quiz>(`/admins/quizzes/${id}`);

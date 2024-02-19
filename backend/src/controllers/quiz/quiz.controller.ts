@@ -18,13 +18,12 @@ import { Request } from 'express';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@Controller('quizzes')
+@Controller('admins/quizzes')
 @Auth()
 @Roles([Role.ADMIN, Role.SUPERADMIN])
 export class QuizController {
   public constructor(private readonly quizService: QuizService) {}
   @Get()
-  @Roles([Role.ADMIN, Role.SUPERADMIN])
   public async getQuizzes(
     @Query('search') search?: string,
     @Query('page') page: number = 1,
@@ -34,6 +33,16 @@ export class QuizController {
     }
 
     return this.quizService.findMany(page, search);
+  }
+
+  @Get(':id')
+  public async getQuiz(@Param('id') id: string) {
+    const quiz = await this.quizService.find(id);
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    return quiz;
   }
 
   @Post()

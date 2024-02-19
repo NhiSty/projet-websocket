@@ -181,7 +181,14 @@ export function Quizzes(): JSX.Element {
               {/* body */}
               {paginatedList.data?.items.map((quiz) => (
                 <tr key={quiz.id}>
-                  <td>{quiz.name}</td>
+                  <td>
+                    <Link
+                      className="link link-hover link-primary"
+                      to={`/dashboard/quizzes/${quiz.id}`}
+                    >
+                      {quiz.name}
+                    </Link>
+                  </td>
                   <td className="text-center">{quiz.author.username}</td>
                   <td className="flex flex-row justify-end gap-2">
                     <ViewButton quiz={quiz} />

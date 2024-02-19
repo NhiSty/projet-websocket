@@ -6,6 +6,7 @@ import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -21,18 +22,18 @@ interface CreateQuizForm {
 }
 
 const schema = yup
-  .object({
-    name: yup.string().required(),
-  })
-  .required();
+    .object({
+      name: yup.string().required(),
+    })
+    .required();
 
 export function CreateQuizModal({
-  onClose,
-}: CreateQuizModalProps): JSX.Element {
+                                  onClose,
+                                }: CreateQuizModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [toastId, setToastId] = useState<string | number | undefined>(
-    undefined
+      undefined
   );
 
   const {
@@ -52,6 +53,7 @@ export function CreateQuizModal({
     onSuccess: (data) => {
       toast.success("Quiz created successfully", {
         id: toastId,
+        icon: <CheckCircleIcon className="w-4 h-4" />,
       });
       queryClient.invalidateQueries({
         queryKey: QueryConstants.QUIZ_SEARCH,
@@ -66,6 +68,7 @@ export function CreateQuizModal({
         setError("name", { message });
         toast.error(message, {
           id: toastId,
+          icon: <XCircleIcon className="w-5 h-5" />,
         });
       };
 
@@ -95,28 +98,28 @@ export function CreateQuizModal({
   };
 
   return (
-    <Modal
-      title="Create a new quiz"
-      isOpened={true}
-      onProceed={() => {}}
-      onClose={onClose}
-      processLabel="Create"
-      onSubmit={handleSubmit(onProceed)}
-    >
-      <FormController
-        label="Quiz name"
-        inputId="newQuizName"
-        className="max-w-none"
-        errorMessage={errors.name}
+      <Modal
+          title="Create a new quiz"
+          isOpened={true}
+          onProceed={() => {}}
+          onClose={onClose}
+          processLabel="Create"
+          onSubmit={handleSubmit(onProceed)}
       >
-        <Input
-          id="newQuizName"
-          type="text"
-          className="max-w-none"
-          placeholder="Quiz name"
-          {...register("name", { required: true })}
-        />
-      </FormController>
-    </Modal>
+        <FormController
+            label="Quiz name"
+            inputId="newQuizName"
+            className="max-w-none"
+            errorMessage={errors.name}
+        >
+          <Input
+              id="newQuizName"
+              type="text"
+              className="max-w-none"
+              placeholder="Quiz name"
+              {...register("name", { required: true })}
+          />
+        </FormController>
+      </Modal>
   );
 }

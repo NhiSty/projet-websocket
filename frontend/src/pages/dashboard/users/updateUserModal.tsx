@@ -30,7 +30,7 @@ export function UpdateUserModal({
         icon: <CheckCircleIcon className="w-4 h-4" />,
       });
       queryClient.invalidateQueries({
-        queryKey: QueryConstants.ADMIN_SEARCH,
+        queryKey: QueryConstants.USERS_SEARCH,
       });
       onClose();
     },

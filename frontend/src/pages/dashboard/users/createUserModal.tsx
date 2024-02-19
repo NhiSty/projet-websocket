@@ -68,7 +68,7 @@ export function CreateUserModal({
         id: toastId,
       });
       queryClient.invalidateQueries({
-        queryKey: QueryConstants.ADMIN_SEARCH,
+        queryKey: QueryConstants.USERS_SEARCH,
       });
       onClose();
     },

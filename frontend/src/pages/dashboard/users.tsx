@@ -135,7 +135,7 @@ export function UsersList(): JSX.Element {
   const [userAction, setUserAction] = useState<UserAction | null>(null);
 
   const paginatedList = useQuery({
-    queryKey: [...QueryConstants.ADMIN_SEARCH, search, page],
+    queryKey: [...QueryConstants.USERS_SEARCH, search, page],
     queryFn: async () => searchAdmins(search, page),
     placeholderData: keepPreviousData,
   });

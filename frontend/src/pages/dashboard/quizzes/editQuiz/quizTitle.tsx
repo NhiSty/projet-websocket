@@ -4,7 +4,7 @@ import { Quiz } from "#/api/types";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PenIcon } from "lucide-react";
+import { PenIcon, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRevalidator } from "react-router-dom";
@@ -13,6 +13,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ConflictError, UnprocessableContentError } from "#/api/api";
 import { Modal } from "#/components/containers/Modal";
+import { Link } from "react-router-dom";
 
 interface QuizTitleProps {
   quiz: Quiz;
@@ -28,15 +29,15 @@ interface UpdateQuizTitleForm {
 }
 
 const schema = yup
-  .object({
-    name: yup.string().required(),
-  })
-  .required();
+    .object({
+      name: yup.string().required(),
+    })
+    .required();
 
 function QuizTitleUpdateModal({ quiz, onClose }: QuizTitleUpdateModalProps) {
   const queryClient = useQueryClient();
   const [toastId, setToastId] = useState<string | number | undefined>(
-    undefined
+      undefined
   );
 
   const {
@@ -53,7 +54,7 @@ function QuizTitleUpdateModal({ quiz, onClose }: QuizTitleUpdateModalProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: UpdateQuizTitleForm) =>
-      updateQuiz(quiz.id, data.name),
+        updateQuiz(quiz.id, data.name),
     onSuccess: async () => {
       toast.success("Quiz title updated successfully", {
         id: toastId,
@@ -100,29 +101,29 @@ function QuizTitleUpdateModal({ quiz, onClose }: QuizTitleUpdateModalProps) {
   };
 
   return (
-    <Modal
-      title="Update the quiz"
-      isOpened={true}
-      onProceed={() => {}}
-      onClose={onClose}
-      processLabel="Update"
-      onSubmit={handleSubmit(onProceed)}
-    >
-      <FormController
-        label="Quiz name"
-        inputId="quizName"
-        className="max-w-none"
-        errorMessage={errors.name}
+      <Modal
+          title="Update the quiz"
+          isOpened={true}
+          onProceed={() => {}}
+          onClose={onClose}
+          processLabel="Update"
+          onSubmit={handleSubmit(onProceed)}
       >
-        <Input
-          id="quizName"
-          type="text"
-          className="max-w-none"
-          placeholder="Quiz name"
-          {...register("name", { required: true })}
-        />
-      </FormController>
-    </Modal>
+        <FormController
+            label="Quiz name"
+            inputId="quizName"
+            className="max-w-none"
+            errorMessage={errors.name}
+        >
+          <Input
+              id="quizName"
+              type="text"
+              className="max-w-none"
+              placeholder="Quiz name"
+              {...register("name", { required: true })}
+          />
+        </FormController>
+      </Modal>
   );
 }
 
@@ -140,23 +141,33 @@ export function QuizTitle({ quiz }: QuizTitleProps) {
   }, [revalidate]);
 
   return (
-    <div className="flex flex-row gap-2 items-center">
-      <h1 className="text-3xl font-bold">
-        Quiz "<span className="font-mono italic">{quiz.name}</span>"
-      </h1>
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+        <div className="flex-1 flex flex-row items-center gap2">
+          <h1 className="text-3xl font-bold">
+            Quiz "<span className="font-mono italic">{quiz.name}</span>"
+          </h1>
 
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm btn-circle"
-        onClick={() => setIsEditing(true)}
-        title="Edit quiz name"
-      >
-        <PenIcon className="w-4 h-4" />
-      </button>
+          <button
+              type="button"
+              className="btn btn-ghost btn-sm btn-circle"
+              onClick={() => setIsEditing(true)}
+              title="Edit quiz name"
+          >
+            <PenIcon className="w-4 h-4" />
+          </button>
+        </div>
 
-      {isEditing && (
-        <QuizTitleUpdateModal quiz={quiz} onClose={onUpdateClose} />
-      )}
-    </div>
+        <Link
+            to={`/dashboard/quizzes/${quiz.id}`}
+            className="btn btn-secondary btn-sm"
+        >
+          <XCircle className="h-4 w-4" />
+          Cancel
+        </Link>
+
+        {isEditing && (
+            <QuizTitleUpdateModal quiz={quiz} onClose={onUpdateClose} />
+        )}
+      </div>
   );
 }

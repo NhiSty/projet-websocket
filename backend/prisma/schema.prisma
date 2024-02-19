@@ -35,7 +35,7 @@ enum QuestionType {
 
 model Quiz {
   id        String     @id @default(uuid())
-  name      String     @unique
+  name      String
   author    User       @relation(fields: [userId], references: [id])
   questions Question[]
 

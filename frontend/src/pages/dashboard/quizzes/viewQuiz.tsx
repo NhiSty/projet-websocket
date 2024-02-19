@@ -27,30 +27,29 @@ export function viewQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
 
 export function ViewQuiz(): JSX.Element {
   const quiz = useRouteLoaderData("viewQuiz") as Quiz;
-  console.log(quiz);
   return (
-      <div>
-        <header className="relative">
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <h1 className="text-3xl font-bold flex-1">
-              Quiz "<span className="font-mono italic">{quiz.name}</span>"
-            </h1>
+    <div>
+      <header className="relative">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <h1 className="text-3xl font-bold flex-1">
+            Quiz "<span className="font-mono italic">{quiz.name}</span>"
+          </h1>
 
-            <Link
-                to={`/dashboard/quizzes/${quiz.id}/edit`}
-                className="btn btn-primary btn-sm"
-            >
-              <PenIcon className="h-4 w-4" />
-              Edit
-            </Link>
-          </div>
+          <Link
+            to={`/dashboard/quizzes/${quiz.id}/edit`}
+            className="btn btn-primary btn-sm"
+          >
+            <PenIcon className="h-4 w-4" />
+            Edit
+          </Link>
+        </div>
 
-          <h2 className="text-1xl text-gray-600 p-2 px-4">
-            Created by <span className="italic">{quiz.author.username}</span>
-          </h2>
-        </header>
+        <h2 className="text-1xl text-gray-600 p-2 px-4">
+          Created by <span className="italic">{quiz.author.username}</span>
+        </h2>
+      </header>
 
-        <main>{/* questions list */}</main>
-      </div>
+      <main>{/* questions list */}</main>
+    </div>
   );
 }

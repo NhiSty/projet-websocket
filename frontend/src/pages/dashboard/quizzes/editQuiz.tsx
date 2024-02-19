@@ -4,18 +4,16 @@ import { Quiz } from "#/api/types";
 import { QueryClient } from "@tanstack/react-query";
 import { LoaderFunction, redirect, useRouteLoaderData } from "react-router-dom";
 import { QuizTitle } from "./editQuiz/quizTitle";
+import { QuestionsList } from "./editQuiz/questionsList";
 
 export function editQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
   return async ({ params: { id } }) => {
-    console.log("editQuizLoader", id);
     if (id && typeof id === "string") {
-      console.log("fetching quiz");
       try {
         const value = await queryClient.fetchQuery({
           queryKey: [...QueryConstants.QUIZ, id],
           queryFn: () => fetchQuiz(id),
         });
-        console.log("fetched quiz", value);
 
         return value;
       } catch (_) {
@@ -40,7 +38,9 @@ export function EditQuiz(): JSX.Element {
         </h2>
       </header>
 
-      <main>{/* questions list */}</main>
+      <main>
+        <QuestionsList quiz={quiz} />
+      </main>
     </div>
   );
 }

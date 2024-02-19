@@ -14,10 +14,10 @@ interface DeleteQuizModalProps {
 }
 
 export function DeleteQuizModal({
-                                  quiz,
-                                  onClose,
-                                  onDelete,
-                                }: DeleteQuizModalProps): JSX.Element {
+  quiz,
+  onClose,
+  onDelete,
+}: DeleteQuizModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const [toastId, setToastId] = useState<string | number | undefined>();
 
@@ -55,14 +55,14 @@ export function DeleteQuizModal({
   };
 
   return (
-      <Modal
-          title="Delete quiz"
-          isOpened={true}
-          onProceed={onProceed}
-          onClose={onClose ?? (() => {})}
-          processLabel="Delete"
-      >
-        <p>Are you sure you want to delete {quiz.name}?</p>
-      </Modal>
+    <Modal
+      title="Delete quiz"
+      isOpened={true}
+      onProceed={onProceed}
+      onClose={onClose ?? (() => {})}
+      processLabel="Delete"
+    >
+      <p>Are you sure you want to delete {quiz.name}?</p>
+    </Modal>
   );
 }

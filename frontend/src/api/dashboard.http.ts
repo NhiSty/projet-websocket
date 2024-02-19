@@ -1,6 +1,6 @@
 import { Paginated } from "#/utils/pagination";
 import { fetcher } from "./api";
-import { Quiz, User } from "./types";
+import { Question, Quiz, User } from "./types";
 
 type SearchUsersResponse = Paginated<Omit<User, "password">>;
 
@@ -72,3 +72,6 @@ export const updateQuiz = (id: string, name: string) => {
     body: JSON.stringify({ name }),
   });
 };
+
+export const fetchQuestions = (id: string) =>
+  fetcher<Question[]>(`admins/quizzes/${id}/questions`);

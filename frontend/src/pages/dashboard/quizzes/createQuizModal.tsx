@@ -22,18 +22,18 @@ interface CreateQuizForm {
 }
 
 const schema = yup
-    .object({
-      name: yup.string().required(),
-    })
-    .required();
+  .object({
+    name: yup.string().required(),
+  })
+  .required();
 
 export function CreateQuizModal({
-                                  onClose,
-                                }: CreateQuizModalProps): JSX.Element {
+  onClose,
+}: CreateQuizModalProps): JSX.Element {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [toastId, setToastId] = useState<string | number | undefined>(
-      undefined
+    undefined
   );
 
   const {
@@ -98,28 +98,28 @@ export function CreateQuizModal({
   };
 
   return (
-      <Modal
-          title="Create a new quiz"
-          isOpened={true}
-          onProceed={() => {}}
-          onClose={onClose}
-          processLabel="Create"
-          onSubmit={handleSubmit(onProceed)}
+    <Modal
+      title="Create a new quiz"
+      isOpened={true}
+      onProceed={() => {}}
+      onClose={onClose}
+      processLabel="Create"
+      onSubmit={handleSubmit(onProceed)}
+    >
+      <FormController
+        label="Quiz name"
+        inputId="newQuizName"
+        className="max-w-none"
+        errorMessage={errors.name}
       >
-        <FormController
-            label="Quiz name"
-            inputId="newQuizName"
-            className="max-w-none"
-            errorMessage={errors.name}
-        >
-          <Input
-              id="newQuizName"
-              type="text"
-              className="max-w-none"
-              placeholder="Quiz name"
-              {...register("name", { required: true })}
-          />
-        </FormController>
-      </Modal>
+        <Input
+          id="newQuizName"
+          type="text"
+          className="max-w-none"
+          placeholder="Quiz name"
+          {...register("name", { required: true })}
+        />
+      </FormController>
+    </Modal>
   );
 }

@@ -16,6 +16,7 @@ import { SuperadminController } from './controllers/superadmin/superadmin.contro
 import { QuizController } from './controllers/quiz/quiz.controller';
 import { QuizService } from './services/quiz/quiz.service';
 import { QuizQuestionService } from './services/quiz/quiz-question.service';
+import { QuizQuestionsController } from './controllers/quiz-questions/quiz-questions.controller';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { QuizQuestionService } from './services/quiz/quiz-question.service';
     AuthController,
     SuperadminController,
     QuizController,
+    QuizQuestionsController,
   ],
   providers: [
     AppService,

@@ -62,23 +62,25 @@ export function Modal({
       <div className="modal-box">
         <h3 className="font-bold text-lg">{title}</h3>
 
-        <main className="py-4">{children}</main>
+        <form method="dialog">
+          <main className="py-4">{children}</main>
 
-        <div className="modal-action">
-          <form method="dialog" className="flex flex-row-reverse gap-2">
-            <Button
-              type="submit"
-              className="btn btn-accent"
-              onClick={onProceed ? () => onProceed() : undefined}
-            >
-              {processLabel}
-            </Button>
+          <div className="modal-action">
+            <div className="flex flex-row-reverse gap-2">
+              <Button
+                type="submit"
+                className="btn btn-accent"
+                onClick={onProceed ? () => onProceed() : undefined}
+              >
+                {processLabel}
+              </Button>
 
-            <Button className="btn" value="cancel" onClick={() => onClose()}>
-              {cancelLabel}
-            </Button>
-          </form>
-        </div>
+              <Button className="btn" value="cancel" onClick={() => onClose()}>
+                {cancelLabel}
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
     </dialog>
   );

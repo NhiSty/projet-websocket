@@ -57,7 +57,7 @@ export function CreateQuizModal({
         queryKey: QueryConstants.QUIZ_SEARCH,
       });
       onClose();
-      navigate(`/dashboard/quizzes/${data.id}`);
+      navigate(`/dashboard/quizzes/${data.id}/edit`);
     },
     onError: (error) => {
       console.error(error);

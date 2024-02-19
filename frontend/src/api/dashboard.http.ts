@@ -65,3 +65,10 @@ export const deleteQuiz = (id: string) => {
 };
 
 export const fetchQuiz = (id: string) => fetcher<Quiz>(`/admins/quizzes/${id}`);
+
+export const updateQuiz = (id: string, name: string) => {
+  return fetcher<void>(`/admins/quizzes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ name }),
+  });
+};

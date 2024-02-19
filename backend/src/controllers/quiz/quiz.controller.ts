@@ -7,6 +7,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -73,5 +74,30 @@ export class QuizController {
     }
 
     await this.quizService.delete(quiz);
+  }
+
+  @Patch(':id')
+  @HttpCode(204)
+  public async updateQuiz(
+    @Param('id') id: string,
+    @Body() data: CreateQuizDto,
+    @Req() request: Request,
+  ) {
+    const quiz = await this.quizService.find(id);
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    const currentUserRole = request.user.role;
+
+    if (currentUserRole === Role.ADMIN && quiz.author.id !== request.user.id) {
+      throw new ForbiddenException('You cannot update this quiz');
+    }
+
+    if (data.name) {
+      quiz.name = data.name;
+    }
+
+    await this.quizService.update(quiz);
   }
 }

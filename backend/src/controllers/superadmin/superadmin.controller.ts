@@ -12,7 +12,6 @@ import {
   Post,
   Query,
   Req,
-  Res,
   ValidationPipe,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';

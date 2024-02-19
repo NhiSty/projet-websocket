@@ -12,11 +12,7 @@ export class QuizService {
     return this.databaseService.quiz.create({
       data: {
         name,
-        author: {
-          connect: {
-            id: author.id,
-          },
-        },
+        author: { connect: { id: author.id } },
       },
     });
   }
@@ -57,17 +53,8 @@ export class QuizService {
         name: 'asc',
       },
       include: {
-        author: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-        questions: {
-          include: {
-            answers: true,
-          },
-        },
+        author: { select: { id: true, username: true } },
+        questions: { include: { answers: true } },
       },
     });
 
@@ -82,18 +69,14 @@ export class QuizService {
 
   public async update(quiz: Quiz): Promise<Quiz> {
     return await this.databaseService.quiz.update({
-      where: {
-        id: quiz.id,
-      },
-      data: quiz,
+      where: { id: quiz.id },
+      data: { name: quiz.name },
     });
   }
 
   public async delete(quiz: Quiz): Promise<void> {
     await this.databaseService.quiz.delete({
-      where: {
-        id: quiz.id,
-      },
+      where: { id: quiz.id },
     });
   }
 }

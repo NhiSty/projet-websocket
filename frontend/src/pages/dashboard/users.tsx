@@ -2,8 +2,6 @@ import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
 import {
-  ChevronLeft,
-  ChevronRightIcon,
   Loader2,
   PenIcon,
   SearchIcon,
@@ -11,24 +9,22 @@ import {
   UserPlus2Icon,
 } from "lucide-react";
 import { useRouteLoaderData } from "react-router-dom";
-import { FormEvent, ReactElement, useCallback, useState } from "react";
+import { FormEvent, useCallback, useState, type JSX } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { QueryConstants } from "#/api/queryConstants";
 import { searchAdmins } from "#/api/dashboard.http";
 import { Role, User, isInRole } from "#/api/types";
-import { DeleteUserModal } from "./admin/deleteUserModal";
-import { UpdateUserModal } from "./admin/updateUserModal";
-import { CreateUserModal } from "./admin/createUserModal";
+import { DeleteUserModal } from "./users/deleteUserModal";
+import { UpdateUserModal } from "./users/updateUserModal";
+import { CreateUserModal } from "./users/createUserModal";
+import { Pagination } from "#/components/partials/Pagination";
 
-interface AdministratorsHeaderProps {
+interface UsersHeaderProps {
   onSearch: (search: string) => void;
   onCreate: () => void;
 }
 
-function AdministratorsHeader({
-  onSearch,
-  onCreate,
-}: AdministratorsHeaderProps): JSX.Element {
+function UsersHeader({ onSearch, onCreate }: UsersHeaderProps): JSX.Element {
   const [search, setSearch] = useState<string>("");
 
   const onSubmit = (event: FormEvent) => {
@@ -60,71 +56,6 @@ function AdministratorsHeader({
         </Button>
       </form>
     </header>
-  );
-}
-
-interface AdministratorsPaginationProps {
-  page: number;
-  setPage: (page: number) => void;
-  maxPages: number;
-  totalPages: number;
-}
-
-function AdministratorsPagination({
-  page,
-  setPage,
-  maxPages,
-  totalPages,
-}: AdministratorsPaginationProps): JSX.Element {
-  const pagesToShow: ReactElement<HTMLButtonElement>[] = [];
-  const startPage = Math.max(page - maxPages, 1);
-  const endPage = Math.min(page + maxPages, totalPages);
-
-  for (let i = startPage; i <= endPage; i++) {
-    pagesToShow.push(
-      <button
-        type="button"
-        key={i}
-        className={`join-item btn ${i === page ? "btn-active" : ""}`}
-        onClick={() => setPage(i)}
-      >
-        {i}
-      </button>
-    );
-  }
-
-  if (startPage > 1) {
-    pagesToShow.unshift(
-      <button
-        type="button"
-        key="prev"
-        className="join-item btn"
-        onClick={() => setPage(page - 1)}
-        aria-label="Previous page"
-      >
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-    );
-  }
-
-  if (endPage < maxPages && endPage < totalPages) {
-    pagesToShow.push(
-      <button
-        type="button"
-        key="next"
-        className="join-item btn"
-        onClick={() => setPage(page + 1)}
-        aria-label="Next page"
-      >
-        <ChevronRightIcon className="w-6 h-6" />
-      </button>
-    );
-  }
-
-  return (
-    <nav className="join" aria-label="pagination">
-      {pagesToShow}
-    </nav>
   );
 }
 
@@ -196,7 +127,7 @@ function ActionsModals({
   }
 }
 
-export function Administrators(): JSX.Element {
+export function UsersList(): JSX.Element {
   const user = useRouteLoaderData("dashboard") as User;
 
   const [page, setPage] = useState<number>(1);
@@ -273,7 +204,7 @@ export function Administrators(): JSX.Element {
 
   return (
     <div>
-      <AdministratorsHeader
+      <UsersHeader
         onSearch={setSearch}
         onCreate={() => setUserAction(["create", null])}
       />
@@ -285,8 +216,8 @@ export function Administrators(): JSX.Element {
             <thead>
               <tr>
                 <th className="w-1/3">Username</th>
-                <th className="w-1/3">Role</th>
-                <th className="w-1/3">Actions</th>
+                <th className="w-1/3 text-center">Role</th>
+                <th className="w-1/3 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -318,7 +249,7 @@ export function Administrators(): JSX.Element {
             </tbody>
           </table>
           <div className="p-4 flex flex-col items-center justify-center">
-            <AdministratorsPagination
+            <Pagination
               page={page}
               setPage={setPage}
               maxPages={3}

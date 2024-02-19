@@ -2,10 +2,10 @@ import { Paginated } from "#/utils/pagination";
 import { fetcher } from "./api";
 import { User } from "./types";
 
-type SearchAdminResponse = Paginated<Omit<User, "password">>;
+type SearchUsersResponse = Paginated<Omit<User, "password">>;
 
 export const searchAdmins = (search: string, page: number) => {
-  return fetcher<SearchAdminResponse>(
+  return fetcher<SearchUsersResponse>(
     `/admins/users?search=${search}&page=${page}`,
     {
       method: "GET",

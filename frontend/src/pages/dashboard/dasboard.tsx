@@ -3,7 +3,7 @@ import { QueryConstants } from "#/api/queryConstants";
 import { Role, User, isInRole } from "#/api/types";
 import { cn } from "#/utils/css";
 import { QueryClient } from "@tanstack/react-query";
-import { NavLinkProps, Outlet, useLoaderData } from "react-router-dom";
+import { NavLinkProps, Outlet } from "react-router-dom";
 import { NavLink, LoaderFunction, redirect } from "react-router-dom";
 
 export function dashboardLoader(

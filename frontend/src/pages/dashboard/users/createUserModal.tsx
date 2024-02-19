@@ -88,7 +88,6 @@ export function CreateUserModal({
         showError("Invalid data");
 
         for (const e of error.errors) {
-          console.log(e);
           setError(e.field as keyof CreateUserForm, {
             type: "manual",
             message: e.message,
@@ -110,7 +109,7 @@ export function CreateUserModal({
 
   return (
     <Modal
-      title={`Create new user`}
+      title="Create new user"
       isOpened={true}
       onProceed={() => {}}
       onClose={onClose}

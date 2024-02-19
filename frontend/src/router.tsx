@@ -7,7 +7,7 @@ import { BaseLayout } from "./layouts/BaseLayout";
 import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
 import { Dashboard, dashboardLoader } from "./pages/dashboard/dasboard";
-import { Administrators } from "./pages/dashboard/admins";
+import { UsersList } from "./pages/dashboard/users";
 
 const router = createBrowserRouter([
   {
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
 
           {
             path: "users",
-            element: <Administrators />,
+            element: <UsersList />,
           },
         ],
       },

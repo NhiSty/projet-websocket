@@ -12,8 +12,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/role/roles.guard';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { SessionService } from './services/session/session.service';
-import { AdminController } from './controllers/admin/admin.controller';
 import { SuperadminController } from './controllers/superadmin/superadmin.controller';
+import { QuizController } from './controllers/quiz/quiz.controller';
+import { QuizService } from './services/quiz/quiz.service';
+import { QuizQuestionService } from './services/quiz/quiz-question.service';
 
 @Module({
   imports: [
@@ -25,7 +27,12 @@ import { SuperadminController } from './controllers/superadmin/superadmin.contro
       }),
     }),
   ],
-  controllers: [AppController, AuthController, AdminController, SuperadminController],
+  controllers: [
+    AppController,
+    AuthController,
+    SuperadminController,
+    QuizController,
+  ],
   providers: [
     AppService,
     DatabaseService,
@@ -41,6 +48,8 @@ import { SuperadminController } from './controllers/superadmin/superadmin.contro
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    QuizService,
+    QuizQuestionService,
   ],
 })
 export class AppModule {}

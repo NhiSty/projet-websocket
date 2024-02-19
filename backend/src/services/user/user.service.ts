@@ -118,7 +118,7 @@ export class UserService {
    * Delete user
    * @param user - The user
    */
-  public async deleteUserFromId(user: User): Promise<void> {
+  public async delete(user: User): Promise<void> {
     await this.databaseService.user.delete({
       where: {
         id: user.id,
@@ -130,7 +130,7 @@ export class UserService {
    * Update user
    * @param user - The user data
    */
-  public async updateUser(user: User): Promise<User> {
+  public async update(user: User): Promise<User> {
     return await this.databaseService.user.update({
       where: {
         id: user.id,

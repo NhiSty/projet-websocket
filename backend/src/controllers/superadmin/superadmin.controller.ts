@@ -92,7 +92,7 @@ export class SuperadminController {
       throw new ForbiddenException('You cannot delete an admin');
     }
 
-    return this.userService.deleteUserFromId(user);
+    return this.userService.delete(user);
   }
 
   @Patch(':id')
@@ -120,6 +120,6 @@ export class SuperadminController {
     }
 
     user.role = body.role;
-    return this.userService.updateUser(user);
+    return this.userService.update(user);
   }
 }

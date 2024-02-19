@@ -68,7 +68,7 @@ export async function fetcher<T = void>(
       res.status
     );
   }
-  if (res.status === 204 || res.status === 201) {
+  if (res.status === 204) {
     return {} as T;
   }
   return res.json();

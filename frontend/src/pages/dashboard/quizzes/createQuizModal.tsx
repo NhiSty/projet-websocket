@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as yup from "yup";
 
@@ -29,6 +30,7 @@ export function CreateQuizModal({
   onClose,
 }: CreateQuizModalProps): JSX.Element {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [toastId, setToastId] = useState<string | number | undefined>(
     undefined
   );
@@ -46,11 +48,8 @@ export function CreateQuizModal({
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: CreateQuizForm) => {
-      const response = await createQuiz(data.name);
-      return response;
-    },
-    onSuccess: () => {
+    mutationFn: async (data: CreateQuizForm) => createQuiz(data.name),
+    onSuccess: (data) => {
       toast.success("Quiz created successfully", {
         id: toastId,
       });
@@ -58,6 +57,7 @@ export function CreateQuizModal({
         queryKey: QueryConstants.QUIZ_SEARCH,
       });
       onClose();
+      navigate(`/dashboard/quizzes/${data.id}`);
     },
     onError: (error) => {
       console.error(error);

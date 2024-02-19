@@ -49,8 +49,14 @@ export const searchQuiz = (search: string, page: number) => {
 };
 
 export const createQuiz = (name: string) => {
-  return fetcher<void>("/quizzes", {
+  return fetcher<{ id: string }>("/quizzes", {
     method: "POST",
     body: JSON.stringify({ name }),
+  });
+};
+
+export const deleteQuiz = (id: string) => {
+  return fetcher<void>(`/quizzes/${id}`, {
+    method: "DELETE",
   });
 };

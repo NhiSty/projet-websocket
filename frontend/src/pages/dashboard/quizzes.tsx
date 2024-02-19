@@ -16,6 +16,7 @@ import {
 import { useState, type JSX, FormEvent, useCallback } from "react";
 import { Link, useRouteLoaderData } from "react-router-dom";
 import { CreateQuizModal } from "./quizzes/createQuizModal";
+import { DeleteQuizModal } from "./quizzes/deleteQuizModal";
 
 interface QuizzesHeaderProps {
   onSearch: (search: string) => void;
@@ -116,7 +117,7 @@ function ActionsModals({
 
   switch (action) {
     case "delete":
-      return <></>;
+      return <DeleteQuizModal quiz={quizz} onClose={onClose} />;
     case "create":
       return <CreateQuizModal onClose={onClose} />;
   }

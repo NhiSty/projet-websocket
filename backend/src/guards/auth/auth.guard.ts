@@ -12,6 +12,7 @@ import {
 } from 'src/services/auth/auth.service';
 import { Request } from 'express';
 import { SessionService } from 'src/services/session/session.service';
+import { UserService } from 'src/services/user/user.service';
 
 /**
  * This guard is responsible for checking the authentication status of the user.
@@ -21,6 +22,7 @@ export class AuthGuard implements CanActivate {
   public constructor(
     private reflector: Reflector,
     private authService: AuthService,
+    private userService: UserService,
     private sessionService: SessionService,
   ) {}
 
@@ -32,6 +34,13 @@ export class AuthGuard implements CanActivate {
 
     const req: Request = context.switchToHttp().getRequest();
     const userId = req.session.userId;
+
+    if (userId) {
+      const user = await this.userService.find(userId);
+      if (!user) {
+        this.sessionService.destroy(req);
+      }
+    }
 
     if (auth === 'guest') {
       if (userId) {

@@ -4,13 +4,16 @@ import { Quiz } from "#/api/types";
 import { Button } from "#/components/form/Button";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
+import { QuestionForm } from "./questionForm";
+import { QuestionItem } from "./questionItem";
 
 interface QuestionsListProps {
   quiz: Quiz;
 }
 
 export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
+  const [creating, setCreating] = useState(false);
   const { data, isLoading, isPending, isError } = useQuery({
     queryKey: [...QueryConstants.QUIZ_QUESTIONS, quiz.id],
     queryFn: () => fetchQuestions(quiz.id),
@@ -35,28 +38,22 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
   }
 
   return (
-    <div className="flex flex-col p-8">
-      {data?.map((question) => {
-        return (
-          <div
-            key={question.id}
-            className="flex justify-between items-center p-4 border-b border-gray-200"
-          >
-            <div>
-              <h3 className="text-lg font-bold">{question.question}</h3>
-              <p className="text-gray-600">{question.type}</p>
-            </div>
-            <div>
-              <Button className="mr-2">Edit</Button>
-              <Button>Delete</Button>
-            </div>
-          </div>
-        );
-      })}
-      <Button className="">
-        <PlusIcon className="w-4 h-4" />
-        Add an answer
-      </Button>
+    <div className="flex flex-col p-8" role="list">
+      {data?.map((question) => (
+        <QuestionItem key={question.id} question={question} />
+      ))}
+      {!creating ? (
+        <Button onClick={() => setCreating(true)}>
+          <PlusIcon className="w-4 h-4" />
+          Add an answer
+        </Button>
+      ) : (
+        <QuestionForm
+          quiz={quiz}
+          onCancel={() => setCreating(false)}
+          onClose={() => setCreating(false)}
+        />
+      )}
     </div>
   );
 }

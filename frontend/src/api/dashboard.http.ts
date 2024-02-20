@@ -75,3 +75,24 @@ export const updateQuiz = (id: string, name: string) => {
 
 export const fetchQuestions = (id: string) =>
   fetcher<Question[]>(`admins/quizzes/${id}/questions`);
+
+export const createQuestion = (
+  quizId: string,
+  name: string,
+  type: string,
+  duration: number
+) => {
+  return fetcher<Question>(`/admins/quizzes/${quizId}/questions`, {
+    method: "POST",
+    body: JSON.stringify({ name, type, duration }),
+  });
+};
+
+export const deleteQuestion = (question: Question) => {
+  return fetcher<void>(
+    `/admins/quizzes/${question.quizId}/questions/${question.id}`,
+    {
+      method: "DELETE",
+    }
+  );
+};

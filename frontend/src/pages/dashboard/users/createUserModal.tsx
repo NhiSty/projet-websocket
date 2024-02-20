@@ -111,7 +111,6 @@ export function CreateUserModal({
     <Modal
       title="Create new user"
       isOpened={true}
-      onProceed={() => {}}
       onClose={onClose}
       processLabel="Create"
       onSubmit={handleSubmit(onProceed)}

@@ -13,6 +13,7 @@ export function FormController({
   children,
   label,
   errorMessage,
+  inputId,
 }: FormControllerProps): JSX.Element {
   return (
     <div
@@ -22,7 +23,7 @@ export function FormController({
     >
       {label && (
         <div className="label">
-          <label className="label-text" htmlFor="email">
+          <label className="label-text" htmlFor={inputId}>
             {label}
           </label>
         </div>
@@ -31,7 +32,7 @@ export function FormController({
 
       {errorMessage && (
         <div className="label">
-          <label className="label-text text-error" htmlFor="password">
+          <label className="label-text text-error" htmlFor={inputId}>
             {errorMessage.message}
           </label>
         </div>

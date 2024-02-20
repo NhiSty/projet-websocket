@@ -27,6 +27,7 @@ export type QuestionType = "SINGLE" | "MULTIPLE" | "TEXT" | "BINARY";
 
 export interface Question {
   id: string;
+  quizId: string;
   question: string;
   duration: number;
   type: QuestionType;

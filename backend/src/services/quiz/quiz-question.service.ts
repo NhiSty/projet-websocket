@@ -12,7 +12,7 @@ export class QuizQuestionService {
     question: string,
     type: QuestionType,
     duration: number,
-    choices?: Choices[],
+    choices: Pick<Choices, 'choice' | 'correct'>[],
   ): Promise<Question> {
     const lastPos = quiz.questions.length;
 
@@ -55,10 +55,22 @@ export class QuizQuestionService {
     });
   }
 
-  public async updateQuestion(question: Question): Promise<Question> {
+  public async updateQuestion(
+    question: Question,
+    choices?: Pick<Choices, 'choice' | 'correct' | 'id'>[],
+  ): Promise<Question> {
     return this.databaseService.question.update({
       where: { id: question.id },
-      data: question,
+      data: {
+        ...question,
+        choices: {
+          upsert: choices?.map((choice) => ({
+            where: { id: choice.id },
+            create: choice,
+            update: choice,
+          })),
+        },
+      },
     });
   }
 

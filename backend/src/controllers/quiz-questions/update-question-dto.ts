@@ -13,6 +13,9 @@ import { Type } from 'class-transformer';
 
 class ChoiceDto {
   @IsString()
+  id: string;
+
+  @IsString()
   choice: string;
 
   @IsString()
@@ -22,7 +25,7 @@ class ChoiceDto {
 /**
  * Data transfer object for creating a quiz
  */
-export class CreateQuestionDto {
+export class UpdateQuestionDto {
   /**
    * The name of the quiz
    */

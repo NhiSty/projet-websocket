@@ -17,6 +17,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { QuizQuestionService } from 'src/services/quiz/quiz-question.service';
 import { QuizService } from 'src/services/quiz/quiz.service';
 import { CreateQuestionDto } from './create-question-dto';
+import { UpdateQuestionDto } from './update-question-dto';
 
 @Controller('admins/quizzes/:quizId/questions')
 @Auth()
@@ -52,6 +53,10 @@ export class QuizQuestionsController {
       body.name,
       body.type,
       body.duration,
+      body.choices?.map((choice) => ({
+        choice: choice.choice,
+        correct: choice.correct,
+      })),
     );
   }
 
@@ -87,5 +92,32 @@ export class QuizQuestionsController {
     }
 
     return this.quizQuestionService.moveQuestion(question, direction);
+  }
+
+  @Patch(':id')
+  @HttpCode(204)
+  public async updateQuestion(
+    @Param('quizId') quizId: string,
+    @Param('id') id: string,
+    @Body() body: UpdateQuestionDto,
+  ) {
+    const question = await this.quizQuestionService.find(id);
+    if (!question) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    return this.quizQuestionService.updateQuestion(
+      {
+        ...question,
+        question: body.name,
+        type: body.type,
+        duration: body.duration,
+      },
+      body.choices.map((choice) => ({
+        id: choice.id,
+        choice: choice.choice,
+        correct: choice.correct,
+      })),
+    );
   }
 }

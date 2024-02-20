@@ -38,7 +38,7 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
   }
 
   return (
-    <div className="flex flex-col p-8" role="list">
+    <ul className="flex flex-col p-8 gap-2">
       {data
         ?.sort((a, b) => a.position - b.position)
         .map((question, index) => (
@@ -56,11 +56,11 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
         </Button>
       ) : (
         <QuestionForm
-          quiz={quiz}
+          quizId={quiz.id}
           onCancel={() => setCreating(false)}
           onClose={() => setCreating(false)}
         />
       )}
-    </div>
+    </ul>
   );
 }

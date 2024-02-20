@@ -19,7 +19,7 @@ export interface User {
 
 export interface Choices {
   id: string;
-  answer: string;
+  choice: string;
   correct: boolean;
 }
 

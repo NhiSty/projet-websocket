@@ -1,6 +1,6 @@
 import { Paginated } from "#/utils/pagination";
 import { fetcher } from "./api";
-import { Question, Quiz, User } from "./types";
+import { Choices, Question, Quiz, User } from "./types";
 
 type SearchUsersResponse = Paginated<Omit<User, "password">>;
 
@@ -80,12 +80,30 @@ export const createQuestion = (
   quizId: string,
   name: string,
   type: string,
-  duration: number
+  duration: number,
+  choices?: Pick<Choices, "choice" | "correct">[]
 ) => {
   return fetcher<Question>(`/admins/quizzes/${quizId}/questions`, {
     method: "POST",
-    body: JSON.stringify({ name, type, duration }),
+    body: JSON.stringify({ name, type, duration, choices }),
   });
+};
+
+export const updateQuestion = (
+  quizId: string,
+  questionId: string,
+  name: string,
+  type: string,
+  duration: number,
+  choices?: Pick<Choices, "choice" | "correct">[]
+) => {
+  return fetcher<Question>(
+    `/admins/quizzes/${quizId}/questions/${questionId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ name, type, duration, choices }),
+    }
+  );
 };
 
 export const deleteQuestion = (question: Question) => {

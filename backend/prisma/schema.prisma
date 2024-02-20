@@ -36,7 +36,7 @@ enum QuestionType {
 model Quiz {
   id        String     @id @default(uuid())
   name      String
-  author    User       @relation(fields: [userId], references: [id])
+  author    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   questions Question[]
 
   userId String
@@ -58,7 +58,7 @@ model Question {
 
 model Choices {
   id       String   @id @default(uuid())
-  question Question @relation(fields: [questionId], references: [id])
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   choice   String
   correct  Boolean  @default(false)
 

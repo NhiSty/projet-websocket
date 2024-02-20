@@ -92,6 +92,7 @@ function QuizTitleUpdateModal({ quiz, onClose }: QuizTitleUpdateModalProps) {
       }
 
       setToastId(undefined);
+      onClose();
     },
   });
 

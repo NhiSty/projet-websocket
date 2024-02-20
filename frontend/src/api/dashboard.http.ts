@@ -96,3 +96,12 @@ export const deleteQuestion = (question: Question) => {
     }
   );
 };
+
+export const moveQuestion = (question: Question, direction: "up" | "down") => {
+  return fetcher<void>(
+    `/admins/quizzes/${question.quizId}/questions/${question.id}/move?direction=${direction}`,
+    {
+      method: "PATCH",
+    }
+  );
+};

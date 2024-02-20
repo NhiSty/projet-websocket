@@ -1,10 +1,10 @@
-import { Answer, Question, Quiz, User } from '@prisma/client';
+import { Choices, Question, Quiz, User } from '@prisma/client';
 
-export type QuestionWithAnswer = Question & {
-  answers: Answer[];
+export type QuestionWithChoices = Question & {
+  choices: Choices[];
 };
 
-export type QuizWithAuthor = Quiz & {
+export type QuizWithData = Quiz & {
   author: Pick<User, 'id' | 'username'>;
-  questions: QuestionWithAnswer[];
+  questions: QuestionWithChoices[];
 };

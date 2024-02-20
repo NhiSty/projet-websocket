@@ -39,9 +39,16 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
 
   return (
     <div className="flex flex-col p-8" role="list">
-      {data?.map((question) => (
-        <QuestionItem key={question.id} question={question} />
-      ))}
+      {data
+        ?.sort((a, b) => a.position - b.position)
+        .map((question, index) => (
+          <QuestionItem
+            key={question.id}
+            question={question}
+            showMoveUp={index > 0}
+            showMoveDown={index < data.length - 1}
+          />
+        ))}
       {!creating ? (
         <Button onClick={() => setCreating(true)}>
           <PlusIcon className="w-4 h-4" />

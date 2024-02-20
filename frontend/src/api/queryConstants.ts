@@ -10,4 +10,5 @@ export const QueryConstants = {
   QUIZ_QUESTIONS: ["quizzes", "questions"],
   QUIZ_QUESTION: ["quizzes", "question"],
   DELETE_QUESTION: ["quizzes", "question", "delete"],
+  MOVE_QUESTION: ["quizzes", "question", "move"],
 };

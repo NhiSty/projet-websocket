@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { Quiz, User } from '@prisma/client';
-import { QuizWithAuthor } from 'src/types/quiz';
+import { QuizWithData } from 'src/types/quiz';
 import { Paginated } from 'src/types/pagination';
 
 @Injectable()
@@ -17,12 +17,12 @@ export class QuizService {
     });
   }
 
-  public async find(id: string): Promise<QuizWithAuthor | null> {
+  public async find(id: string): Promise<QuizWithData | null> {
     return this.databaseService.quiz.findUnique({
       where: { id },
       include: {
         author: { select: { id: true, username: true } },
-        questions: { include: { answers: true } },
+        questions: { include: { choices: true } },
       },
     });
   }
@@ -30,7 +30,7 @@ export class QuizService {
   public async findMany(
     page: number,
     search?: string,
-  ): Promise<Paginated<QuizWithAuthor>> {
+  ): Promise<Paginated<QuizWithData>> {
     const totalItems = await this.databaseService.quiz.count({
       where: {
         name: search && {
@@ -54,7 +54,7 @@ export class QuizService {
       },
       include: {
         author: { select: { id: true, username: true } },
-        questions: { include: { answers: true } },
+        questions: { include: { choices: true } },
       },
     });
 

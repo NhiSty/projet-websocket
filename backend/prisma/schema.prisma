@@ -44,19 +44,22 @@ model Quiz {
 
 model Question {
   id       String       @id @default(uuid())
-  quiz     Quiz         @relation(fields: [quizId], references: [id])
+  quiz     Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
   question String
   duration Int          @default(10)
   type     QuestionType @default(SINGLE)
-  answers  Answer[]
+  choices  Choices[]
+  position Int
 
   quizId String
+
+  @@unique([quizId, position])
 }
 
-model Answer {
+model Choices {
   id       String   @id @default(uuid())
   question Question @relation(fields: [questionId], references: [id])
-  answer   String
+  choice   String
   correct  Boolean  @default(false)
 
   questionId String

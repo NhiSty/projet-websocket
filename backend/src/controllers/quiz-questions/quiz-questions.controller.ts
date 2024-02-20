@@ -6,7 +6,10 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  Patch,
   Post,
+  Query,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { Auth } from 'src/decorators/auth.decorator';
@@ -65,5 +68,24 @@ export class QuizQuestionsController {
 
     await this.quizQuestionService.deleteQuestion(question);
     return;
+  }
+
+  @Patch(':id/move')
+  @HttpCode(204)
+  public async moveQuestion(
+    @Param('quizId') quizId: string,
+    @Param('id') id: string,
+    @Query('direction') direction: 'up' | 'down',
+  ) {
+    if (direction !== 'up' && direction !== 'down') {
+      throw new UnprocessableEntityException('Invalid direction');
+    }
+
+    const question = await this.quizQuestionService.find(id);
+    if (!question) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    return this.quizQuestionService.moveQuestion(question, direction);
   }
 }

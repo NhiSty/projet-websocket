@@ -17,7 +17,7 @@ export interface User {
   role: Role;
 }
 
-export interface Answer {
+export interface Choices {
   id: string;
   answer: string;
   correct: boolean;
@@ -31,7 +31,8 @@ export interface Question {
   question: string;
   duration: number;
   type: QuestionType;
-  answers: Answer[];
+  choices: Choices[];
+  position: number;
 }
 
 export interface Quiz {

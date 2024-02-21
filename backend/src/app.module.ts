@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import { GatewayModule } from './modules/gateway/gateway.module';
+import { SessionModule } from './modules/session/session.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { UserModule } from './modules/user/user.module';
 import { SharedModule } from './modules/shared/shared.module';
@@ -15,7 +15,7 @@ import { SharedModule } from './modules/shared/shared.module';
         REDIS_HOST: Joi.string().default('localhost'),
       }),
     }),
-    GatewayModule,
+    SessionModule,
     AdminModule,
     UserModule,
     SharedModule,

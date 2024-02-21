@@ -6,12 +6,13 @@ import { queryClient } from "./api/api";
 import { BaseLayout } from "./layouts/BaseLayout";
 import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
-import { Dashboard, dashboardLoader } from "./pages/dashboard/dasboard";
+import { Dashboard, dashboardLoader } from "./pages/dashboard/dashboard";
 import { UsersList } from "./pages/dashboard/users";
 import { Quizzes } from "./pages/dashboard/quizzes";
 import { ViewQuiz, viewQuizLoader } from "./pages/dashboard/quizzes/viewQuiz";
 import { EditQuiz, editQuizLoader } from "./pages/dashboard/quizzes/editQuiz";
 import { PlayQuiz, playQuizLoader } from "./pages/dashboard/quizzes/playQuiz";
+import { QuizSession } from "./pages/quiz-session/quizSession";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
         loader: logoutAction(queryClient),
       },
     ],
+  },
+  {
+    path: "quiz/session/:id",
+    element: <QuizSession />,
   },
   {
     path: "",

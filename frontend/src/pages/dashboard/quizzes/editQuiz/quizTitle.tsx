@@ -4,7 +4,7 @@ import { Quiz } from "#/api/types";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PenIcon, TrashIcon, XCircle } from "lucide-react";
+import { CheckCircleIcon, PenIcon, TrashIcon, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useRevalidator } from "react-router-dom";
@@ -60,6 +60,7 @@ function QuizTitleUpdateModal({ quiz, onClose }: QuizTitleUpdateModalProps) {
     onSuccess: async () => {
       toast.success("Quiz title updated successfully", {
         id: toastId,
+        icon: <CheckCircleIcon className="w-4 h-4" />,
       });
       await queryClient.invalidateQueries({
         queryKey: [...QueryConstants.QUIZ, quiz.id],

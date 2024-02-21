@@ -5,6 +5,7 @@ import { Button } from "#/components/form/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowUpIcon,
+  CheckCircleIcon,
   CheckSquareIcon,
   CircleDotIcon,
   PencilIcon,
@@ -77,7 +78,10 @@ export function QuestionItem({
     mutationKey: [...QueryConstants.DELETE_QUESTION, question.id],
     mutationFn: () => deleteQuestion(question),
     onSuccess: () => {
-      toast.success("Question deleted successfully", { id: toastId });
+      toast.success("Question deleted successfully", {
+        id: toastId,
+        icon: <CheckCircleIcon className="w-4 h-4" />,
+      });
       queryClient.invalidateQueries({
         queryKey: [...QueryConstants.QUIZ_QUESTIONS, question.quizId],
       });

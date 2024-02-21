@@ -6,7 +6,12 @@ import { useForm } from "react-hook-form";
 import { FormController } from "#/components/form/FormController";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "#/api/auth.http";
-import { LucideLoader2, LucideLogIn, XCircleIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  LucideLoader2,
+  LucideLogIn,
+  XCircleIcon,
+} from "lucide-react";
 import { QueryConstants } from "#/api/queryConstants";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -38,7 +43,9 @@ export function Login() {
     onSuccess: (data) => {
       queryClient.setQueryData(QueryConstants.USER, data);
       navigate("/");
-      toast.success("Welcome back!");
+      toast.success("Welcome back!", {
+        icon: <CheckCircleIcon className="w-4 h-4" />,
+      });
     },
     onError: (error) => {
       console.error(error);

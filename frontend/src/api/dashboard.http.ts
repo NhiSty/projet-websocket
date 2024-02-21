@@ -126,7 +126,7 @@ export const moveQuestion = (question: Question, direction: "up" | "down") => {
 };
 
 export const playQuiz = (id: string, data: PlayQuizForm) => {
-  return fetcher<void>(`/quizzes/${id}/play`, {
+  return fetcher<{ roomId: string }>(`/quizzes/${id}/play`, {
     method: "POST",
     body: JSON.stringify(data),
   });

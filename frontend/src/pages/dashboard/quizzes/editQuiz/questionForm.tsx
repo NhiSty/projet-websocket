@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QueryConstants } from "#/api/queryConstants";
 import { createQuestion, updateQuestion } from "#/api/dashboard.http";
-import { XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { UnprocessableContentError } from "#/api/api";
 import { ChoiceForm } from "./choiceForm";
 import { Select } from "#/components/form/Select";
@@ -136,6 +136,7 @@ export function QuestionForm({
     onSuccess: () => {
       toast.success("Question created successfully", {
         id: toastId,
+        icon: <CheckCircleIcon className="w-4 h-4" />,
       });
       queryClient.invalidateQueries({
         queryKey: [...QueryConstants.QUIZ_QUESTIONS, quizId],

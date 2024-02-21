@@ -8,7 +8,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { registerUser } from "#/api/auth.http";
 import { QueryConstants } from "#/api/queryConstants";
 import { useNavigate } from "react-router-dom";
-import { LucideLoader2, LucideLogIn, XCircleIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  LucideLoader2,
+  LucideLogIn,
+  XCircleIcon,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -39,7 +44,9 @@ export function Register() {
     onSuccess: (data) => {
       queryClient.setQueryData(QueryConstants.USER, data);
       navigate("/");
-      toast.success("Welcome!");
+      toast.success("Welcome!", {
+        icon: <CheckCircleIcon className="w-4 h-4" />,
+      });
     },
     onError: (error) => {
       console.error(error);

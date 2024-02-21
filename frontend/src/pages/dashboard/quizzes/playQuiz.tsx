@@ -5,7 +5,12 @@ import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { LoaderFunction, redirect, useRouteLoaderData } from "react-router-dom";
+import {
+  LoaderFunction,
+  redirect,
+  useNavigate,
+  useRouteLoaderData,
+} from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "#/components/form/Button";
@@ -13,7 +18,7 @@ import { QueryConstants } from "#/api/queryConstants";
 import { useState } from "react";
 import { toast } from "sonner";
 import { UnprocessableContentError } from "#/api/api";
-import { XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 
 export function playQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
   return async ({ params: { id } }) => {
@@ -73,6 +78,7 @@ export function PlayQuiz(): JSX.Element {
     undefined
   );
   const quiz = useRouteLoaderData("playQuiz") as Quiz;
+  const navigate = useNavigate();
 
   const {
     register,
@@ -98,9 +104,14 @@ export function PlayQuiz(): JSX.Element {
   const mutation = useMutation({
     mutationKey: QueryConstants.START_QUIZ,
     mutationFn: (data: PlayQuizForm) => playQuiz(quiz.id, data),
-    onSuccess: () => {
-      toast.success("The quiz session has been created!");
+    onSuccess: (data) => {
+      toast.success("The quiz session has been created!", {
+        id: toastId,
+        icon: <CheckCircleIcon className="w-4 h-4" />,
+      });
       setToastId(undefined);
+
+      navigate(`/quiz/session/${data.roomId}`);
     },
     onError: (error) => {
       console.error(error);

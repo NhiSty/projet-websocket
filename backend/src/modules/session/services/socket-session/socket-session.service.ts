@@ -17,17 +17,17 @@ export class SocketSessionService {
   private roomData = new Map<string, RoomData>();
 
   public constructor(
-    private eventEmitter: EventEmitter2,
-    private hashService: HashService,
+      private eventEmitter: EventEmitter2,
+      private hashService: HashService,
   ) {}
 
   /**
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
   public async createRoom({
-    sessionPassword,
-    userCountLimit,
-  }: CreateRoomDto): Promise<string> {
+                            sessionPassword,
+                            userCountLimit,
+                          }: CreateRoomDto): Promise<string> {
     // Generate a random room ID
     const roomId = randomUUID();
 
@@ -105,6 +105,11 @@ export class SocketSessionService {
     // If there is a user limit on the room and the limit is reached, return
     if (data.userLimit && users.size >= data.userLimit) {
       return new UnauthorizedException('Room full');
+    }
+
+    // If the room is already started, return
+    if (data.started) {
+      return new UnauthorizedException('Room already started');
     }
 
     // If the user is already in the room, close the previous connection

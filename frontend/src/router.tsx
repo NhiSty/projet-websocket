@@ -12,7 +12,11 @@ import { Quizzes } from "./pages/dashboard/quizzes";
 import { ViewQuiz, viewQuizLoader } from "./pages/dashboard/quizzes/viewQuiz";
 import { EditQuiz, editQuizLoader } from "./pages/dashboard/quizzes/editQuiz";
 import { PlayQuiz, playQuizLoader } from "./pages/dashboard/quizzes/playQuiz";
-import { QuizSession } from "./pages/quiz-session/quizSession";
+import {
+  QuizSession,
+  quizSessionLoader,
+} from "./pages/quiz-session/quizSession";
+import { WebSocketProvider } from "./providers/socketio/socketio";
 
 const router = createBrowserRouter([
   {
@@ -86,7 +90,12 @@ const router = createBrowserRouter([
   },
   {
     path: "quiz/session/:id",
-    element: <QuizSession />,
+    loader: quizSessionLoader(queryClient),
+    element: (
+      <WebSocketProvider>
+        <QuizSession />
+      </WebSocketProvider>
+    ),
   },
   {
     path: "",

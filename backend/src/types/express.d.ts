@@ -1,8 +1,9 @@
 import { User } from '@prisma/client';
+import { UserId } from './opaque';
 
 declare module 'express-session' {
   interface SessionData {
-    userId: User['id'];
+    userId: UserId;
   }
 }
 

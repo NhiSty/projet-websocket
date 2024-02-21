@@ -21,6 +21,7 @@ import { AdminCreateUserDto } from './admin-create-user.dto';
 import { Request } from 'express';
 import { AdminUpdateUserDto } from './admin-update-user.dto';
 import { UserService } from 'src/modules/user/services/user/user.service';
+import { UserId } from 'src/types/opaque';
 
 @Controller('admins/users')
 @Auth()
@@ -66,7 +67,7 @@ export class SuperadminController {
 
   @Delete(':id')
   @HttpCode(204)
-  public async deleteUser(@Param('id') id: string, @Req() request: Request) {
+  public async deleteUser(@Param('id') id: UserId, @Req() request: Request) {
     if (request.user.id === id) {
       throw new ForbiddenException('You cannot delete yourself');
     }
@@ -94,7 +95,7 @@ export class SuperadminController {
   @Patch(':id')
   @Roles(Role.SUPERADMIN)
   public async updateUser(
-    @Param('id') id: string,
+    @Param('id') id: UserId,
     @Req() request: Request,
     @Body(new ValidationPipe()) body: AdminUpdateUserDto,
   ) {

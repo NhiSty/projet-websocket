@@ -10,7 +10,7 @@ export class QuizSessionController {
 
   @Post('play')
   public async playSessions(
-    @Param('id') id: string,
+    @Param('id') id: QuizId,
     @Body(new ValidationPipe()) body: CreateRoomDto,
   ) {
     const roomId = await this.socketSession.createRoom(body);

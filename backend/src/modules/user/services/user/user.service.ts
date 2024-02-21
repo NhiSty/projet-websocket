@@ -3,6 +3,7 @@ import { Role, User } from '@prisma/client';
 import { Paginated } from 'src/types/pagination';
 import { DatabaseService } from 'src/modules/shared/services/database/database.service';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
+import { UserId } from 'src/types/opaque';
 
 /**
  * Service responsible for managing user-related operations.
@@ -53,7 +54,7 @@ export class UserService {
    * @param id - The ID of the user to find.
    * @returns The found user, or null if not found.
    */
-  public async find(id: string): Promise<User | null> {
+  public async find(id: UserId): Promise<User | null> {
     return this.databaseService.user.findUnique({
       where: {
         id,

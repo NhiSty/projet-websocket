@@ -4,15 +4,15 @@ import { cn } from "#/utils/css";
 import { MenuIcon, XIcon } from "lucide-react";
 
 interface SessionHeaderProps {
-  quiz: Quiz;
-  sidebarExpanded: boolean;
-  onExpandSidebar: (expand: boolean) => void;
-  onEndSession: () => void;
+  title: string;
+  sidebarExpanded?: boolean;
+  onExpandSidebar?: (expand: boolean) => void;
+  onEndSession?: () => void;
 }
 
 export function SessionHeader({
-  quiz,
-  sidebarExpanded,
+  title,
+  sidebarExpanded = false,
   onExpandSidebar,
   onEndSession,
 }: SessionHeaderProps): JSX.Element {
@@ -20,15 +20,15 @@ export function SessionHeader({
   return (
     <header className="navbar bg-base-100 border-b border-base-200">
       <div className="flex-1">
-        <h1 className="text-xl">{quiz.name}</h1>
+        <h1 className="text-xl">{title}</h1>
       </div>
       <div className="flex-1 gap-2 justify-end">
-        <Button className="btn btn-ghost" onClick={() => onEndSession()}>
+        <Button className="btn btn-ghost" onClick={() => onEndSession?.()}>
           End session
         </Button>
         <Button
           className="btn-square btn-ghost"
-          onClick={() => onExpandSidebar(!sidebarExpanded)}
+          onClick={() => onExpandSidebar?.(!sidebarExpanded)}
         >
           <span
             className={cn("swap swap-rotate", {

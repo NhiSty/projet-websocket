@@ -1,23 +1,15 @@
 export enum WsEventType {
-  IS_COMPOSING = 'is-compositing',
-  COMPOSING_END = 'composing-end',
+  IS_COMPOSING = "is-compositing",
+  COMPOSING_END = "composing-end",
 
-  CHAT_MESSAGE = 'chat-message',
+  CHAT_MESSAGE = "chat-message",
 
-  JOIN_ROOM = 'join-room',
-  LEAVE_ROOM = 'leave-room',
+  JOIN_ROOM = "join-room",
+  REQUIRE_PASSWORD = "require-password",
+  LEAVE_ROOM = "leave-room",
 
-  USER_JOINED = 'user-joined',
-  USER_LEFT = 'user-left',
-}
-
-export enum WsErrorType {
-  ROOM_FULL = 'room-full',
-  ROOM_NOT_FOUND = 'room-not-found',
-  ALREADY_STARTED = 'already-started',
-  REQUIRE_PASSWORD = 'require-password',
-  INVALID_PASSWORD = 'invalid-password',
-  UNKNOWN_ERROR = 'unknown-error',
+  USER_JOINED = "user-joined",
+  USER_LEFT = "user-left",
 }
 
 export interface WsEvent<WsEvent> {

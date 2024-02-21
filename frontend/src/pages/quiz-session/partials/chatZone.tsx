@@ -33,27 +33,27 @@ export function ChatZone(): JSX.Element {
   }, [chatText]);
 
   return (
-      <section className="p-2 pb-0 h-full w-full flex flex-col gap-4">
-        <div className="rounded-lg flex-1"></div>
+    <section className="p-2 pb-0 h-full w-full flex flex-col gap-4">
+      <div className="rounded-lg flex-1"></div>
 
-        <div className="flex flex-col">
-          <div className="flex flex-row gap-2">
-            <Input
-                className="flex-1 max-w-none"
-                placeholder="Type a message"
-                onChange={(event) => setChatText(event.target.value)}
-            />
-            <Button className="btn-square" aria-label="Send">
-              <SendHorizonalIcon className="w-5 h-5" />
-            </Button>
-          </div>
+      <div className="flex flex-col">
+        <div className="flex flex-row gap-2">
+          <Input
+            className="flex-1 max-w-none"
+            placeholder="Type a message"
+            onChange={(event) => setChatText(event.target.value)}
+          />
+          <Button className="btn-square" aria-label="Send">
+            <SendHorizonalIcon className="w-5 h-5" />
+          </Button>
+        </div>
 
-          <div className="text-sm px-2">
+        <div className="text-sm px-2">
           <span className="text-gray-700">
             <strong>Someone</strong> is writing...
           </span>
-          </div>
         </div>
-      </section>
+      </div>
+    </section>
   );
 }

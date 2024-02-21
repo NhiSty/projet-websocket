@@ -5,6 +5,7 @@ import { User } from '@prisma/client';
 import { Request } from 'express';
 import { SessionService } from '../session/session.service';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
+import { UserId } from 'src/types/opaque';
 
 export class InvalidSessionError extends Error {
   public constructor() {
@@ -88,7 +89,7 @@ export class AuthService {
       await this.sessionService.regenerate(request);
     }
 
-    request.session.userId = user.id;
+    request.session.userId = user.id as UserId;
     await this.sessionService.save(request);
   }
 

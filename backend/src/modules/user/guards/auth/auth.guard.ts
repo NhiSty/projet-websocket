@@ -1,44 +1,71 @@
 import {
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { SessionData } from 'express-session';
-import { IncomingMessage } from 'http';
-import { Socket } from 'socket.io';
-import { UserService } from 'src/modules/user/services/user/user.service';
+import { Reflector } from '@nestjs/core';
+import { Auth } from 'src/modules/user/decorators/auth.decorator';
+import { Request } from 'express';
+import { SessionService } from 'src/modules/user/services/session/session.service';
+import {
+  AuthService,
+  InvalidSessionError,
+} from '../../services/auth/auth.service';
+import { UserService } from '../../services/user/user.service';
 
+/**
+ * This guard is responsible for checking the authentication status of the user.
+ */
 @Injectable()
-export class AuthWsGuard implements CanActivate {
-  public constructor(private userService: UserService) {}
+export class AuthGuard implements CanActivate {
+  public constructor(
+    private reflector: Reflector,
+    private authService: AuthService,
+    private userService: UserService,
+    private sessionService: SessionService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToWs().getClient<Socket>()
-      .request as IncomingMessage & { session: SessionData; user?: User };
+    const auth = this.reflector.getAllAndOverride(Auth, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
+    const req: Request = context.switchToHttp().getRequest();
     const userId = req.session.userId;
 
     if (userId) {
       const user = await this.userService.find(userId);
       if (!user) {
-        throw new ForbiddenException('User not found');
+        this.sessionService.destroy(req);
       }
     }
 
-    try {
-      const userId = req.session.userId;
-      const user = await this.userService.find(userId);
-
-      if (!user) {
-        throw new UnauthorizedException();
+    if (auth === 'guest') {
+      if (userId) {
+        return false;
       }
 
-      req.user = user;
-    } catch (error) {
-      return false;
+      return true;
+    }
+
+    if (auth === 'auth') {
+      if (!userId) {
+        return false;
+      }
+
+      try {
+        await this.authService.loadSession(req);
+        return true;
+      } catch (error) {
+        if (error instanceof InvalidSessionError) {
+          throw new UnauthorizedException(
+            'User not authenticated. Maybe your session has expired',
+          );
+        }
+        return false;
+      }
     }
 
     return true;

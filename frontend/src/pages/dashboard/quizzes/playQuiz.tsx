@@ -10,7 +10,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "#/components/form/Button";
 import { QueryConstants } from "#/api/queryConstants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { UnprocessableContentError } from "#/api/api";
 import { XCircleIcon } from "lucide-react";

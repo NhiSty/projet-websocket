@@ -1,8 +1,7 @@
 import { Question } from "#/api/types";
 import { CheckSquareIcon, CircleDotIcon } from "lucide-react";
-import { useState, type JSX } from "react";
+import { type JSX } from "react";
 import { cn } from "#/utils/css";
-import React from "react";
 
 interface QuestionChoicesProps {
   question: Question;

@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import { type ReactElement } from "react";
 import { QuestionItem } from "./questionItem";
-import React from "react";
 
 interface QuestionsListProps {
   quiz: Quiz;

@@ -6,7 +6,6 @@ import { PenIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LoaderFunction, redirect, useRouteLoaderData } from "react-router-dom";
 import { QuestionsList } from "./viewQuiz/questionsList";
-import React from "react";
 
 export function viewQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
   return async ({ params: { id } }) => {

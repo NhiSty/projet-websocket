@@ -1,34 +1,50 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { User } from '@prisma/client';
 import { Socket } from 'socket.io';
+import { UserInfo, WsEventType } from '../../constants';
+import { RoomId } from 'src/types/opaque';
+
+export const TIME_TO_COMPOSE = 5000;
 
 export class UserData {
-  public socket: Socket;
-  public username: string;
-  public isTyping: boolean;
+  public isComposing: boolean;
 
-  private _isTypingTimeout: NodeJS.Timeout;
+  private composingTimeout: NodeJS.Timeout;
 
-  public constructor(socket: Socket, username: string) {
-    this.socket = socket;
-    this.username = username;
-    this.isTyping = false;
+  public constructor(
+    public socket: Socket,
+    public roomId: RoomId,
+    public user: User,
+    private eventEmitter: EventEmitter2,
+  ) {
+    this.isComposing = false;
   }
 
   public type(): void {
-    if (!this.isTyping) {
-      this.isTyping = true;
-      this.socket.emit('isComposing');
+    if (!this.isComposing) {
+      this.isComposing = true;
+      this.eventEmitter.emit(WsEventType.IS_COMPOSING, this);
     }
 
-    clearTimeout(this._isTypingTimeout);
-    this._isTypingTimeout = setTimeout(() => {
-      this.isTyping = false;
-      this.socket.emit('composingEnd');
-    }, 1500);
+    clearTimeout(this.composingTimeout);
+    this.composingTimeout = setTimeout(() => {
+      this.isComposing = false;
+      if (this.eventEmitter) {
+        this.eventEmitter.emit(WsEventType.COMPOSING_END, this);
+      }
+    }, TIME_TO_COMPOSE);
   }
 
   public stopTyping(): void {
-    this.isTyping = false;
-    clearTimeout(this._isTypingTimeout);
-    this.socket.emit('composingEnd');
+    this.isComposing = false;
+    clearTimeout(this.composingTimeout);
+    this.eventEmitter.emit(WsEventType.COMPOSING_END, this);
+  }
+
+  public toJSON(): UserInfo {
+    return {
+      id: this.user.id,
+      username: this.user.username,
+    };
   }
 }

@@ -1,3 +1,6 @@
+import { RoomId } from 'src/types/opaque';
+import { Quiz } from '@prisma/client';
+
 export enum WsEventType {
   IS_COMPOSING = 'is-compositing',
   COMPOSING_END = 'composing-end',
@@ -9,6 +12,8 @@ export enum WsEventType {
 
   USER_JOINED = 'user-joined',
   USER_LEFT = 'user-left',
+
+  ROOM_INFO = 'room-info',
 }
 
 export enum WsErrorType {
@@ -24,15 +29,30 @@ export interface WsEvent<WsEvent> {
   event: WsEvent;
 }
 
-export interface ComposingEvent extends WsEvent<WsEventType.IS_COMPOSING> {}
-export interface ComposingEnd extends WsEvent<WsEventType.COMPOSING_END> {}
+export interface UserInfo {
+  username: string;
+  id: string;
+}
+
+export interface ComposingEvent extends WsEvent<WsEventType.IS_COMPOSING> {
+  users: UserInfo[];
+}
+export interface ComposingEnd extends WsEvent<WsEventType.COMPOSING_END> {
+  users: UserInfo[];
+}
+
+export interface RoomInfoEvent extends WsEvent<WsEventType.ROOM_INFO> {
+  quiz: Quiz;
+}
 
 export interface ChatMessageEvent extends WsEvent<WsEventType.CHAT_MESSAGE> {
   message: string;
+  user: UserInfo;
+  timestamp: number;
 }
 
 export interface JoinRoomEvent extends WsEvent<WsEventType.JOIN_ROOM> {
-  roomId: string;
+  roomId: RoomId;
   password?: string;
 }
 export interface LeaveRoomEvent extends WsEvent<WsEventType.LEAVE_ROOM> {}

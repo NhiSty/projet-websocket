@@ -3,46 +3,48 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateRoomDto } from '../../controllers/quiz-session/create-room.dto';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
 import { RoomData } from './room-data';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
-import { WsEventType } from '../../constants';
+import { UserInfo, WsEventType } from '../../constants';
 import { SessionData } from 'express-session';
 import {
   RoomFullExceptions,
   RoomRequirePasswords,
   RoomStartedExceptions,
 } from './exceptions';
-
-type RoomId = string;
-type UserId = string;
+import { RoomId, UserId } from 'src/types/opaque';
+import { UserData } from './user-data';
+import { UserService } from 'src/modules/user/services/user/user.service';
+import { Quiz } from '@prisma/client';
 
 @Injectable()
 export class SocketSessionService {
-  private server: Server;
-
   // List of users in a Room
-  private roomUsers = new Map<RoomId, Map<UserId, Socket>>();
+  private roomUsers = new Map<RoomId, Map<UserId, UserData>>();
   // Data related to a room
   private roomData = new Map<RoomId, RoomData>();
+  // Map rooms by usersId
+  private usersRooms = new Map<UserId, RoomId>();
 
   public constructor(
     private eventEmitter: EventEmitter2,
     private hashService: HashService,
+    private userService: UserService,
   ) {}
 
   /**
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
-  public async createRoom({
-    sessionPassword,
-    userCountLimit,
-  }: CreateRoomDto): Promise<string> {
+  public async createRoom(
+    quiz: Quiz,
+    { sessionPassword, userCountLimit }: CreateRoomDto,
+  ): Promise<string> {
     // Generate a random room ID
-    const roomId = randomUUID();
+    const roomId = randomUUID() as RoomId;
 
     // Create the user list for the room
     const users = new Map();
@@ -50,6 +52,7 @@ export class SocketSessionService {
 
     // Append the room data
     const data = new RoomData();
+    data.quiz = quiz;
 
     // If a password is provided, hash it and store it
     if (sessionPassword.enable) {
@@ -72,7 +75,10 @@ export class SocketSessionService {
    * Delete a room by its ID.
    * @param roomId - The ID of the room to delete.
    */
-  public deleteRoom(roomId: string) {
+  public deleteRoom(roomId: RoomId) {
+    for (const [userId] of this.roomUsers.get(roomId)) {
+      this.usersRooms.delete(userId);
+    }
     this.roomUsers.delete(roomId);
     this.roomData.delete(roomId);
   }
@@ -82,7 +88,7 @@ export class SocketSessionService {
    * @param roomId - The ID of the room to check.
    * @returns True if the room exists, false otherwise.
    */
-  public hasRoom(roomId: string) {
+  public hasRoom(roomId: RoomId) {
     return this.roomUsers.has(roomId) && this.roomData.has(roomId);
   }
 
@@ -93,7 +99,7 @@ export class SocketSessionService {
    * @param password - The password provided by the user to join the room.
    * @returns The room data if the user joined successfully, undefined otherwise.
    */
-  public joinRoom(roomId: string, socket: Socket, password?: string) {
+  public async joinRoom(roomId: RoomId, socket: Socket, password?: string) {
     // If the room does not exist, return
     if (!this.hasRoom(roomId)) {
       throw new NotFoundException('Room not found');
@@ -125,17 +131,24 @@ export class SocketSessionService {
       throw new RoomStartedExceptions();
     }
 
-    const userId = (socket.request['session'] as SessionData).userId;
+    const userId = this.getUserId(socket);
+    const user = await this.userService.find(userId);
     // If the user is already in the room, close the previous connection
-    if (users.has(userId) && users.get(userId).id !== socket.id) {
-      users.get(userId).disconnect();
+    if (users.has(userId) && users.get(userId).socket.id !== socket.id) {
+      users.get(userId).socket.disconnect();
     }
 
+    // Join the room
+    socket.join(roomId);
+    console.log('User joined room', roomId);
     // Then set the new one
-    users.set(userId, socket);
+    users.set(userId, new UserData(socket, roomId, user, this.eventEmitter));
+    this.usersRooms.set(userId, roomId);
 
+    // Emit the room information
+    socket.emit(WsEventType.ROOM_INFO, { quiz: data.quiz });
     // Emit the user joined event
-    this.eventEmitter.emit(WsEventType.USER_JOINED, roomId, userId);
+    this.eventEmitter.emit(WsEventType.USER_JOINED, roomId, user);
   }
 
   /**
@@ -143,7 +156,8 @@ export class SocketSessionService {
    * @param roomId - The ID of the room to leave.
    * @param socket - The socket of the user.
    */
-  public leaveRoom(roomId: string, socket: Socket) {
+  public leaveRoom(socket: Socket) {
+    const roomId = this.usersRooms.get(this.getUserId(socket));
     // If the user isn't in the room
     if (!this.roomUsers.has(roomId)) {
       throw new NotFoundException('Room not found');
@@ -152,10 +166,12 @@ export class SocketSessionService {
     // Get the room's user list
     const users = this.roomUsers.get(roomId);
 
+    const userId = this.getUserId(socket);
     // If the user is in the room
-    if (users.has(socket.id)) {
+    if (users.has(userId)) {
       // Remove the user from the room
-      users.delete(socket.id);
+      users.delete(userId);
+      this.usersRooms.delete(userId);
 
       // Emit the user left event
       this.eventEmitter.emit(WsEventType.USER_LEFT, roomId, socket.id);
@@ -168,5 +184,45 @@ export class SocketSessionService {
 
     // And close the connection
     socket.disconnect();
+  }
+
+  public compose(client: Socket) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      return;
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomUsers = this.roomUsers.get(roomId);
+    const socket = roomUsers.get(userId);
+
+    socket.type();
+  }
+
+  public stopComposing(client: Socket) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      return;
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    if (!this.roomUsers.has(roomId)) {
+      return;
+    }
+    const roomUsers = this.roomUsers.get(roomId);
+    const socket = roomUsers.get(userId);
+
+    socket.stopTyping();
+  }
+
+  private getUserId(client: Socket): UserId {
+    return (client.request['session'] as SessionData).userId;
+  }
+
+  public getComposingUsers(roomId: RoomId): UserInfo[] {
+    const users = this.roomUsers.get(roomId);
+    return Array.from(users.values())
+      .filter((user) => user.isComposing)
+      .map((user) => user.toJSON());
   }
 }

@@ -1,3 +1,4 @@
+import { Quiz } from '@prisma/client';
 import { QuestionWithChoices } from 'src/types/quiz';
 
 export class RoomData {
@@ -5,6 +6,7 @@ export class RoomData {
   private _usersLimit?: number;
   public questions: QuestionWithChoices[] = [];
   public started = false;
+  public quiz: Quiz;
 
   public set userLimit(limit: number) {
     this._usersLimit = limit > 0 ? limit : undefined;

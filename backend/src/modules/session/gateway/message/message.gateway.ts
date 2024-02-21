@@ -11,8 +11,6 @@ import { SocketSessionService } from '../../services/socket-session/socket-sessi
 import { JoinRoomEvent, WsErrorType, WsEventType } from '../../constants';
 import { sessionMiddleware } from 'src/session';
 import { ConfigService } from '@nestjs/config';
-import { Auth } from 'src/modules/user/decorators/auth.decorator';
-import { SessionData } from 'express-session';
 import { AuthWsGuard } from '../../guards/auth-ws/auth-ws.guard';
 import {
   RoomFullExceptions,
@@ -21,7 +19,9 @@ import {
   RoomStartedExceptions,
 } from '../../services/socket-session/exceptions';
 import { OnEvent } from '@nestjs/event-emitter';
-import { UserService } from 'src/modules/user/services/user/user.service';
+import { User } from '@prisma/client';
+import { UserData } from '../../services/socket-session/user-data';
+import { RoomId } from 'src/types/opaque';
 
 @WebSocketGateway()
 @Injectable()
@@ -34,25 +34,37 @@ export class MessageGateway
   public constructor(
     private socketSession: SocketSessionService,
     private configService: ConfigService,
-    private userService: UserService,
   ) {}
 
   public afterInit() {
     this.server.engine.use(sessionMiddleware(this.configService));
   }
 
-  public handleDisconnect() {
-    console.log('Client disconnected');
+  public handleDisconnect(client: Socket) {
+    try {
+      this.socketSession.leaveRoom(client);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND, { message: error.message });
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
   }
 
   @SubscribeMessage(WsEventType.JOIN_ROOM)
   @UseGuards(AuthWsGuard)
-  @Auth()
   public async handleJoinRoom(client: Socket, data: JoinRoomEvent) {
-    console.log((<SessionData>client.request['session']).userId);
-    console.log('Join room', data.roomId);
     try {
-      this.socketSession.joinRoom(data.roomId, client, data.password);
+      await this.socketSession.joinRoom(data.roomId, client, data.password);
     } catch (error) {
       if (error instanceof NotFoundException) {
         client.emit(WsErrorType.ROOM_NOT_FOUND, { message: error.message });
@@ -90,10 +102,33 @@ export class MessageGateway
     }
   }
 
+  // When a "composing" event is received, it set the state on the userData object
+  @SubscribeMessage(WsEventType.IS_COMPOSING)
+  @UseGuards(AuthWsGuard)
+  public async handleComposing(client: Socket) {
+    this.socketSession.compose(client);
+  }
+
+  // When "composing end" event is received, it set the state on the userData object
+  @SubscribeMessage(WsEventType.COMPOSING_END)
+  @UseGuards(AuthWsGuard)
+  public async handleComposingEnd(client: Socket) {
+    this.socketSession.stopComposing(client);
+  }
+
+  // When an event is sent by a userData object, broadcast the data to other clients
+  @OnEvent(WsEventType.IS_COMPOSING)
+  @OnEvent(WsEventType.COMPOSING_END)
+  public handleIsComposing(data: UserData) {
+    const composingUsers = this.socketSession.getComposingUsers(data.roomId);
+
+    this.server.to(data.roomId).emit(WsEventType.IS_COMPOSING, {
+      users: composingUsers,
+    });
+  }
+
   @OnEvent(WsEventType.USER_JOINED)
-  public handleOnUserJoined(roomId: string, userId: string) {
-    console.log(`User ${userId} joined`);
-    const user = this.userService.find(userId);
+  public handleOnUserJoined(roomId: RoomId, user: User) {
     this.server.of(roomId).emit(WsEventType.USER_JOINED, { user });
   }
 }

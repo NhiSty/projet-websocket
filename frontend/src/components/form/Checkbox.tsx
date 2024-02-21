@@ -11,7 +11,7 @@ export type CheckboxProps = Omit<
 export const CheckBox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, label, ...props }, ref) => {
     return (
-      <label className="label cursor-pointer">
+      <label className="label cursor-pointer gap-2">
         <input
           type="checkbox"
           className={cn("checkbox checkbox-primary", className)}

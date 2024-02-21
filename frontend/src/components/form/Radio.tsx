@@ -8,7 +8,7 @@ export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
   ({ className, ...props }, ref) => {
     return (
-      <label className="label cursor-pointer">
+      <label className="label cursor-pointer gap-2">
         <input
           type="radio"
           className={cn("radio", className)}

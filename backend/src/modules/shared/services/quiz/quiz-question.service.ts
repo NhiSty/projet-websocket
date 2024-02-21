@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
 import { Choices, Question, QuestionType, Quiz } from '@prisma/client';
+import { DatabaseService } from '../database/database.service';
 import { QuestionWithChoices, QuizWithData } from 'src/types/quiz';
 
 @Injectable()

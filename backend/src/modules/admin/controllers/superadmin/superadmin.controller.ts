@@ -15,12 +15,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { Auth } from 'src/decorators/auth.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { UserService } from 'src/services/user/user.service';
+import { Auth } from 'src/modules/user/decorators/auth.decorator';
+import { Roles } from 'src/modules/user/decorators/roles.decorator';
 import { AdminCreateUserDto } from './admin-create-user.dto';
 import { Request } from 'express';
 import { AdminUpdateUserDto } from './admin-update-user.dto';
+import { UserService } from 'src/modules/user/services/user/user.service';
 
 @Controller('admins/users')
 @Auth()

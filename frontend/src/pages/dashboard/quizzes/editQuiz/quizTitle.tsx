@@ -175,7 +175,7 @@ export function QuizTitle({ quiz }: QuizTitleProps) {
         className="btn btn-secondary btn-sm"
       >
         <XCircle className="h-4 w-4" />
-        Cancel
+        Exit edit
       </Link>
 
       {isDeleting && (

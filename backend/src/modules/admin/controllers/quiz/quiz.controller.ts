@@ -12,12 +12,12 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { Auth } from 'src/decorators/auth.decorator';
-import { QuizService } from 'src/services/quiz/quiz.service';
+import { Auth } from 'src/modules/user/decorators/auth.decorator';
 import { CreateQuizDto } from './create-quiz.dto';
 import { Request } from 'express';
-import { Roles } from 'src/decorators/roles.decorator';
+import { Roles } from 'src/modules/user/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { QuizService } from 'src/modules/shared/services/quiz/quiz.service';
 
 @Controller('admins/quizzes')
 @Auth()

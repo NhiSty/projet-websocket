@@ -11,6 +11,7 @@ import { UsersList } from "./pages/dashboard/users";
 import { Quizzes } from "./pages/dashboard/quizzes";
 import { ViewQuiz, viewQuizLoader } from "./pages/dashboard/quizzes/viewQuiz";
 import { EditQuiz, editQuizLoader } from "./pages/dashboard/quizzes/editQuiz";
+import { PlayQuiz, playQuizLoader } from "./pages/dashboard/quizzes/playQuiz";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,12 @@ const router = createBrowserRouter([
                 element: <EditQuiz />,
                 id: "editQuiz", // 'id' is used to identify the route in the 'useRouteLoaderData' hook
                 loader: editQuizLoader(queryClient),
+              },
+              {
+                path: ":id/play",
+                element: <PlayQuiz />,
+                id: "playQuiz", // 'id' is used to identify the route in the 'useRouteLoaderData' hook
+                loader: playQuizLoader(queryClient),
               },
               {
                 path: ":id/results",

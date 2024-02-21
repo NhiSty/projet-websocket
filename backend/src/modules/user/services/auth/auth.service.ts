@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { HashService } from '../hash/hash.service';
-import { CreateUserDto } from 'src/controllers/auth/create-user.dto';
+import { CreateUserDto } from 'src/modules/user/controllers/auth/create-user.dto';
 import { User } from '@prisma/client';
 import { Request } from 'express';
 import { SessionService } from '../session/session.service';
+import { HashService } from 'src/modules/shared/services/hash/hash.service';
 
 export class InvalidSessionError extends Error {
   public constructor() {

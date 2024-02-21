@@ -12,12 +12,12 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { Auth } from 'src/decorators/auth.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { QuizQuestionService } from 'src/services/quiz/quiz-question.service';
-import { QuizService } from 'src/services/quiz/quiz.service';
+import { Auth } from 'src/modules/user/decorators/auth.decorator';
+import { Roles } from 'src/modules/user/decorators/roles.decorator';
 import { CreateQuestionDto } from './create-question-dto';
 import { UpdateQuestionDto } from './update-question-dto';
+import { QuizQuestionService } from 'src/modules/shared/services/quiz/quiz-question.service';
+import { QuizService } from 'src/modules/shared/services/quiz/quiz.service';
 
 @Controller('admins/quizzes/:quizId/questions')
 @Auth()

@@ -8,12 +8,12 @@ import {
   Req,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from 'src/services/auth/auth.service';
 import { LoginUserDto } from './login-user.dto';
 import { CreateUserDto } from './create-user.dto';
 import { User } from '@prisma/client';
-import { Auth, Guest } from 'src/decorators/auth.decorator';
+import { Auth, Guest } from 'src/modules/user/decorators/auth.decorator';
 import { Request } from 'express';
+import { AuthService } from '../../services/auth/auth.service';
 
 /**
  * Controller responsible for handling authentication related requests.

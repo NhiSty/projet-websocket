@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { Observable } from 'rxjs';
-import { Roles } from 'src/decorators/roles.decorator';
+import { Roles } from 'src/modules/user/decorators/roles.decorator';
 
 /**
  * A guard that checks if a user has the required roles to access a resource.

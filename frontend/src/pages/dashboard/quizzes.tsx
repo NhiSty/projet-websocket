@@ -10,6 +10,7 @@ import {
   FilePlus,
   FolderOpenIcon,
   Loader2,
+  PlayIcon,
   SearchIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -61,11 +62,26 @@ function QuizzesHeader({
   );
 }
 
-interface ViewButtonProps {
+interface ActionButtonProps {
   quiz: Quiz;
 }
 
-function ViewButton({ quiz }: ViewButtonProps): JSX.Element | null {
+function StartButton({ quiz }: ActionButtonProps): JSX.Element | null {
+  return (
+    <span className="tooltip tooltip-left" data-tip={`Start ${quiz.name}`}>
+      <Link
+        to={`/dashboard/quizzes/${quiz.id}/play`}
+        type="button"
+        className="btn btn-ghost btn-xs"
+        aria-label={`Start ${quiz.name}`}
+      >
+        <PlayIcon className="w-4 h-4" />
+      </Link>
+    </span>
+  );
+}
+
+function ViewButton({ quiz }: ActionButtonProps): JSX.Element | null {
   return (
     <span className="tooltip tooltip-left" data-tip={`View ${quiz.name}`}>
       <Link
@@ -80,8 +96,7 @@ function ViewButton({ quiz }: ViewButtonProps): JSX.Element | null {
   );
 }
 
-interface DeleteButtonProps {
-  quiz: Quiz;
+interface DeleteButtonProps extends ActionButtonProps {
   onDelete: () => void;
 }
 
@@ -190,7 +205,8 @@ export function Quizzes(): JSX.Element {
                     </Link>
                   </td>
                   <td className="text-center">{quiz.author.username}</td>
-                  <td className="flex flex-row justify-end gap-2">
+                  <td className="flex flex-row justify-end gap-1">
+                    <StartButton quiz={quiz} />
                     <ViewButton quiz={quiz} />
                     {canDelete(quiz) && (
                       <DeleteButton

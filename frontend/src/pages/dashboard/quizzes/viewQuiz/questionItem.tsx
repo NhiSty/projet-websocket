@@ -1,10 +1,8 @@
 import { Question } from "#/api/types";
-import {
-  CheckSquareIcon,
-  CircleDotIcon,
-} from "lucide-react";
-import { type JSX } from "react";
+import { CheckSquareIcon, CircleDotIcon } from "lucide-react";
+import { useState, type JSX } from "react";
 import { cn } from "#/utils/css";
+import React from "react";
 
 interface QuestionChoicesProps {
   question: Question;
@@ -25,7 +23,7 @@ function QuestionChoices({ question }: QuestionChoicesProps) {
         <li
           key={choices.id}
           className={cn(
-            "rounded-md bg-gray-100 p-4 py-2 flex flex-row items-center gap-2",
+            "rounded-md bg-gray-100 p-4 py-2 flex flex-row items-center gap-2 border border-gray-300",
             { "text-success": choices.correct }
           )}
         >

@@ -5,14 +5,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Auth } from 'src/decorators/auth.decorator';
+import { Auth } from 'src/modules/user/decorators/auth.decorator';
+import { Request } from 'express';
+import { SessionService } from 'src/modules/user/services/session/session.service';
 import {
   AuthService,
   InvalidSessionError,
-} from 'src/services/auth/auth.service';
-import { Request } from 'express';
-import { SessionService } from 'src/services/session/session.service';
-import { UserService } from 'src/services/user/user.service';
+} from '../../services/auth/auth.service';
+import { UserService } from '../../services/user/user.service';
 
 /**
  * This guard is responsible for checking the authentication status of the user.

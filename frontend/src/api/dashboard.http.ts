@@ -1,3 +1,4 @@
+import { PlayQuizForm } from "#/pages/dashboard/quizzes/playQuiz";
 import { Paginated } from "#/utils/pagination";
 import { fetcher } from "./api";
 import { Choices, Question, Quiz, User } from "./types";
@@ -122,4 +123,11 @@ export const moveQuestion = (question: Question, direction: "up" | "down") => {
       method: "PATCH",
     }
   );
+};
+
+export const playQuiz = (id: string, data: PlayQuizForm) => {
+  return fetcher<void>(`/quizzes/${id}/play`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };

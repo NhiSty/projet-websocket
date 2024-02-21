@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
 import { Role, User } from '@prisma/client';
-import { HashService } from '../hash/hash.service';
 import { Paginated } from 'src/types/pagination';
+import { DatabaseService } from 'src/modules/shared/services/database/database.service';
+import { HashService } from 'src/modules/shared/services/hash/hash.service';
 
 /**
  * Service responsible for managing user-related operations.

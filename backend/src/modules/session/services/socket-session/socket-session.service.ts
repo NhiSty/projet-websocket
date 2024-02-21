@@ -3,31 +3,44 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CreateRoomDto } from '../../controllers/quiz-session/create-room.dto';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
 import { RoomData } from './room-data';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
-import { SessionEvents } from '../../constants';
+import { WsEventType } from '../../constants';
+import { SessionData } from 'express-session';
+import {
+  RoomFullExceptions,
+  RoomRequirePasswords,
+  RoomStartedExceptions,
+} from './exceptions';
+
+type RoomId = string;
+type UserId = string;
 
 @Injectable()
 export class SocketSessionService {
-  private roomUsers = new Map<string, Map<string, Socket>>();
-  private roomData = new Map<string, RoomData>();
+  private server: Server;
+
+  // List of users in a Room
+  private roomUsers = new Map<RoomId, Map<UserId, Socket>>();
+  // Data related to a room
+  private roomData = new Map<RoomId, RoomData>();
 
   public constructor(
-      private eventEmitter: EventEmitter2,
-      private hashService: HashService,
+    private eventEmitter: EventEmitter2,
+    private hashService: HashService,
   ) {}
 
   /**
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
   public async createRoom({
-                            sessionPassword,
-                            userCountLimit,
-                          }: CreateRoomDto): Promise<string> {
+    sessionPassword,
+    userCountLimit,
+  }: CreateRoomDto): Promise<string> {
     // Generate a random room ID
     const roomId = randomUUID();
 
@@ -92,7 +105,7 @@ export class SocketSessionService {
 
     // If there is a password on the room, but the user did not provide one, return
     if (data.hashedPass && !password) {
-      throw new UnauthorizedException('Password required');
+      throw new RoomRequirePasswords();
     }
 
     // If there is a password on the room and the user provided one, but it is incorrect, return
@@ -104,26 +117,25 @@ export class SocketSessionService {
 
     // If there is a user limit on the room and the limit is reached, return
     if (data.userLimit && users.size >= data.userLimit) {
-      return new UnauthorizedException('Room full');
+      throw new RoomFullExceptions();
     }
 
     // If the room is already started, return
     if (data.started) {
-      return new UnauthorizedException('Room already started');
+      throw new RoomStartedExceptions();
     }
 
+    const userId = (socket.request['session'] as SessionData).userId;
     // If the user is already in the room, close the previous connection
-    if (users.has(socket.id)) {
-      users.get(socket.id).disconnect();
+    if (users.has(userId) && users.get(userId).id !== socket.id) {
+      users.get(userId).disconnect();
     }
 
     // Then set the new one
-    users.set(socket.id, socket);
+    users.set(userId, socket);
 
     // Emit the user joined event
-    this.eventEmitter.emit(SessionEvents.USER_JOINED, roomId, socket.id);
-
-    return data;
+    this.eventEmitter.emit(WsEventType.USER_JOINED, roomId, userId);
   }
 
   /**
@@ -146,7 +158,7 @@ export class SocketSessionService {
       users.delete(socket.id);
 
       // Emit the user left event
-      this.eventEmitter.emit(SessionEvents.USER_LEFT, roomId, socket.id);
+      this.eventEmitter.emit(WsEventType.USER_LEFT, roomId, socket.id);
     }
 
     // If the room is empty, delete it

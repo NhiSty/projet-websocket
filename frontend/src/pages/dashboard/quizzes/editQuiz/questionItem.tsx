@@ -1,6 +1,6 @@
 import { deleteQuestion, moveQuestion } from "#/api/dashboard.http";
 import { QueryConstants } from "#/api/queryConstants";
-import { Question, QuestionType } from "#/api/types";
+import { Question } from "#/api/types";
 import { Button } from "#/components/form/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -100,7 +100,7 @@ export function QuestionItem({
     deleteMutation.mutate();
   };
   return (
-    <li className="flex flex-col p-4 border-b border-gray-200 gap-2">
+    <li className="flex flex-col p-4 border-b border-gray-200 gap-2 last:border-none">
       <div className="flex flex-row justify-between items-center last:border-none">
         <div>
           <h3 className="text-lg font-bold">{question.question}</h3>

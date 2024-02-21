@@ -1,9 +1,4 @@
-import {
-  FieldErrors,
-  UseFormReturn,
-  useFieldArray,
-  useFormContext,
-} from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { CreateQuestionForm } from "./questionForm";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
@@ -23,6 +18,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
     register,
     formState: { errors },
     setValue,
+    trigger,
   } = useFormContext<CreateQuestionForm>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -37,6 +33,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
       setValue(`choices.${i}.correct`, false);
     }
     setValue(`choices.${index}.correct`, value, { shouldValidate: true });
+    trigger("choices");
   };
 
   return (

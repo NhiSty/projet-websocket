@@ -1,12 +1,7 @@
 import { useUser } from "#/api/auth.queries";
 import { Role, User, isInRole } from "#/api/types";
 import logo from "#/assets/logo.png";
-import {
-  LayoutDashboardIcon,
-  LogOutIcon,
-  LucideLogIn,
-  Settings2Icon,
-} from "lucide-react";
+import { LayoutDashboardIcon, LogOutIcon, LucideLogIn } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface NavbarUserSectionProps {

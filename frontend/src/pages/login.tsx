@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "#/components/form/Button";
 import { Input } from "#/components/form/Input";
 import { yupResolver } from "@hookform/resolvers/yup";

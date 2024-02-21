@@ -8,12 +8,12 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 ### Exigences : 
 
 1. Interface de création de quiz : 
-- [ ] Un formulaire pour que les **administrateurs** puissent créer et gérer des quiz. 
-- [ ] La capacité d'ajouter des questions.
-  - [ ] Question choix multiples avec 1,2,3 ou 4 options
-  - [ ] Question choix unique
-  - [ ] Question rédactionnel (Exemple : Quel est la capitale de la France ? (format de réponse attendu : lisbonne) -> pour dire que tout en minuscule)
-  - [ ] Question Vrai faux
+- [x] Un formulaire pour que les **administrateurs** puissent créer et gérer des quiz. 
+- [x] La capacité d'ajouter des questions.
+  - [x] Question choix multiples avec 1,2,3 ou 4 options
+  - [x] Question choix unique
+  - [x] Question rédactionnel (Exemple : Quel est la capitale de la France ? (format de réponse attendu : lisbonne) -> pour dire que tout en minuscule)
+  - [x] Question Vrai faux
 
  
 2. Communication en temps réel avec Socket.IO : 
@@ -66,11 +66,11 @@ Ces fonctionnalités avancées doivent non seulement démontrer l'appropriation 
 La mise en œuvre de ces fonctionnalités avancées nécessitera une planification et une coordination minutieuse pour s'assurer qu'elles s'intègrent harmonieusement dans l'application sans perturber les fonctionnalités existantes.
 
 Stockage de données persistant : 
-- [ ] Intégration avec une base de données (SQL ou NoSQL) pour stocker les données de quiz et les résultats historiques. 
+- [x] Intégration avec une base de données (SQL ou NoSQL) pour stocker les données de quiz et les résultats historiques. 
 
 Authentification des utilisateurs : 
 - [ ] Solution pour suivre les utilisateurs et les scores au fil du temps. 
-- [ ] Différents niveaux d'accès pour les participants au quiz et les administrateurs. 
+- [x] Différents niveaux d'accès pour les participants au quiz et les administrateurs. 
 
 Gestion avancée des salles : 
 - [ ] Fonctionnalités pour gérer les salles, comme la protection par mot de passe ou les limites d'utilisateurs. 

@@ -1,11 +1,11 @@
 import { fetchQuiz } from "#/api/dashboard.http";
 import { QueryConstants } from "#/api/queryConstants";
 import { Quiz } from "#/api/types";
-import { Button } from "#/components/form/Button";
 import { QueryClient } from "@tanstack/react-query";
 import { PenIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LoaderFunction, redirect, useRouteLoaderData } from "react-router-dom";
+import { QuestionsList } from "./viewQuiz/questionsList";
 
 export function viewQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
   return async ({ params: { id } }) => {
@@ -49,7 +49,9 @@ export function ViewQuiz(): JSX.Element {
         </h2>
       </header>
 
-      <main>{/* questions list */}</main>
+      <main>
+        <QuestionsList quiz={quiz} />
+      </main>
     </div>
   );
 }

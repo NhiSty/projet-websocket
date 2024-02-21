@@ -1,4 +1,4 @@
-import { Question, QuestionType, Quiz } from "#/api/types";
+import { Question, QuestionType } from "#/api/types";
 import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
@@ -70,14 +70,17 @@ const schema = yup
           if (!choices) {
             return false;
           }
+
           const { type } = context.parent;
           const correctChoices = choices.filter((choice) => choice.correct);
 
           if (type === "SINGLE") {
             return correctChoices.length === 1;
+          } else if (type === "MULTIPLE") {
+            return correctChoices.length > 0;
           }
 
-          return correctChoices.length > 0;
+          return false;
         }
       ),
   })

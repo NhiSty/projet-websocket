@@ -186,6 +186,10 @@ export function QuizTitle({ quiz }: QuizTitleProps) {
               queryKey: [...QueryConstants.QUIZ, quiz.id],
             });
             navigate(`/dashboard/quizzes`);
+            setDeleting(false);
+          }}
+          onClose={() => {
+            setDeleting(false);
           }}
         />
       )}

@@ -4,10 +4,11 @@ FROM node:20 as builder
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm i -g pnpm
+RUN pnpm install
 ENV NODE_ENV=production
-RUN npm run build
-RUN npm prune --production
+RUN pnpm run build
+RUN pnpm prune --production
 
 #######################################################################
 FROM nginx

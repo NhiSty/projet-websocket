@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";

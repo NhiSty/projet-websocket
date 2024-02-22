@@ -1,5 +1,5 @@
 import { Button } from "#/components/form/Button";
-import { useQuizSession } from "#/providers/quiz/quizProvider";
+import { useQuizSession } from "#/providers/quiz";
 import { cn } from "#/utils/css";
 import { MenuIcon, XIcon } from "lucide-react";
 

@@ -50,8 +50,10 @@ export function Modal({
       document.body.classList.remove("modal-open");
     }
 
+    const modalRef = ref.current;
+
     return () => {
-      ref.current?.close();
+      modalRef?.close();
       document.body.classList.remove("modal-open");
     };
   }, [isOpened]);

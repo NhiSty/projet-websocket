@@ -1,18 +1,6 @@
-import { deleteQuestion, moveQuestion } from "#/api/dashboard.http";
-import { QueryConstants } from "#/api/queryConstants";
 import { Question } from "#/api/types";
-import { Button } from "#/components/form/Button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowUpIcon,
-  CheckSquareIcon,
-  CircleDotIcon,
-  PencilIcon,
-  TrashIcon,
-} from "lucide-react";
-import { useState, type JSX } from "react";
-import { toast } from "sonner";
-import { QuestionForm } from "./questionForm";
+import { CheckSquareIcon, CircleDotIcon } from "lucide-react";
+import { type JSX } from "react";
 import { cn } from "#/utils/css";
 
 interface QuestionChoicesProps {

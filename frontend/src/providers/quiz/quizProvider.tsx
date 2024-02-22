@@ -1,16 +1,11 @@
-import React, {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
   UserInfo,
   UserJoinedEvent,
   UserLeftEvent,
   WsEventType,
 } from "../socketio/constants";
-import { useWS } from "../socketio/socketio";
+import { useWS } from "../socketio";
 import { toast } from "sonner";
 import { InfoIcon } from "lucide-react";
 import { Quiz } from "#/api/types";
@@ -69,7 +64,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ws.off(WsEventType.USER_JOINED);
       ws.off(WsEventType.USER_LEFT);
     };
-  }, [ws]);
+  }, [navigate, user?.id, ws]);
 
   function endSession() {
     wsSend({
@@ -90,12 +85,4 @@ export function QuizProvider({ children }: QuizProviderProps) {
     isOwner: user?.id === quiz?.author.id,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
-}
-
-export function useQuizSession(): QuizContextData {
-  const context = useContext(QuizContext);
-  if (!context) {
-    throw new Error("useQuizSession must be used within a QuizProvider");
-  }
-  return context;
 }

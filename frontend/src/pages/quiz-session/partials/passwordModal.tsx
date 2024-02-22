@@ -1,7 +1,7 @@
 import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
-import { useWS } from "#/providers/socketio/socketio";
+import { useWS } from "#/providers/socketio";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

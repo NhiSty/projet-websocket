@@ -1,16 +1,11 @@
-import { fetchQuiz, playQuiz } from "#/api/dashboard.http";
+import { playQuiz } from "#/api/dashboard.http";
 import { Quiz } from "#/api/types";
 import { CheckBox } from "#/components/form/Checkbox";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import {
-  LoaderFunction,
-  redirect,
-  useNavigate,
-  useRouteLoaderData,
-} from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "#/components/form/Button";
@@ -19,23 +14,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UnprocessableContentError } from "#/api/api";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
-
-export function playQuizLoader(queryClient: QueryClient): LoaderFunction<Quiz> {
-  return async ({ params: { id } }) => {
-    if (id && typeof id === "string") {
-      try {
-        const value = await queryClient.fetchQuery({
-          queryKey: ["quiz", id],
-          queryFn: () => fetchQuiz(id),
-        });
-        return value;
-      } catch (_) {
-        /* empty */
-      }
-    }
-    return redirect("/dashboard/quizzes");
-  };
-}
 
 export interface PlayQuizForm {
   sessionPassword: {

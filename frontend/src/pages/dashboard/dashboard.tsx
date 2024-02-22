@@ -1,30 +1,6 @@
-import { fetchUser } from "#/api/auth.http";
-import { QueryConstants } from "#/api/queryConstants";
-import { Role, User, isInRole } from "#/api/types";
 import { cn } from "#/utils/css";
-import { QueryClient } from "@tanstack/react-query";
 import { NavLinkProps, Outlet } from "react-router-dom";
-import { NavLink, LoaderFunction, redirect } from "react-router-dom";
-
-export function dashboardLoader(
-  queryClient: QueryClient
-): LoaderFunction<User> {
-  return async () => {
-    try {
-      const value = await queryClient.fetchQuery({
-        queryKey: QueryConstants.USER,
-        queryFn: fetchUser,
-      });
-
-      if (isInRole(value, [Role.ADMIN, Role.SUPERADMIN])) {
-        return value;
-      }
-    } catch (_) {
-      /* empty */
-    }
-    return redirect("/");
-  };
-}
+import { NavLink } from "react-router-dom";
 
 function DashboardHeader(): JSX.Element {
   const classNames: NavLinkProps["className"] = ({ isActive }) =>

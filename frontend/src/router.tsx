@@ -1,24 +1,27 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 import Home from "./pages/home";
-import AuthLayout, { authLoader } from "./layouts/AuthLayout";
+import AuthLayout from "./layouts/AuthLayout";
 import { Login } from "./pages/login";
 import { queryClient } from "./api/api";
 import { BaseLayout } from "./layouts/BaseLayout";
 import { logoutAction } from "./api/auth.queries";
 import { Register } from "./pages/register";
-import { Dashboard, dashboardLoader } from "./pages/dashboard/dashboard";
+import { Dashboard } from "./pages/dashboard/dashboard";
 import { UsersList } from "./pages/dashboard/users";
 import { Quizzes } from "./pages/dashboard/quizzes";
-import { ViewQuiz, viewQuizLoader } from "./pages/dashboard/quizzes/viewQuiz";
-import { EditQuiz, editQuizLoader } from "./pages/dashboard/quizzes/editQuiz";
-import { PlayQuiz, playQuizLoader } from "./pages/dashboard/quizzes/playQuiz";
-import {
-  QuizSession,
-  quizSessionLoader,
-} from "./pages/quiz-session/quizSession";
+import { ViewQuiz } from "./pages/dashboard/quizzes/viewQuiz";
+import { EditQuiz } from "./pages/dashboard/quizzes/editQuiz";
+import { PlayQuiz } from "./pages/dashboard/quizzes/playQuiz";
+import { QuizSession } from "./pages/quiz-session/quizSession";
 import { WebSocketProvider } from "./providers/socketio/socketio";
 import { ChatProvider } from "./providers/chat/chat";
 import { QuizProvider } from "./providers/quiz/quizProvider";
+import { authLoader } from "./layouts/authLayout.loader";
+import { dashboardLoader } from "./pages/dashboard/dashboard.loader";
+import { editQuizLoader } from "./pages/dashboard/quizzes/editQuiz.loader";
+import { playQuizLoader } from "./pages/dashboard/quizzes/playQuiz.loader";
+import { viewQuizLoader } from "./pages/dashboard/quizzes/viewQuiz.loader";
+import { quizSessionLoader } from "./pages/quiz-session/quizSession.loader";
 
 const router = createBrowserRouter([
   {

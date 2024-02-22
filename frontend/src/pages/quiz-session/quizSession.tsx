@@ -1,41 +1,14 @@
 import { SessionHeader } from "./partials/header";
 import { SessionSidebar } from "./partials/sidebar";
 import { SessionContent } from "./partials/content";
-import {
-  LoaderFunction,
-  redirect,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useWS } from "#/providers/socketio/socketio";
+import { useWS } from "#/providers/socketio";
 import { Loader2Icon } from "lucide-react";
 import { WsErrorType, WsEventType } from "#/providers/socketio/constants";
-import { QueryClient } from "@tanstack/react-query";
-import { QueryConstants } from "#/api/queryConstants";
-import { fetchUser } from "#/api/auth.http";
-import { User } from "#/api/types";
-import { useQuizSession } from "#/providers/quiz/quizProvider";
+import { useQuizSession } from "#/providers/quiz";
 import { PasswordModal } from "./partials/passwordModal";
 import { ErrorModal } from "./partials/ErrorModal";
-
-export function quizSessionLoader(
-  queryClient: QueryClient
-): LoaderFunction<User> {
-  return async () => {
-    try {
-      const value = await queryClient.fetchQuery({
-        queryKey: QueryConstants.USER,
-        queryFn: fetchUser,
-      });
-
-      return value;
-    } catch (_) {
-      /* empty */
-    }
-    return redirect("/");
-  };
-}
 
 type ErrorState = "password-required" | "ok" | "invalid-password" | "room-full";
 

@@ -1,7 +1,8 @@
 import { useUser } from "#/api/auth.queries";
 import { Button } from "#/components/form/Button";
 import { Input } from "#/components/form/Input";
-import { MessageData, useWsChat } from "#/providers/chat/chat";
+import { useWsChat } from "#/providers/chat";
+import { MessageData } from "#/providers/chat/chat";
 import { UserInfo } from "#/providers/socketio/constants";
 import { SendHorizonalIcon } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
@@ -35,7 +36,7 @@ function ChatComposingIndicator({ users }: { users: UserInfo[] }) {
     } else {
       setText("");
     }
-  }, [users]);
+  }, [user?.id, users]);
 
   return (
     <div className="text-sm px-2 h-5">

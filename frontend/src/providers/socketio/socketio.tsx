@@ -1,8 +1,8 @@
-import React, { PropsWithChildren, useContext, useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { WsEventsMessages } from "./constants";
 
-interface SocketContextData {
+export interface SocketContextData {
   ws: Socket;
   isConnected: boolean;
   send: (message: WsEventsMessages) => void;
@@ -47,12 +47,4 @@ export function WebSocketProvider({ children }: SocketProviderProps) {
   return (
     <SocketContext.Provider value={values}>{children}</SocketContext.Provider>
   );
-}
-
-export function useWS(): SocketContextData {
-  const context = useContext(SocketContext);
-  if (!context) {
-    throw new Error("useWS must be used within a SocketProvider");
-  }
-  return context;
 }

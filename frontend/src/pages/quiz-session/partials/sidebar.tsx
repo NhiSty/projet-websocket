@@ -7,11 +7,9 @@ import {
 import { useState } from "react";
 import { ChatZone } from "./chatZone";
 import { SessionInfo } from "./sessionInfo";
-import { useWsChat } from "#/providers/chat/chat";
+import { useWsChat } from "#/providers/chat";
 
-interface SessionSidebarProps {}
-
-export function SessionSidebar({}: SessionSidebarProps): JSX.Element {
+export function SessionSidebar(): JSX.Element {
   const { hasNewMessages } = useWsChat();
   const [currentTab, setCurrentTab] = useState<"chat" | "info">("chat");
 

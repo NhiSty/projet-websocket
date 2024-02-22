@@ -1,4 +1,4 @@
-import { useQuizSession } from "#/providers/quiz/quizProvider";
+import { useQuizSession } from "#/providers/quiz";
 import { Crown } from "lucide-react";
 
 export function SessionInfo(): JSX.Element {

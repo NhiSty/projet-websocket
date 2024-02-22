@@ -17,6 +17,7 @@ import {
   quizSessionLoader,
 } from "./pages/quiz-session/quizSession";
 import { WebSocketProvider } from "./providers/socketio/socketio";
+import { ChatProvider } from "./providers/chat/chat";
 
 const router = createBrowserRouter([
   {
@@ -91,9 +92,12 @@ const router = createBrowserRouter([
   {
     path: "quiz/session/:id",
     loader: quizSessionLoader(queryClient),
+    id: "quizSession",
     element: (
       <WebSocketProvider>
-        <QuizSession />
+        <ChatProvider>
+          <QuizSession />
+        </ChatProvider>
       </WebSocketProvider>
     ),
   },

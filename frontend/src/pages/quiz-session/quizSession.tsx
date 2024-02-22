@@ -1,15 +1,20 @@
 import { SessionHeader } from "./partials/header";
 import { SessionSidebar } from "./partials/sidebar";
 import { SessionContent } from "./partials/content";
-import { LoaderFunction, redirect, useParams } from "react-router-dom";
-import { useState } from "react";
+import {
+  LoaderFunction,
+  redirect,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useWS } from "#/providers/socketio/socketio";
 import { Loader2Icon } from "lucide-react";
-import { WsEventType } from "#/providers/socketio/constants";
+import { WsErrorType, WsEventType } from "#/providers/socketio/constants";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryConstants } from "#/api/queryConstants";
 import { fetchUser } from "#/api/auth.http";
-import { User } from "#/api/types";
+import { Quiz, User } from "#/api/types";
 
 export function quizSessionLoader(
   queryClient: QueryClient
@@ -31,22 +36,41 @@ export function quizSessionLoader(
 
 export function QuizSession(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const { ws, isConnected, send: wsSend } = useWS();
+  const { ws, send: wsSend } = useWS();
   const [sidebarExpanded, setExpandedSidebar] = useState<boolean>(false);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Bind all the events
+    ws.on("connect", () => {
+      if (!id) return;
+      wsSend({ event: WsEventType.JOIN_ROOM, roomId: id });
+    });
+    ws.on(WsEventType.ROOM_INFO, (data) => {
+      setQuiz(data.quiz);
+    });
+
+    // Bind all the errors
+    ws.on(WsErrorType.REQUIRE_PASSWORD, () => {});
+    ws.on(WsErrorType.ROOM_NOT_FOUND, () => navigate("/"));
+
+    return () => {
+      wsSend({ event: WsEventType.LEAVE_ROOM });
+
+      ws.off("connect");
+      ws.off(WsEventType.ROOM_INFO);
+      ws.off(WsErrorType.REQUIRE_PASSWORD);
+    };
+  }, [id, navigate, ws, wsSend]);
 
   if (!id) {
     return <div>Invalid session</div>;
   }
 
-  if (!isConnected) {
+  if (!quiz) {
     console.log("Connecting to websocket");
     ws.connect();
-    ws.on("connect", () => {
-      wsSend({
-        event: WsEventType.JOIN_ROOM,
-        roomId: id,
-      });
-    });
 
     return (
       <div className="flex flex-col min-h-screen">
@@ -62,7 +86,7 @@ export function QuizSession(): JSX.Element {
   return (
     <div className="flex flex-col min-h-screen">
       <SessionHeader
-        title={""}
+        title={quiz.name}
         onExpandSidebar={(expand) => setExpandedSidebar(expand)}
         sidebarExpanded={sidebarExpanded}
         onEndSession={() => {}}

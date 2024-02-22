@@ -1,59 +1,77 @@
+import { useUser } from "#/api/auth.queries";
 import { Button } from "#/components/form/Button";
 import { Input } from "#/components/form/Input";
+import { useWsChat } from "#/providers/chat/chat";
+import { UserInfo } from "#/providers/socketio/constants";
 import { SendHorizonalIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 
-export function ChatZone(): JSX.Element {
-  const [chatText, setChatText] = useState<string>("");
-  const [isComposing, setIsComposing] = useState<boolean>(false);
+function ChatComposingIndicator({ users }: { users: UserInfo[] }) {
+  const { data: user } = useUser();
+  const [text, setText] = useState<ReactNode>("");
 
   useEffect(() => {
-    // If the user isn't composing and the chat text is not empty, then the user is composing
-    if (!isComposing && chatText.length > 0) {
-      console.log("User is composing");
-      setIsComposing(true);
+    const list = users; ///.filter((item) => item.id !== user?.id);
+
+    if (list.length === 1) {
+      setText(
+        <>
+          <strong>{list[0].username}</strong> is writing...
+        </>
+      );
+    } else if (list.length > 1 && list.length <= 4) {
+      const others = list
+        .slice(0, -1)
+        .map((user) => <strong>{user.username}</strong>)
+        .join(", ");
+      setText(
+        <>
+          {others} and <strong>{list[list.length - 1].username}</strong> are
+          writing...
+        </>
+      );
+    } else if (list.length > 4) {
+      setText("Many users are writing...");
+    } else {
+      setText("");
     }
-    // Otherwise, if the user is composing and the chat text is empty, then the user stopped composing
-    else if (isComposing && chatText.length === 0) {
-      console.log("User stopped composing");
-      setIsComposing(false);
-    }
+  }, [users]);
 
-    const timeout = window.setTimeout(() => {
-      // Send composing event
+  return (
+    <div className="text-sm px-2 h-5">
+      <span className="text-gray-700">{text}</span>
+    </div>
+  );
+}
 
-      console.log("User stopped composing");
-      setIsComposing(false);
-    }, 1500);
+export function ChatZone(): JSX.Element {
+  const { text, setText, sendMessage, composingUsers } = useWsChat();
 
-    // Fetch messages
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [chatText]);
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    // Send chat message
+    sendMessage();
+  };
 
   return (
     <section className="p-2 pb-0 h-full w-full flex flex-col gap-4">
       <div className="rounded-lg flex-1"></div>
 
-      <div className="flex flex-col">
+      <form className="flex flex-col" onSubmit={onSubmit}>
         <div className="flex flex-row gap-2">
           <Input
             className="flex-1 max-w-none"
             placeholder="Type a message"
-            onChange={(event) => setChatText(event.target.value)}
+            onChange={(event) => setText(event.target.value)}
+            value={text}
           />
           <Button className="btn-square" aria-label="Send">
             <SendHorizonalIcon className="w-5 h-5" />
           </Button>
         </div>
 
-        <div className="text-sm px-2">
-          <span className="text-gray-700">
-            <strong>Someone</strong> is writing...
-          </span>
-        </div>
-      </div>
+        <ChatComposingIndicator users={composingUsers} />
+      </form>
     </section>
   );
 }

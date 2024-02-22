@@ -8,18 +8,13 @@ export enum RoomStatus {
   ENDED = 'ended',
 }
 
-export enum RoomStatus {
-  PENDING = 'pending',
-  STARTED = 'started',
-  ENDED = 'ended',
-}
-
 export class RoomData {
   public hashedPass?: string;
   private _usersLimit?: number;
   public questions: QuestionWithChoices[] = [];
   public status: RoomStatus = RoomStatus.PENDING;
   public quiz: Quiz;
+  public questionIndex = 0;
   public countDown?: Countdown;
 
   public set userLimit(limit: number) {
@@ -49,5 +44,9 @@ export class RoomData {
     }
 
     return array;
+  }
+
+  public nextQuestion(): QuestionWithChoices {
+    return this.questions[this.questionIndex++];
   }
 }

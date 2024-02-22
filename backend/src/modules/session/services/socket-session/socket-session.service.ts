@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CreateRoomDto } from '../../controllers/quiz-session/create-room.dto';
 import { Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
@@ -40,18 +40,18 @@ export class SocketSessionService {
   private usersRooms = new Map<UserId, RoomId>();
 
   public constructor(
-    private eventEmitter: EventEmitter2,
-    private hashService: HashService,
-    private userService: UserService,
-    private quizQuestionService: QuizQuestionService,
+      private eventEmitter: EventEmitter2,
+      private hashService: HashService,
+      private userService: UserService,
+      private quizQuestionService: QuizQuestionService,
   ) {}
 
   /**
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
   public async createRoom(
-    quiz: Quiz,
-    { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
+      quiz: Quiz,
+      { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
   ): Promise<string> {
     // Generate a random room ID
     const roomId = randomUUID() as RoomId;
@@ -247,8 +247,8 @@ export class SocketSessionService {
   public getComposingUsers(roomId: RoomId): UserInfo[] {
     const users = this.roomUsers.get(roomId);
     return Array.from(users.values())
-      .filter((user) => user.isComposing)
-      .map((user) => user.toJSON());
+        .filter((user) => user.isComposing)
+        .map((user) => user.toJSON());
   }
 
   public getUsersInRoom(roomId: RoomId): UserInfo[] {
@@ -297,6 +297,8 @@ export class SocketSessionService {
       throw new UnauthorizedException();
     }
 
+    roomData.countDown?.stop();
+
     this.eventEmitter.emit(WsEventType.SESSION_ENDED, roomId);
   }
 
@@ -333,5 +335,40 @@ export class SocketSessionService {
       }
     });
     roomData.countDown.start();
+  }
+
+  @OnEvent(WsEventType.START_SESSION)
+  @OnEvent(WsEventType.NEXT_QUESTION)
+  protected async onSessionStart(roomId: RoomId) {
+    // When the session start, we send the first question and start the countdown
+    const roomData = this.roomData.get(roomId);
+
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    if (roomData.questionIndex >= roomData.questions.length) {
+      this.eventEmitter.emit(WsEventType.FINISHED_QUESTIONS, roomId);
+      return;
+    }
+
+    const question = roomData.nextQuestion();
+    this.eventEmitter.emit(WsEventType.QUESTION, roomId, question);
+    roomData.countDown = new Countdown(question.duration, (count) => {
+      if (count > 0) {
+        this.eventEmitter.emit(WsEventType.QUESTION_COUNTDOWN, roomId, count);
+      } else {
+        this.eventEmitter.emit(WsEventType.QUESTION_COUNTDOWN_END, roomId);
+      }
+    });
+    roomData.countDown.start();
+  }
+
+  @OnEvent(WsEventType.QUESTION_COUNTDOWN_END)
+  public async onQuestionCountdownEnd(roomId: RoomId) {
+    // TODO: Handle user responses
+
+    // Then switch to the next question
+    this.eventEmitter.emit(WsEventType.NEXT_QUESTION, roomId);
   }
 }

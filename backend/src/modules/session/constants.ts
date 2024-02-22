@@ -19,6 +19,12 @@ export enum WsEventType {
   START_SESSION = 'start-session',
   END_SESSION = 'end-session',
   SESSION_ENDED = 'session-ended',
+
+  QUESTION_COUNTDOWN = 'question-countdown',
+  QUESTION_COUNTDOWN_END = 'question-countdown-end',
+  QUESTION = 'question',
+  NEXT_QUESTION = 'next-question',
+  FINISHED_QUESTIONS = 'finished-questions',
 }
 
 export enum WsErrorType {
@@ -74,10 +80,10 @@ export interface UserLeftEvent extends WsEvent<WsEventType.USER_LEFT> {
 }
 
 export type WsEventsMessages =
-  | ComposingEvent
-  | ComposingEnd
-  | ChatMessageEvent
-  | JoinRoomEvent
-  | LeaveRoomEvent;
+    | ComposingEvent
+    | ComposingEnd
+    | ChatMessageEvent
+    | JoinRoomEvent
+    | LeaveRoomEvent;
 
 export const ROOM_BEGIN_COUNTDOWN = 5;

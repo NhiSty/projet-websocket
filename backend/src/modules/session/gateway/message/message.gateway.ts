@@ -29,18 +29,19 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { User } from '@prisma/client';
 import { UserData } from '../../services/socket-session/user-data';
 import { RoomId } from 'src/types/opaque';
+import { QuestionWithChoices } from 'src/types/quiz';
 
 @WebSocketGateway()
 @Injectable()
 export class MessageGateway
-  implements OnGatewayDisconnect<Socket>, OnGatewayInit<Socket>
+    implements OnGatewayDisconnect<Socket>, OnGatewayInit<Socket>
 {
   @WebSocketServer()
   private server: Server;
 
   public constructor(
-    private socketSession: SocketSessionService,
-    private configService: ConfigService,
+      private socketSession: SocketSessionService,
+      private configService: ConfigService,
   ) {}
 
   public afterInit() {
@@ -109,6 +110,28 @@ export class MessageGateway
     }
   }
 
+  // When a "composing" event is received, it set the state on the userData object
+  @SubscribeMessage(WsEventType.IS_COMPOSING)
+  @UseGuards(AuthWsGuard)
+  public async handleComposing(client: Socket) {
+    try {
+      this.socketSession.compose(client);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
+  }
 
   // When "composing end" event is received, it set the state on the userData object
   @SubscribeMessage(WsEventType.COMPOSING_END)
@@ -235,5 +258,25 @@ export class MessageGateway
   @OnEvent(WsEventType.START_SESSION)
   public handleOnStartSession(roomId: RoomId) {
     this.server.to(roomId).emit(WsEventType.START_SESSION);
+  }
+
+  @OnEvent(WsEventType.QUESTION_COUNTDOWN)
+  public handleOnQuestionCountdown(roomId: RoomId, count: number): void {
+    this.server.to(roomId).emit(WsEventType.QUESTION_COUNTDOWN, count);
+  }
+
+  @OnEvent(WsEventType.QUESTION_COUNTDOWN_END)
+  public handleOnQuestionCountdownEnd(roomId: RoomId): void {
+    this.server.to(roomId).emit(WsEventType.QUESTION_COUNTDOWN_END);
+  }
+
+  @OnEvent(WsEventType.QUESTION)
+  public handleOnQuestion(roomId: RoomId, question: QuestionWithChoices): void {
+    this.server.to(roomId).emit(WsEventType.QUESTION, question);
+  }
+
+  @OnEvent(WsEventType.FINISHED_QUESTIONS)
+  public handleOnQuestionFinished(roomId: RoomId): void {
+    this.server.to(roomId).emit(WsEventType.FINISHED_QUESTIONS);
   }
 }

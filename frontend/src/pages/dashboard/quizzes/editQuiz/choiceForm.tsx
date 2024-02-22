@@ -84,6 +84,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
                   id={`choice-correct-${index}`}
                   onChange={(value) => {
                     setValue(`choices.${index}.correct`, value.target.checked);
+                    trigger(`choices.${index}.correct`);
                   }}
                   defaultChecked={field.correct}
                   label={`Correct?`}
@@ -108,7 +109,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
           className="w-full"
         >
           <PlusIcon className="w-4 h-4" />
-          Add an answer
+          Add a choice
         </Button>
       </li>
     </ul>

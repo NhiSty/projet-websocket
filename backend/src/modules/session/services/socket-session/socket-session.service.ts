@@ -13,6 +13,7 @@ import { ChatMessageEvent, UserInfo, WsEventType } from '../../constants';
 import { SessionData } from 'express-session';
 import {
   RoomFullExceptions,
+  RoomInvalidPassword,
   RoomRequirePasswords,
   RoomStartedExceptions,
 } from './exceptions';
@@ -116,22 +117,24 @@ export class SocketSessionService {
     // Get the room's user list and data
     const users = this.roomUsers.get(roomId);
     const data = this.roomData.get(roomId);
+    const userId = this.getUserId(socket);
+    const ownerId = data.quiz.userId;
 
-    // If there is a password on the room, but the user did not provide one, return
-    if (data.hashedPass && !password) {
-      throw new RoomRequirePasswords();
-    }
-
-    // If there is a password on the room and the user provided one, but it is incorrect, return
-    if (data.hashedPass && password) {
-      if (!this.hashService.verify(password, data.hashedPass)) {
-        throw new UnauthorizedException('Password incorrect');
+    if (ownerId !== userId) {
+      // If there is a password on the room, but the user did not provide one, return
+      if (data.hashedPass && !password) {
+        throw new RoomRequirePasswords();
       }
-    }
 
-    // If there is a user limit on the room and the limit is reached, return
-    if (data.userLimit && users.size >= data.userLimit) {
-      throw new RoomFullExceptions();
+      // If there is a password on the room and the user provided one, but it is incorrect, return
+      if (!(await this.hashService.verify(password, data.hashedPass))) {
+        throw new RoomInvalidPassword();
+      }
+
+      // If there is a user limit on the room and the limit is reached, return
+      if (data.userLimit && users.size >= data.userLimit) {
+        throw new RoomFullExceptions();
+      }
     }
 
     // If the room is already started, return
@@ -139,7 +142,6 @@ export class SocketSessionService {
       throw new RoomStartedExceptions();
     }
 
-    const userId = this.getUserId(socket);
     const user = await this.userService.find(userId);
     // If the user is already in the room, close the previous connection
     if (users.has(userId) && users.get(userId).socket.id !== socket.id) {

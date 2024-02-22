@@ -52,7 +52,7 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
       {!creating ? (
         <Button onClick={() => setCreating(true)}>
           <PlusIcon className="w-4 h-4" />
-          Add an answer
+          Add a question
         </Button>
       ) : (
         <QuestionForm

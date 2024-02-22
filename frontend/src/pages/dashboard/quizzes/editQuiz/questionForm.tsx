@@ -2,7 +2,7 @@ import { Question, QuestionType } from "#/api/types";
 import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
-import { useState, type ReactElement } from "react";
+import { useState, type ReactElement, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -33,10 +33,15 @@ const schema = yup
   .object({
     // Accepts only strings that are not empty
     question: yup.string().required().min(1),
-    // Accepts only strings that are "SINGLE", "MULTIPLE", "BINARY", or "TEXT"
+    // Accepts only strings that are "SINGLE", "MULTIPLE", "BINARY", or "TEXTUAL"
     type: yup
       .mixed<QuestionType>()
-      .oneOf(["SINGLE", "MULTIPLE", "BINARY", "TEXT"] as QuestionType[])
+      .oneOf([
+        "SINGLE",
+        "MULTIPLE",
+        "BINARY",
+        "TEXTUAL",
+      ] satisfies QuestionType[])
       .required(),
     // Accepts only numbers that are not empty, greater than or equal to 0, and less than or equal to 60
     duration: yup.number().required().min(0).max(60).default(15),
@@ -47,42 +52,49 @@ const schema = yup
       // The field is only required if the "type" field is "SINGLE" or "MULTIPLE"
       .when("type", {
         is: (value: string) => value === "SINGLE" || value === "MULTIPLE",
-        then: (schema) => schema.required(),
-      })
-      .of(
-        // Accepts only objects that have a "choice" field that is a string and not empty, and a "correct" field that is a boolean
-        yup
-          .object({
-            choice: yup.string().required(),
-            correct: yup.boolean().required(),
-          })
-          .required()
-      )
-      // Accepts only arrays that have at least 2 elements
-      .min(2)
-      // This validation is a bit more trickier :
-      // Accept only if there is exactly 1 correct choice if the "type" field is "SINGLE",
-      // or at least 1 correct choice if the "type" field is "MULTIPLE"
-      .test(
-        "at-least-one-correct",
-        "At least one choice must be correct",
-        (choices, context) => {
-          if (!choices) {
-            return false;
-          }
+        then: (schema) =>
+          schema
+            .required(
+              'Choices are required for "SINGLE" and "MULTIPLE" questions'
+            )
+            .min(2, "At least 2 choices are required")
+            .of(
+              // Accepts only objects that have a "choice" field that is a string and not empty, and a "correct" field that is a boolean
+              yup
+                .object({
+                  choice: yup.string().required("Choice is required"),
+                  correct: yup.boolean().required(),
+                })
+                .required()
+            )
+            // Accepts only arrays that have at least 2 elements
+            .min(2)
+            // This validation is a bit more trickier :
+            // Accept only if there is exactly 1 correct choice if the "type" field is "SINGLE",
+            // or at least 1 correct choice if the "type" field is "MULTIPLE"
+            .test(
+              "at-least-one-correct",
+              "At least one choice must be correct",
+              (choices, context) => {
+                if (!choices) {
+                  return false;
+                }
 
-          const { type } = context.parent;
-          const correctChoices = choices.filter((choice) => choice.correct);
+                const { type } = context.parent;
+                const correctChoices = choices.filter(
+                  (choice) => choice.correct
+                );
 
-          if (type === "SINGLE") {
-            return correctChoices.length === 1;
-          } else if (type === "MULTIPLE") {
-            return correctChoices.length > 0;
-          }
+                if (type === "SINGLE") {
+                  return correctChoices.length === 1;
+                } else if (type === "MULTIPLE") {
+                  return correctChoices.length > 0;
+                }
 
-          return false;
-        }
-      ),
+                return false;
+              }
+            ),
+      }),
   })
   .required();
 
@@ -178,6 +190,12 @@ export function QuestionForm({
 
   const questionType = formHook.watch("type");
 
+  useEffect(() => {
+    if (questionType !== "SINGLE" && questionType !== "MULTIPLE") {
+      formHook.setValue("choices", []);
+    }
+  }, [formHook, questionType]);
+
   return (
     <div className="card bg-base-100 shadow-xl border border-gray-100">
       <FormProvider {...formHook}>
@@ -219,7 +237,7 @@ export function QuestionForm({
                 <option value="SINGLE">Single Choice</option>
                 <option value="MULTIPLE">Multiple Choice</option>
                 <option value="BINARY">True/False</option>
-                <option value="TEXT">Short Answer</option>
+                <option value="TEXTUAL">Short Answer</option>
               </Select>
             </FormController>
 

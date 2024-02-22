@@ -9,7 +9,7 @@ import { Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
 import { RoomData } from './room-data';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
-import { UserInfo, WsEventType } from '../../constants';
+import { ChatMessageEvent, UserInfo, WsEventType } from '../../constants';
 import { SessionData } from 'express-session';
 import {
   RoomFullExceptions,
@@ -140,7 +140,6 @@ export class SocketSessionService {
 
     // Join the room
     socket.join(roomId);
-    console.log('User joined room', roomId);
     // Then set the new one
     users.set(userId, new UserData(socket, roomId, user, this.eventEmitter));
     this.usersRooms.set(userId, roomId);
@@ -194,9 +193,12 @@ export class SocketSessionService {
 
     const roomId = this.usersRooms.get(userId);
     const roomUsers = this.roomUsers.get(roomId);
-    const socket = roomUsers.get(userId);
+    if (!roomUsers) {
+      throw new NotFoundException();
+    }
+    const userData = roomUsers.get(userId);
 
-    socket.type();
+    userData.type();
   }
 
   public stopComposing(client: Socket) {
@@ -224,5 +226,30 @@ export class SocketSessionService {
     return Array.from(users.values())
       .filter((user) => user.isComposing)
       .map((user) => user.toJSON());
+  }
+
+  public async sendChatMessage(client: Socket, data: ChatMessageEvent) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      return;
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomUsers = this.roomUsers.get(roomId);
+    if (!roomUsers) {
+      throw new NotFoundException();
+    }
+
+    const user = await this.userService.find(userId);
+
+    this.eventEmitter.emit(WsEventType.CHAT_MESSAGE, roomId, {
+      event: data.event,
+      message: data.message,
+      timestamp: Date.now(),
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+    } satisfies ChatMessageEvent);
   }
 }

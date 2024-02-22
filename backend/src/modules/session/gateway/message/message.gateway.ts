@@ -8,7 +8,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketSessionService } from '../../services/socket-session/socket-session.service';
-import { JoinRoomEvent, WsErrorType, WsEventType } from '../../constants';
+import {
+  ChatMessageEvent,
+  JoinRoomEvent,
+  WsErrorType,
+  WsEventType,
+} from '../../constants';
 import { sessionMiddleware } from 'src/session';
 import { ConfigService } from '@nestjs/config';
 import { AuthWsGuard } from '../../guards/auth-ws/auth-ws.guard';
@@ -106,7 +111,23 @@ export class MessageGateway
   @SubscribeMessage(WsEventType.IS_COMPOSING)
   @UseGuards(AuthWsGuard)
   public async handleComposing(client: Socket) {
-    this.socketSession.compose(client);
+    try {
+      this.socketSession.compose(client);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
   }
 
   // When "composing end" event is received, it set the state on the userData object
@@ -130,5 +151,34 @@ export class MessageGateway
   @OnEvent(WsEventType.USER_JOINED)
   public handleOnUserJoined(roomId: RoomId, user: User) {
     this.server.of(roomId).emit(WsEventType.USER_JOINED, { user });
+  }
+
+  // When a user send a message to a room
+  @SubscribeMessage(WsEventType.CHAT_MESSAGE)
+  @UseGuards(AuthWsGuard)
+  public async handleMessage(client: Socket, data: ChatMessageEvent) {
+    try {
+      await this.socketSession.sendChatMessage(client, data);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
+  }
+
+  // When a message need to be broadcasted to other users
+  @OnEvent(WsEventType.CHAT_MESSAGE)
+  public handleMessageBroadcast(roomId: RoomId, message: ChatMessageEvent) {
+    this.server.to(roomId).emit(WsEventType.CHAT_MESSAGE, message);
   }
 }

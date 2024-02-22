@@ -1,17 +1,17 @@
 import { useUser } from "#/api/auth.queries";
 import { Button } from "#/components/form/Button";
 import { Input } from "#/components/form/Input";
-import { useWsChat } from "#/providers/chat/chat";
+import { MessageData, useWsChat } from "#/providers/chat/chat";
 import { UserInfo } from "#/providers/socketio/constants";
 import { SendHorizonalIcon } from "lucide-react";
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 function ChatComposingIndicator({ users }: { users: UserInfo[] }) {
   const { data: user } = useUser();
   const [text, setText] = useState<ReactNode>("");
 
   useEffect(() => {
-    const list = users; ///.filter((item) => item.id !== user?.id);
+    const list = users.filter((item) => item.id !== user?.id);
 
     if (list.length === 1) {
       setText(
@@ -44,19 +44,74 @@ function ChatComposingIndicator({ users }: { users: UserInfo[] }) {
   );
 }
 
+function MessageItem({ data }: { data: MessageData }) {
+  return (
+    <div className="flex flex-col hover:bg-base-200 rounded-md p-2 px-4">
+      <div className="flex flex-row gap-3">
+        <div className="flex flex-col">
+          <div className="flex flex-row gap-2 items-center leading-tight">
+            <span className="font-semibold">{data.from.username}</span>
+            <span className="text-gray-500 text-xs">
+              {new Date(data.timestamp).toLocaleTimeString()}
+            </span>
+          </div>
+          <div className="px-1">{data.content}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ChatZone(): JSX.Element {
-  const { text, setText, sendMessage, composingUsers } = useWsChat();
+  const {
+    text,
+    setText,
+    sendMessage,
+    composingUsers,
+    history,
+    readNewMessages,
+  } = useWsChat();
+  const [messageSent, setMessageSent] = useState<boolean>(false);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     // Send chat message
     sendMessage();
+    setMessageSent(true);
   };
 
-  return (
-    <section className="p-2 pb-0 h-full w-full flex flex-col gap-4">
-      <div className="rounded-lg flex-1"></div>
+  useEffect(() => {
+    readNewMessages();
 
+    setTimeout(() => {
+      if (messageSent) {
+        setMessageSent(false);
+        listRef.current?.scrollTo({
+          top: listRef.current?.scrollHeight,
+        });
+      }
+    }, 0);
+  }, [readNewMessages, history, messageSent]);
+
+  return (
+    <section className="p-2 pb-0 flex flex-col h-full gap-3">
+      {/* Chat list section */}
+      <div className="flex-1 relative">
+        <div
+          className="absolute top-0 left-0 right-0 bottom-0 overflow-auto"
+          ref={listRef}
+        >
+          {history.map((message) => (
+            <MessageItem
+              data={message}
+              key={`${message.from.id}-${message.timestamp}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Chat Input form */}
       <form className="flex flex-col" onSubmit={onSubmit}>
         <div className="flex flex-row gap-2">
           <Input

@@ -6,7 +6,7 @@ export function SessionInfo(): JSX.Element {
 
   return (
     <section className="p-2 px-4 flex flex-col gap-2">
-      <h2 className="uppercase text-sm">Information</h2>
+      <h2 className="uppercase text-sm">Users</h2>
 
       <ul className="grid grid-cols-2 grid-flow-row gap-1">
         {users.map((user) => (

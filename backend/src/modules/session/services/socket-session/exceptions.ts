@@ -12,6 +12,12 @@ export class RoomStartedExceptions extends UnauthorizedException {
   }
 }
 
+export class RoomEndedExceptions extends UnauthorizedException {
+  public constructor() {
+    super('Room is finished');
+  }
+}
+
 export class RoomRequirePasswords extends UnauthorizedException {
   public constructor() {
     super('Room requires a password');

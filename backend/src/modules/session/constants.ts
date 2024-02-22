@@ -15,6 +15,8 @@ export enum WsEventType {
 
   ROOM_INFO = 'room-info',
 
+  START_COUNTDOWN = 'start-countdown',
+  START_SESSION = 'start-session',
   END_SESSION = 'end-session',
   SESSION_ENDED = 'session-ended',
 }
@@ -23,6 +25,7 @@ export enum WsErrorType {
   ROOM_FULL = 'room-full',
   ROOM_NOT_FOUND = 'room-not-found',
   ALREADY_STARTED = 'already-started',
+  ALREADY_FINISHED = 'already-finished',
   REQUIRE_PASSWORD = 'require-password',
   INVALID_PASSWORD = 'invalid-password',
   UNKNOWN_ERROR = 'unknown-error',
@@ -76,3 +79,5 @@ export type WsEventsMessages =
   | ChatMessageEvent
   | JoinRoomEvent
   | LeaveRoomEvent;
+
+export const ROOM_BEGIN_COUNTDOWN = 5;

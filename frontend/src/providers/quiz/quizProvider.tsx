@@ -12,6 +12,7 @@ import { Quiz } from "#/api/types";
 import { useUser } from "#/api/auth.queries";
 import { useNavigate } from "react-router-dom";
 
+type QuizStatus = "pending" | "starting" | "started" | "ended";
 export interface QuizContextData {
   users: UserInfo[];
   quiz: Quiz | null;
@@ -19,6 +20,9 @@ export interface QuizContextData {
   endSession: () => void;
   leaveSession: () => void;
   isOwner: boolean;
+  status: QuizStatus;
+  startQuiz: () => void;
+  countDown: number | null;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -33,6 +37,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const { data: user } = useUser();
   const navigate = useNavigate();
+  const [status, setStatus] = useState<QuizStatus>("pending");
+  const [countDown, setCountDown] = useState<number | null>(null);
 
   useEffect(() => {
     ws.on(WsEventType.USER_JOINED, (data: UserJoinedEvent) => {
@@ -55,6 +61,14 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
       setUsers(data.users);
     });
+    ws.on(WsEventType.START_COUNTDOWN, (count: number) => {
+      setStatus("starting");
+      setCountDown(count);
+    });
+    ws.on(WsEventType.START_SESSION, () => {
+      setStatus("started");
+      setCountDown(null);
+    });
 
     ws.on("disconnect", () => {
       navigate("/");
@@ -63,6 +77,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
     return () => {
       ws.off(WsEventType.USER_JOINED);
       ws.off(WsEventType.USER_LEFT);
+      ws.off(WsEventType.START_SESSION);
+      ws.off("disconnect");
     };
   }, [navigate, user?.id, ws]);
 
@@ -76,6 +92,12 @@ export function QuizProvider({ children }: QuizProviderProps) {
     ws.disconnect();
   }
 
+  function startQuiz() {
+    wsSend({
+      event: WsEventType.START_SESSION,
+    });
+  }
+
   const values: QuizContextData = {
     users,
     quiz,
@@ -83,6 +105,9 @@ export function QuizProvider({ children }: QuizProviderProps) {
     endSession,
     leaveSession,
     isOwner: user?.id === quiz?.author.id,
+    status,
+    startQuiz,
+    countDown,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

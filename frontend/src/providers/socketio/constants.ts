@@ -14,6 +14,8 @@ export enum WsEventType {
 
   ROOM_INFO = "room-info",
 
+  START_COUNTDOWN = "start-countdown",
+  START_SESSION = "start-session",
   END_SESSION = "end-session",
   SESSION_ENDED = "session-ended",
 }
@@ -69,6 +71,11 @@ export interface UserLeftEvent extends WsEvent<WsEventType.USER_LEFT> {
   users: UserInfo[];
 }
 
+export interface StartRoomEvent extends WsEvent<WsEventType.START_SESSION> {}
+
+export interface StartCountdownEvent
+  extends WsEvent<WsEventType.START_COUNTDOWN> {}
+
 export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
 
 export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
@@ -79,4 +86,5 @@ export type WsEventsMessages =
   | Omit<ChatMessageEvent, "user" | "timestamp">
   | JoinRoomEvent
   | LeaveRoomEvent
+  | StartRoomEvent
   | EndSessionEvent;

@@ -1,12 +1,20 @@
 import { Quiz } from '@prisma/client';
 import { QuestionWithChoices } from 'src/types/quiz';
+import { Countdown } from './countdown';
+
+export enum RoomStatus {
+  PENDING = 'pending',
+  STARTED = 'started',
+  ENDED = 'ended',
+}
 
 export class RoomData {
   public hashedPass?: string;
   private _usersLimit?: number;
   public questions: QuestionWithChoices[] = [];
-  public started = false;
+  public status: RoomStatus = RoomStatus.PENDING;
   public quiz: Quiz;
+  public countDown?: Countdown;
 
   public set userLimit(limit: number) {
     this._usersLimit = limit > 0 ? limit : undefined;

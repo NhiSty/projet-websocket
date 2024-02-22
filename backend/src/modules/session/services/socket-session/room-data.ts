@@ -8,6 +8,12 @@ export enum RoomStatus {
   ENDED = 'ended',
 }
 
+export enum RoomStatus {
+  PENDING = 'pending',
+  STARTED = 'started',
+  ENDED = 'ended',
+}
+
 export class RoomData {
   public hashedPass?: string;
   private _usersLimit?: number;

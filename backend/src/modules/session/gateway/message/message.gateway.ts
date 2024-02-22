@@ -109,28 +109,6 @@ export class MessageGateway
     }
   }
 
-  // When a "composing" event is received, it set the state on the userData object
-  @SubscribeMessage(WsEventType.IS_COMPOSING)
-  @UseGuards(AuthWsGuard)
-  public async handleComposing(client: Socket) {
-    try {
-      this.socketSession.compose(client);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        client.emit(WsErrorType.ROOM_NOT_FOUND);
-        return;
-      }
-
-      let message: string;
-      if (error instanceof Error) {
-        message = error.message;
-      } else {
-        message = 'Unexpected error';
-        console.error(message);
-      }
-      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
-    }
-  }
 
   // When "composing end" event is received, it set the state on the userData object
   @SubscribeMessage(WsEventType.COMPOSING_END)

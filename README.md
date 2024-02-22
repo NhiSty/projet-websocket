@@ -17,12 +17,12 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 
  
 2. Communication en temps réel avec Socket.IO : 
-- [ ] Établissement de connexions WebSocket entre le serveur et les clients pour une communication bidirectionnelle. 
+- [x] Établissement de connexions WebSocket entre le serveur et les clients pour une communication bidirectionnelle. 
 - [ ] Diffusion des questions et réception des réponses en temps réel. 
 
 3. Fonctionnalité de la salle de quiz : 
-- [ ] Mécanisme permettant aux utilisateurs de participer à un quiz en utilisant un identifiant unique pour la session. 
-- [ ] Support pour plusieurs salles où différents quiz peuvent se dérouler simultanément. 
+- [x] Mécanisme permettant aux utilisateurs de participer à un quiz en utilisant un identifiant unique pour la session. 
+- [x] Support pour plusieurs salles où différents quiz peuvent se dérouler simultanément. 
 
 4. Minuteur côté serveur : 
 - [ ] Un compteur à rebours géré par le serveur pour chaque question afin de garantir un timing synchronisé pour tous les clients. 
@@ -56,7 +56,7 @@ Pour renforcer l'utilisation de Socket.IO et pour mettre en évidence sa flexibi
 
   * [ ] Synchronisation des états de jeu : Assurer que tous les clients reçoivent les mises à jour d'état en temps réel en cas de changement de question, de fin de temps imparti pour une question, ou toute autre mise à jour critique du jeu.
     
-  * [ ] Chat en direct lors des quiz : Mettre en place un système de chat où les participants peuvent discuter pendant un quiz, avec une attention particulière à la gestion des messages en temps réel et à la prévention de la triche (optionnel).
+  * [x] Chat en direct lors des quiz : Mettre en place un système de chat où les participants peuvent discuter pendant un quiz, avec une attention particulière à la gestion des messages en temps réel et à la prévention de la triche (optionnel).
     
   * [ ] Notifications en temps réel : Envoyer des annonces ou des alertes concernant les événements du quiz, comme le début du quiz, le passage à la prochaine question, ou les rappels avant la fin du temps imparti pour une question.
     
@@ -73,13 +73,13 @@ Authentification des utilisateurs :
 - [x] Différents niveaux d'accès pour les participants au quiz et les administrateurs. 
 
 Gestion avancée des salles : 
-- [ ] Fonctionnalités pour gérer les salles, comme la protection par mot de passe ou les limites d'utilisateurs. 
+- [x] Fonctionnalités pour gérer les salles, comme la protection par mot de passe ou les limites d'utilisateurs. 
 
 Tableau de classement en temps réel : 
 - [ ] Mise à jour et affichage continue des classements des utilisateurs en fonction des scores tout au long du quiz. 
 
 Paramètres de quiz personnalisables : 
-- [ ] Permettre diverses configurations pour les quiz (par exemple, ordre aléatoire des questions, limites de temps pour les questions). 
+- [x] Permettre diverses configurations pour les quiz (par exemple, ordre aléatoire des questions, limites de temps pour les questions). 
 
 Améliorations de l'accessibilité :
 - [ ] S’assurer que l'interface est utilisable par les personnes handicapées, en suivant les normes d'accessibilité. 

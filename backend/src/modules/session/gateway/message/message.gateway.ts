@@ -19,6 +19,7 @@ import { sessionMiddleware } from 'src/session';
 import { ConfigService } from '@nestjs/config';
 import { AuthWsGuard } from '../../guards/auth-ws/auth-ws.guard';
 import {
+  RoomEndedExceptions,
   RoomFullExceptions,
   RoomInvalidPassword,
   RoomRequirePasswords,
@@ -213,5 +214,43 @@ export class MessageGateway
   @OnEvent(WsEventType.SESSION_ENDED)
   public handleSessionEnded(roomId: RoomId) {
     this.server.to(roomId).emit(WsEventType.SESSION_ENDED);
+  }
+
+  @SubscribeMessage(WsEventType.START_SESSION)
+  @UseGuards(AuthWsGuard)
+  public async handleStartSession(client: Socket) {
+    try {
+      console.log('Start session');
+      await this.socketSession.startSession(client);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      if (error instanceof RoomStartedExceptions) {
+        client.emit(WsErrorType.ALREADY_STARTED);
+        return;
+      }
+
+      if (error instanceof RoomEndedExceptions) {
+        client.emit(WsErrorType.ALREADY_FINISHED);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
+  }
+
+  @OnEvent(WsEventType.START_SESSION)
+  public handleOnStartSession(roomId: RoomId) {
+    this.server.to(roomId).emit(WsEventType.START_SESSION);
   }
 }

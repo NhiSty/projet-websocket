@@ -7,11 +7,12 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateRoomDto } from '../../controllers/quiz-session/create-room.dto';
 import { Socket } from 'socket.io';
 import { randomUUID } from 'crypto';
-import { RoomData } from './room-data';
+import { RoomData, RoomStatus } from './room-data';
 import { HashService } from 'src/modules/shared/services/hash/hash.service';
 import { ChatMessageEvent, UserInfo, WsEventType } from '../../constants';
 import { SessionData } from 'express-session';
 import {
+  RoomEndedExceptions,
   RoomFullExceptions,
   RoomInvalidPassword,
   RoomRequirePasswords,
@@ -138,7 +139,7 @@ export class SocketSessionService {
     }
 
     // If the room is already started, return
-    if (data.started) {
+    if (data.status === RoomStatus.STARTED) {
       throw new RoomStartedExceptions();
     }
 
@@ -289,5 +290,33 @@ export class SocketSessionService {
     }
 
     this.eventEmitter.emit(WsEventType.SESSION_ENDED, roomId);
+  }
+
+  public async startSession(client: Socket) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      return;
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomData = this.roomData.get(roomId);
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    if (roomData.quiz.userId !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    if (roomData.status === RoomStatus.STARTED) {
+      throw new RoomStartedExceptions();
+    }
+
+    if (roomData.status === RoomStatus.ENDED) {
+      throw new RoomEndedExceptions();
+    }
+
+    roomData.status = RoomStatus.STARTED;
+    this.eventEmitter.emit(WsEventType.START_SESSION, roomId);
   }
 }

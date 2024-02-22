@@ -14,6 +14,9 @@ export enum WsEventType {
   USER_LEFT = 'user-left',
 
   ROOM_INFO = 'room-info',
+
+  END_SESSION = 'end-session',
+  SESSION_ENDED = 'session-ended',
 }
 
 export enum WsErrorType {

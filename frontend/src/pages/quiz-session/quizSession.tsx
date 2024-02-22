@@ -14,7 +14,8 @@ import { WsErrorType, WsEventType } from "#/providers/socketio/constants";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryConstants } from "#/api/queryConstants";
 import { fetchUser } from "#/api/auth.http";
-import { Quiz, User } from "#/api/types";
+import { User } from "#/api/types";
+import { useQuizSession } from "#/providers/quiz/quizProvider";
 
 export function quizSessionLoader(
   queryClient: QueryClient
@@ -38,7 +39,8 @@ export function QuizSession(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { ws, send: wsSend } = useWS();
   const [sidebarExpanded, setExpandedSidebar] = useState<boolean>(false);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const { setQuiz, quiz } = useQuizSession();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export function QuizSession(): JSX.Element {
     ws.on(WsEventType.ROOM_INFO, (data) => {
       setQuiz(data.quiz);
     });
+    ws.on(WsEventType.SESSION_ENDED, () => navigate("/"));
 
     // Bind all the errors
     ws.on(WsErrorType.REQUIRE_PASSWORD, () => {});
@@ -62,7 +65,7 @@ export function QuizSession(): JSX.Element {
       ws.off(WsEventType.ROOM_INFO);
       ws.off(WsErrorType.REQUIRE_PASSWORD);
     };
-  }, [id, navigate, ws, wsSend]);
+  }, [id, navigate, setQuiz, ws, wsSend]);
 
   if (!id) {
     return <div>Invalid session</div>;
@@ -89,7 +92,6 @@ export function QuizSession(): JSX.Element {
         title={quiz.name}
         onExpandSidebar={(expand) => setExpandedSidebar(expand)}
         sidebarExpanded={sidebarExpanded}
-        onEndSession={() => {}}
       />
 
       <div className="flex flex-row flex-1">

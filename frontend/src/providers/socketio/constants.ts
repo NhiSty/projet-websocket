@@ -13,6 +13,9 @@ export enum WsEventType {
   USER_LEFT = "user-left",
 
   ROOM_INFO = "room-info",
+
+  END_SESSION = "end-session",
+  SESSION_ENDED = "session-ended",
 }
 
 export enum WsErrorType {
@@ -57,18 +60,23 @@ export interface JoinRoomEvent extends WsEvent<WsEventType.JOIN_ROOM> {
 export interface LeaveRoomEvent extends WsEvent<WsEventType.LEAVE_ROOM> {}
 
 export interface UserJoinedEvent extends WsEvent<WsEventType.USER_JOINED> {
-  userId: string;
-  username: string;
+  user: UserInfo;
+  users: UserInfo[];
 }
 
 export interface UserLeftEvent extends WsEvent<WsEventType.USER_LEFT> {
-  userId: string;
-  username: string;
+  user: UserInfo;
+  users: UserInfo[];
 }
+
+export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
+
+export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
 
 export type WsEventsMessages =
   | Omit<ComposingEvent, "users">
   | Omit<ComposingEnd, "users">
   | Omit<ChatMessageEvent, "user" | "timestamp">
   | JoinRoomEvent
-  | LeaveRoomEvent;
+  | LeaveRoomEvent
+  | EndSessionEvent;

@@ -1,5 +1,5 @@
-import { Quiz } from "#/api/types";
 import { Button } from "#/components/form/Button";
+import { useQuizSession } from "#/providers/quiz/quizProvider";
 import { cn } from "#/utils/css";
 import { MenuIcon, XIcon } from "lucide-react";
 
@@ -7,15 +7,15 @@ interface SessionHeaderProps {
   title: string;
   sidebarExpanded?: boolean;
   onExpandSidebar?: (expand: boolean) => void;
-  onEndSession?: () => void;
 }
 
 export function SessionHeader({
   title,
   sidebarExpanded = false,
   onExpandSidebar,
-  onEndSession,
 }: SessionHeaderProps): JSX.Element {
+  const { endSession, leaveSession, isOwner } = useQuizSession();
+
   // On the page open, connect open the websocket session
   return (
     <header className="navbar bg-base-100 border-b border-base-200">
@@ -23,9 +23,15 @@ export function SessionHeader({
         <h1 className="text-xl">{title}</h1>
       </div>
       <div className="flex-1 gap-2 justify-end">
-        <Button className="btn btn-ghost" onClick={() => onEndSession?.()}>
-          End session
-        </Button>
+        {isOwner ? (
+          <Button className="btn btn-ghost" onClick={() => endSession()}>
+            End session
+          </Button>
+        ) : (
+          <Button className="btn btn-ghost" onClick={() => leaveSession()}>
+            Leave session
+          </Button>
+        )}
         <Button
           className="btn-square btn-ghost"
           onClick={() => onExpandSidebar?.(!sidebarExpanded)}

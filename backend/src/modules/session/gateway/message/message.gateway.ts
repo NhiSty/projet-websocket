@@ -11,6 +11,7 @@ import { SocketSessionService } from '../../services/socket-session/socket-sessi
 import {
   ChatMessageEvent,
   JoinRoomEvent,
+  UserInfo,
   WsErrorType,
   WsEventType,
 } from '../../constants';
@@ -45,9 +46,9 @@ export class MessageGateway
     this.server.engine.use(sessionMiddleware(this.configService));
   }
 
-  public handleDisconnect(client: Socket) {
+  public async handleDisconnect(client: Socket) {
     try {
-      this.socketSession.leaveRoom(client);
+      await this.socketSession.leaveRoom(client);
     } catch (error) {
       if (error instanceof NotFoundException) {
         client.emit(WsErrorType.ROOM_NOT_FOUND, { message: error.message });
@@ -149,8 +150,13 @@ export class MessageGateway
   }
 
   @OnEvent(WsEventType.USER_JOINED)
-  public handleOnUserJoined(roomId: RoomId, user: User) {
-    this.server.of(roomId).emit(WsEventType.USER_JOINED, { user });
+  public handleOnUserJoined(roomId: RoomId, user: User, users: UserInfo[]) {
+    this.server.to(roomId).emit(WsEventType.USER_JOINED, { user, users });
+  }
+
+  @OnEvent(WsEventType.USER_LEFT)
+  public handleOnUserLeft(roomId: RoomId, user: User, users: UserInfo[]) {
+    this.server.to(roomId).emit(WsEventType.USER_LEFT, { user, users });
   }
 
   // When a user send a message to a room
@@ -180,5 +186,32 @@ export class MessageGateway
   @OnEvent(WsEventType.CHAT_MESSAGE)
   public handleMessageBroadcast(roomId: RoomId, message: ChatMessageEvent) {
     this.server.to(roomId).emit(WsEventType.CHAT_MESSAGE, message);
+  }
+
+  @SubscribeMessage(WsEventType.END_SESSION)
+  @UseGuards(AuthWsGuard)
+  public async handleEndSession(client: Socket) {
+    try {
+      await this.socketSession.endSession(client);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
+  }
+
+  @OnEvent(WsEventType.SESSION_ENDED)
+  public handleSessionEnded(roomId: RoomId) {
+    this.server.to(roomId).emit(WsEventType.SESSION_ENDED);
   }
 }

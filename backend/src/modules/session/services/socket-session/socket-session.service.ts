@@ -20,6 +20,7 @@ import { RoomId, UserId } from 'src/types/opaque';
 import { UserData } from './user-data';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { Quiz } from '@prisma/client';
+import { QuizQuestionService } from 'src/modules/shared/services/quiz/quiz-question.service';
 
 @Injectable()
 export class SocketSessionService {
@@ -34,6 +35,7 @@ export class SocketSessionService {
     private eventEmitter: EventEmitter2,
     private hashService: HashService,
     private userService: UserService,
+    private quizQuestionService: QuizQuestionService,
   ) {}
 
   /**
@@ -41,7 +43,7 @@ export class SocketSessionService {
    */
   public async createRoom(
     quiz: Quiz,
-    { sessionPassword, userCountLimit }: CreateRoomDto,
+    { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
   ): Promise<string> {
     // Generate a random room ID
     const roomId = randomUUID() as RoomId;
@@ -62,6 +64,12 @@ export class SocketSessionService {
     // If a user count limit is provided, store it
     if (userCountLimit.enable) {
       data.userLimit = userCountLimit.limit;
+    }
+
+    data.questions = await this.quizQuestionService.findQuestions(quiz);
+
+    if (randomizeQuestions) {
+      data.randomizeQuestions();
     }
 
     // Store the room data
@@ -146,8 +154,10 @@ export class SocketSessionService {
 
     // Emit the room information
     socket.emit(WsEventType.ROOM_INFO, { quiz: data.quiz });
+
+    const usersInRoom = this.getUsersInRoom(roomId);
     // Emit the user joined event
-    this.eventEmitter.emit(WsEventType.USER_JOINED, roomId, user);
+    this.eventEmitter.emit(WsEventType.USER_JOINED, roomId, user, usersInRoom);
   }
 
   /**
@@ -155,7 +165,7 @@ export class SocketSessionService {
    * @param roomId - The ID of the room to leave.
    * @param socket - The socket of the user.
    */
-  public leaveRoom(socket: Socket) {
+  public async leaveRoom(socket: Socket) {
     const roomId = this.usersRooms.get(this.getUserId(socket));
     // If the user isn't in the room
     if (!this.roomUsers.has(roomId)) {
@@ -166,14 +176,16 @@ export class SocketSessionService {
     const users = this.roomUsers.get(roomId);
 
     const userId = this.getUserId(socket);
+    const user = await this.userService.find(userId);
     // If the user is in the room
     if (users.has(userId)) {
       // Remove the user from the room
       users.delete(userId);
       this.usersRooms.delete(userId);
 
+      const usersInRoom = this.getUsersInRoom(roomId);
       // Emit the user left event
-      this.eventEmitter.emit(WsEventType.USER_LEFT, roomId, socket.id);
+      this.eventEmitter.emit(WsEventType.USER_LEFT, roomId, user, usersInRoom);
     }
 
     // If the room is empty, delete it
@@ -228,6 +240,11 @@ export class SocketSessionService {
       .map((user) => user.toJSON());
   }
 
+  public getUsersInRoom(roomId: RoomId): UserInfo[] {
+    const users = this.roomUsers.get(roomId);
+    return Array.from(users.values()).map((user) => user.toJSON());
+  }
+
   public async sendChatMessage(client: Socket, data: ChatMessageEvent) {
     const userId = this.getUserId(client);
     if (!this.usersRooms.has(userId)) {
@@ -251,5 +268,24 @@ export class SocketSessionService {
         username: user.username,
       },
     } satisfies ChatMessageEvent);
+  }
+
+  public async endSession(client: Socket) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      return;
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomData = this.roomData.get(roomId);
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    if (roomData.quiz.userId !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    this.eventEmitter.emit(WsEventType.SESSION_ENDED, roomId);
   }
 }

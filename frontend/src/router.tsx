@@ -18,6 +18,7 @@ import {
 } from "./pages/quiz-session/quizSession";
 import { WebSocketProvider } from "./providers/socketio/socketio";
 import { ChatProvider } from "./providers/chat/chat";
+import { QuizProvider } from "./providers/quiz/quizProvider";
 
 const router = createBrowserRouter([
   {
@@ -95,9 +96,11 @@ const router = createBrowserRouter([
     id: "quizSession",
     element: (
       <WebSocketProvider>
-        <ChatProvider>
-          <QuizSession />
-        </ChatProvider>
+        <QuizProvider>
+          <ChatProvider>
+            <QuizSession />
+          </ChatProvider>
+        </QuizProvider>
       </WebSocketProvider>
     ),
   },

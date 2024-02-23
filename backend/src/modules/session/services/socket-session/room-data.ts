@@ -1,6 +1,7 @@
 import { Quiz } from '@prisma/client';
 import { QuestionWithChoices } from 'src/types/quiz';
 import { Countdown } from './countdown';
+import { UserId } from 'src/types/opaque';
 
 export enum RoomStatus {
   PENDING = 'pending',
@@ -16,6 +17,8 @@ export class RoomData {
   public quiz: Quiz;
   public questionIndex = 0;
   public countDown?: Countdown;
+
+  public usersResponses = new Map<UserId, string[]>();
 
   public set userLimit(limit: number) {
     this._usersLimit = limit > 0 ? limit : undefined;
@@ -47,6 +50,7 @@ export class RoomData {
   }
 
   public nextQuestion(): QuestionWithChoices {
+    this.usersResponses.clear();
     return this.questions[this.questionIndex++];
   }
 }

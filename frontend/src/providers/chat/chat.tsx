@@ -1,11 +1,10 @@
 import React, {
   PropsWithChildren,
   useCallback,
-  useContext,
   useEffect,
   useState,
 } from "react";
-import { useWS } from "../socketio/socketio";
+import { useWS } from "../socketio";
 import {
   ChatMessageEvent,
   ComposingEvent,
@@ -19,7 +18,7 @@ export interface MessageData {
   timestamp: number;
 }
 
-interface ChatContextData {
+export interface ChatContextData {
   history: MessageData[];
   sendMessage: () => void;
   setText: (content: string) => void;
@@ -46,6 +45,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const [lastCheck, setLastCheck] = useState<number>(0);
   const [hasNewMessages, setHasNewMessages] = useState<number>(0);
 
+  const [textTimeout, setTextTimeout] = useState<number | undefined>(undefined);
+
   // Handle all the events
   useEffect(() => {
     ws.on(WsEventType.CHAT_MESSAGE, (data: ChatMessageEvent) => {
@@ -68,8 +69,10 @@ export function ChatProvider({ children }: ChatProviderProps) {
       });
       ws.off(WsEventType.CHAT_MESSAGE);
       ws.off(WsEventType.IS_COMPOSING);
+
+      window.clearTimeout(textTimeout);
     };
-  }, [ws, wsSend]);
+  }, [textTimeout, ws, wsSend]);
 
   // Method called to send composing event
   const compose = useCallback(
@@ -84,9 +87,14 @@ export function ChatProvider({ children }: ChatProviderProps) {
   );
 
   // Method to handle composing when the user is writing
-  useEffect(() => {
+  function updateText(value: string) {
+    setText(value);
+
+    if (textTimeout) {
+      window.clearTimeout(textTimeout);
+    }
     // If the the text is empty, the user is not composing
-    if (text.length === 0) {
+    if (value.length === 0) {
       if (isComposing) {
         compose(false);
       }
@@ -102,11 +110,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
     const timeout = window.setTimeout(() => {
       compose(false);
     }, TIME_TO_COMPOSE);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [text]);
+    setTextTimeout(timeout);
+  }
 
   // Method to send the message
   function sendMessage() {
@@ -124,7 +129,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const values: ChatContextData = {
     history,
     sendMessage,
-    setText,
+    setText: updateText,
     text,
     composingUsers,
     hasNewMessages,
@@ -132,12 +137,4 @@ export function ChatProvider({ children }: ChatProviderProps) {
   };
 
   return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
-}
-
-export function useWsChat(): ChatContextData {
-  const context = useContext(ChatContext);
-  if (!context) {
-    throw new Error("useWsChat must be used within a ChatProvider");
-  }
-  return context;
 }

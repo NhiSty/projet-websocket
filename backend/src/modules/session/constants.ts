@@ -25,6 +25,8 @@ export enum WsEventType {
   QUESTION = 'question',
   NEXT_QUESTION = 'next-question',
   FINISHED_QUESTIONS = 'finished-questions',
+
+  USER_RESPONSE = 'user-response',
 }
 
 export enum WsErrorType {
@@ -79,11 +81,20 @@ export interface UserLeftEvent extends WsEvent<WsEventType.USER_LEFT> {
   username: string;
 }
 
+export interface StartRoomEvent extends WsEvent<WsEventType.START_SESSION> {}
+
+export interface StartCountdownEvent
+  extends WsEvent<WsEventType.START_COUNTDOWN> {}
+
+export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
+
+export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
+
 export type WsEventsMessages =
-    | ComposingEvent
-    | ComposingEnd
-    | ChatMessageEvent
-    | JoinRoomEvent
-    | LeaveRoomEvent;
+  | ComposingEvent
+  | ComposingEnd
+  | ChatMessageEvent
+  | JoinRoomEvent
+  | LeaveRoomEvent;
 
 export const ROOM_BEGIN_COUNTDOWN = 5;

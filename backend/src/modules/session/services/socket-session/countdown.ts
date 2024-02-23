@@ -2,8 +2,8 @@ export class Countdown {
   private intervalId: NodeJS.Timeout;
 
   public constructor(
-      private counter: number,
-      private callback: (count: number) => void,
+    private counter: number,
+    private callback: (count: number) => void,
   ) {}
 
   public start(): void {

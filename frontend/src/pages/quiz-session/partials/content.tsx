@@ -4,6 +4,19 @@ import { PropsWithChildren } from "react";
 import { ContentResult } from "./contentResults";
 import { ContentQuestion } from "./contentQuestion";
 
+function CountDown({ countDown }: { countDown: number | null }) {
+  return (
+    countDown && (
+      <p className="border bg-base-100 border-t-0 border-base-200 absolute top-0 p-2 rounded-b-lg text-center min-w-24">
+        <span className="text-secondary capitalize text-xl block">Time</span>
+        <span className="text-lg font-semibold uppercase block">
+          {countDown}
+        </span>
+      </p>
+    )
+  );
+}
+
 function SessionContainer({ children }: PropsWithChildren) {
   return (
     <div className="bg-secondary/50 flex-1">
@@ -73,12 +86,7 @@ export function SessionContent(): JSX.Element {
   if (!isOwner) {
     return (
       <SessionContainer>
-        {countDown && (
-          <p className="border bg-base-100 border-t-0 border-base-200 absolute top-0 p-2 rounded-b-lg text-center">
-            <div className="text-secondary capitalize text-xl">Starting in</div>
-            <div className="text-lg font-semibold uppercase">{countDown}</div>
-          </p>
-        )}
+        <CountDown countDown={countDown} />
         <ContentResult />
       </SessionContainer>
     );
@@ -89,8 +97,8 @@ export function SessionContent(): JSX.Element {
           <div className="card bg-base-100 rounded-lg border border-base-300 in">
             <div className="card-body">
               <p className="text-center text-4xl text-primary-content flex flex-col gap-2">
-                <div>Starting in</div>
-                <div className="font-bold">{countDown}</div>
+                <span>Starting in</span>
+                <span className="font-bold">{countDown}</span>
               </p>
             </div>
           </div>
@@ -99,11 +107,10 @@ export function SessionContent(): JSX.Element {
     } else {
       return (
         <SessionContainer>
+          <CountDown countDown={countDown} />
           <ContentQuestion />
         </SessionContainer>
       );
     }
   }
-
-  return <div className="bg-secondary/50 flex-1"></div>;
 }

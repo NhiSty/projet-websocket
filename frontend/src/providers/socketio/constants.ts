@@ -18,6 +18,14 @@ export enum WsEventType {
   START_SESSION = "start-session",
   END_SESSION = "end-session",
   SESSION_ENDED = "session-ended",
+
+  QUESTION_COUNTDOWN = "question-countdown",
+  QUESTION_COUNTDOWN_END = "question-countdown-end",
+  QUESTION = "question",
+  NEXT_QUESTION = "next-question",
+  FINISHED_QUESTIONS = "finished-questions",
+
+  USER_RESPONSE = "user-response",
 }
 
 export enum WsErrorType {
@@ -80,6 +88,10 @@ export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
 
 export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
 
+export interface UserResponseEvent extends WsEvent<WsEventType.USER_RESPONSE> {
+  answers: string[];
+}
+
 export type WsEventsMessages =
   | Omit<ComposingEvent, "users">
   | Omit<ComposingEnd, "users">
@@ -87,4 +99,5 @@ export type WsEventsMessages =
   | JoinRoomEvent
   | LeaveRoomEvent
   | StartRoomEvent
-  | EndSessionEvent;
+  | EndSessionEvent
+  | UserResponseEvent;

@@ -8,7 +8,7 @@ import {
 import { useWS } from "../socketio";
 import { toast } from "sonner";
 import { InfoIcon } from "lucide-react";
-import { Quiz } from "#/api/types";
+import { Question, Quiz } from "#/api/types";
 import { useUser } from "#/api/auth.queries";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +23,9 @@ export interface QuizContextData {
   status: QuizStatus;
   startQuiz: () => void;
   countDown: number | null;
+
+  question: Question | null;
+  setResponse: (value: string[]) => void;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -39,6 +42,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const navigate = useNavigate();
   const [status, setStatus] = useState<QuizStatus>("pending");
   const [countDown, setCountDown] = useState<number | null>(null);
+
+  const [question, setQuestion] = useState<Question | null>(null);
 
   useEffect(() => {
     ws.on(WsEventType.USER_JOINED, (data: UserJoinedEvent) => {
@@ -70,6 +75,18 @@ export function QuizProvider({ children }: QuizProviderProps) {
       setCountDown(null);
     });
 
+    ws.on(WsEventType.QUESTION_COUNTDOWN, (count: number) => {
+      setCountDown(count);
+    });
+    ws.on(WsEventType.QUESTION_COUNTDOWN_END, () => {
+      setCountDown(null);
+      setQuestion(null);
+    });
+
+    ws.on(WsEventType.QUESTION, (question: Question) => {
+      setQuestion(question);
+    });
+
     ws.on("disconnect", () => {
       navigate("/");
     });
@@ -78,6 +95,10 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ws.off(WsEventType.USER_JOINED);
       ws.off(WsEventType.USER_LEFT);
       ws.off(WsEventType.START_SESSION);
+      ws.off(WsEventType.START_COUNTDOWN);
+      ws.off(WsEventType.QUESTION_COUNTDOWN);
+      ws.off(WsEventType.QUESTION_COUNTDOWN_END);
+      ws.off(WsEventType.QUESTION);
       ws.off("disconnect");
     };
   }, [navigate, user?.id, ws]);
@@ -98,6 +119,13 @@ export function QuizProvider({ children }: QuizProviderProps) {
     });
   }
 
+  function setResponse(answers: string[]) {
+    wsSend({
+      event: WsEventType.USER_RESPONSE,
+      answers,
+    });
+  }
+
   const values: QuizContextData = {
     users,
     quiz,
@@ -108,6 +136,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
     status,
     startQuiz,
     countDown,
+    question,
+    setResponse,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

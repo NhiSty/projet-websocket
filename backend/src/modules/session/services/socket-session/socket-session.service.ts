@@ -40,18 +40,18 @@ export class SocketSessionService {
   private usersRooms = new Map<UserId, RoomId>();
 
   public constructor(
-      private eventEmitter: EventEmitter2,
-      private hashService: HashService,
-      private userService: UserService,
-      private quizQuestionService: QuizQuestionService,
+    private eventEmitter: EventEmitter2,
+    private hashService: HashService,
+    private userService: UserService,
+    private quizQuestionService: QuizQuestionService,
   ) {}
 
   /**
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
   public async createRoom(
-      quiz: Quiz,
-      { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
+    quiz: Quiz,
+    { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
   ): Promise<string> {
     // Generate a random room ID
     const roomId = randomUUID() as RoomId;
@@ -247,8 +247,8 @@ export class SocketSessionService {
   public getComposingUsers(roomId: RoomId): UserInfo[] {
     const users = this.roomUsers.get(roomId);
     return Array.from(users.values())
-        .filter((user) => user.isComposing)
-        .map((user) => user.toJSON());
+      .filter((user) => user.isComposing)
+      .map((user) => user.toJSON());
   }
 
   public getUsersInRoom(roomId: RoomId): UserInfo[] {
@@ -337,8 +337,8 @@ export class SocketSessionService {
     roomData.countDown.start();
   }
 
-  @OnEvent(WsEventType.START_SESSION)
-  @OnEvent(WsEventType.NEXT_QUESTION)
+  @OnEvent(WsEventType.START_SESSION, { nextTick: true })
+  @OnEvent(WsEventType.NEXT_QUESTION, { nextTick: true })
   protected async onSessionStart(roomId: RoomId) {
     // When the session start, we send the first question and start the countdown
     const roomData = this.roomData.get(roomId);
@@ -364,11 +364,108 @@ export class SocketSessionService {
     roomData.countDown.start();
   }
 
-  @OnEvent(WsEventType.QUESTION_COUNTDOWN_END)
+  @OnEvent(WsEventType.QUESTION_COUNTDOWN_END, { nextTick: true })
   public async onQuestionCountdownEnd(roomId: RoomId) {
     // TODO: Handle user responses
+  }
 
-    // Then switch to the next question
-    this.eventEmitter.emit(WsEventType.NEXT_QUESTION, roomId);
+  public sendQuestionsList(roomId: RoomId) {
+    // Check if the room exists
+    const roomData = this.roomData.get(roomId);
+
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    const userId = roomData.quiz.userId as UserId;
+    const users = this.roomUsers.get(roomId);
+    if (!users) {
+      throw new NotFoundException();
+    }
+    const user = users.get(userId);
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    // Send the questions list to the user
+    user.socket.send({
+      questions: roomData.questions,
+      index: roomData.questionIndex,
+    });
+  }
+
+  public async saveUserResponse(client: Socket, answers: string[]) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      throw new NotFoundException();
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomData = this.roomData.get(roomId);
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    console.log(roomData.status);
+    if (roomData.status !== RoomStatus.STARTED) {
+      throw new UnauthorizedException();
+    }
+
+    console.log(roomData.questionIndex);
+    if (roomData.questionIndex >= roomData.questions.length) {
+      throw new UnauthorizedException();
+    }
+
+    const question = roomData.questions[roomData.questionIndex];
+    console.log(answers, answers.length, question.choices.length);
+    if (answers.length !== question.choices.length) {
+      throw new UnauthorizedException();
+    }
+
+    // Ignore if the response ID is not found or the question
+    switch (question.type) {
+      case 'BINARY':
+        {
+          // Allow only one answer that is either "true" or "false"
+          if (
+            answers.length !== 1 ||
+            (answers[0] !== 'true' && answers[0] !== 'false')
+          ) {
+            throw new UnauthorizedException();
+          }
+        }
+        break;
+      case 'SINGLE':
+        {
+          // Allow only one answer that must be in the choices list
+          if (
+            answers.length !== 1 ||
+            !question.choices.map((c) => c.id).includes(answers[0])
+          ) {
+            throw new UnauthorizedException();
+          }
+        }
+        break;
+      case 'MULTIPLE':
+        {
+          // Allow multiple answers that must be in the choices list
+          for (const answer of answers) {
+            if (!question.choices.map((c) => c.id).includes(answer)) {
+              throw new UnauthorizedException();
+            }
+          }
+        }
+        break;
+      case 'TEXTUAL':
+        {
+          // Allow only one answer
+          if (answers.length !== 1) {
+            throw new UnauthorizedException();
+          }
+        }
+        break;
+    }
+
+    roomData.usersResponses.set(userId, answers);
   }
 }

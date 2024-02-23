@@ -34,14 +34,14 @@ import { QuestionWithChoices } from 'src/types/quiz';
 @WebSocketGateway()
 @Injectable()
 export class MessageGateway
-    implements OnGatewayDisconnect<Socket>, OnGatewayInit<Socket>
+  implements OnGatewayDisconnect<Socket>, OnGatewayInit<Socket>
 {
   @WebSocketServer()
   private server: Server;
 
   public constructor(
-      private socketSession: SocketSessionService,
-      private configService: ConfigService,
+    private socketSession: SocketSessionService,
+    private configService: ConfigService,
   ) {}
 
   public afterInit() {
@@ -258,6 +258,8 @@ export class MessageGateway
   @OnEvent(WsEventType.START_SESSION)
   public handleOnStartSession(roomId: RoomId) {
     this.server.to(roomId).emit(WsEventType.START_SESSION);
+
+    this.socketSession.sendQuestionsList(roomId);
   }
 
   @OnEvent(WsEventType.QUESTION_COUNTDOWN)
@@ -278,5 +280,27 @@ export class MessageGateway
   @OnEvent(WsEventType.FINISHED_QUESTIONS)
   public handleOnQuestionFinished(roomId: RoomId): void {
     this.server.to(roomId).emit(WsEventType.FINISHED_QUESTIONS);
+  }
+
+  @SubscribeMessage(WsEventType.USER_RESPONSE)
+  @UseGuards(AuthWsGuard)
+  public async handleUserResponse(client: Socket, answers: string[]) {
+    try {
+      await this.socketSession.saveUserResponse(client, answers);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
   }
 }

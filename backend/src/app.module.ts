@@ -13,6 +13,7 @@ import { SharedModule } from './modules/shared/shared.module';
         APP_SECRET: Joi.string().required(),
         DATABASE_URL: Joi.string().required(),
         REDIS_HOST: Joi.string().default('localhost'),
+        SECURE_COOKIE: Joi.bool().default(true),
       }),
     }),
     SessionModule,

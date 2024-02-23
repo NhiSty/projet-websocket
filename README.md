@@ -25,12 +25,12 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 - [x] Support pour plusieurs salles où différents quiz peuvent se dérouler simultanément. 
 
 4. Minuteur côté serveur : 
-- [ ] Un compteur à rebours géré par le serveur pour chaque question afin de garantir un timing synchronisé pour tous les clients. 
+- [x] Un compteur à rebours géré par le serveur pour chaque question afin de garantir un timing synchronisé pour tous les clients. 
 - [ ] Progression automatique vers la prochaine question à l'expiration du minuteur.
-- [ ] Affichage du minuteur sur le front
+- [x] Affichage du minuteur sur le front
 
 5. Déroulement des questions et réponses : 
-- [ ] Présentation des questions à tous les clients dans une salle lorsque le quiz commence.
+- [x] Présentation des questions à tous les clients dans une salle lorsque le quiz commence.
 - [ ] Collecte des réponses des clients et verrouillage des réponses à la fin du temps imparti. 
 
 6. Retour en direct sur les réponses : 
@@ -54,7 +54,7 @@ Dockerisation encapsule les dépendances, atténuant le syndrome "ça marche sur
     
 Pour renforcer l'utilisation de Socket.IO et pour mettre en évidence sa flexibilité et sa puissance, implémentez les fonctionnalités avancées suivantes utilisant explicitement Socket.IO :
 
-  * [ ] Synchronisation des états de jeu : Assurer que tous les clients reçoivent les mises à jour d'état en temps réel en cas de changement de question, de fin de temps imparti pour une question, ou toute autre mise à jour critique du jeu.
+  * [x] Synchronisation des états de jeu : Assurer que tous les clients reçoivent les mises à jour d'état en temps réel en cas de changement de question, de fin de temps imparti pour une question, ou toute autre mise à jour critique du jeu.
     
   * [x] Chat en direct lors des quiz : Mettre en place un système de chat où les participants peuvent discuter pendant un quiz, avec une attention particulière à la gestion des messages en temps réel et à la prévention de la triche (optionnel).
     

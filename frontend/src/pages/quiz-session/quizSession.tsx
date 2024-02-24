@@ -14,7 +14,7 @@ type ErrorState = "password-required" | "ok" | "invalid-password" | "room-full";
 
 export function QuizSession(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const { ws, send: wsSend } = useWS();
+  const { ws, send: wsSend, isConnected } = useWS();
   const [sidebarExpanded, setExpandedSidebar] = useState<boolean>(false);
   const { setQuiz, quiz } = useQuizSession();
 
@@ -23,11 +23,22 @@ export function QuizSession(): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Bind all the events
-    ws.on("connect", () => {
-      if (!id) return;
+    if (isConnected && id) {
+      ws.connect();
       wsSend({ event: WsEventType.JOIN_ROOM, roomId: id });
-    });
+    }
+  }, [id, isConnected, ws, wsSend]);
+
+  useEffect(() => {
+    if (!quiz) {
+      ws.connect();
+    }
+  }, [quiz, ws]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    // Bind all the events
     ws.on(WsEventType.ROOM_INFO, (data) => {
       setErrorState("ok");
       setQuiz(data.quiz);
@@ -47,7 +58,6 @@ export function QuizSession(): JSX.Element {
     return () => {
       wsSend({ event: WsEventType.LEAVE_ROOM });
 
-      ws.off("connect");
       ws.off(WsErrorType.ROOM_FULL);
       ws.off(WsEventType.ROOM_INFO);
       ws.off(WsErrorType.REQUIRE_PASSWORD);
@@ -66,7 +76,7 @@ export function QuizSession(): JSX.Element {
       <div className="flex flex-col min-h-screen">
         <SessionHeader title="Loading..." />
 
-        <div className="bg-secondary/50 flex-1 flex flex-col items-center justify-center">
+        <div className="bg-secondary-light flex-1 flex flex-col items-center justify-center">
           <PasswordModal roomId={id} />
         </div>
       </div>
@@ -76,7 +86,7 @@ export function QuizSession(): JSX.Element {
       <div className="flex flex-col min-h-screen">
         <SessionHeader title="Loading..." />
 
-        <div className="bg-secondary/50 flex-1 flex flex-col items-center justify-center">
+        <div className="bg-secondary-light flex-1 flex flex-col items-center justify-center">
           <ErrorModal error="A password is required to access this room" />
         </div>
       </div>
@@ -86,7 +96,7 @@ export function QuizSession(): JSX.Element {
       <div className="flex flex-col min-h-screen">
         <SessionHeader title="Loading..." />
 
-        <div className="bg-secondary/50 flex-1 flex flex-col items-center justify-center">
+        <div className="bg-secondary-light flex-1 flex flex-col items-center justify-center">
           <ErrorModal error="This room is full" />
         </div>
       </div>
@@ -94,9 +104,6 @@ export function QuizSession(): JSX.Element {
   }
 
   if (!quiz) {
-    console.log("Connecting to websocket");
-    ws.connect();
-
     return (
       <div className="flex flex-col min-h-screen">
         <SessionHeader title="Loading..." />

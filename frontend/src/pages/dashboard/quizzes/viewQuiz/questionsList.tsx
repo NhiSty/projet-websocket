@@ -35,12 +35,12 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
   }
 
   return (
-    <ul className="flex flex-col p-8 gap-2">
+    <div className="flex flex-col p-8 gap-2">
       {data
         ?.sort((a, b) => a.position - b.position)
         .map((question) => (
           <QuestionItem key={question.id} question={question} />
         ))}
-    </ul>
+    </div>
   );
 }

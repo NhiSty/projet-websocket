@@ -23,10 +23,7 @@ function NavbarUserSection({ user }: NavbarUserSectionProps): JSX.Element {
           />
         </div>
       </div>
-      <ul
-        tabIndex={0}
-        className="mt-3 z-[1] p-2 gap-1 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
-      >
+      <ul className="mt-3 z-[1] p-2 gap-1 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
         {isInRole(user, [Role.ADMIN, Role.SUPERADMIN]) && (
           <li>
             <Link to="/dashboard">

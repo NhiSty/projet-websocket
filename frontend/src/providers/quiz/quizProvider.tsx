@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   UserInfo,
   UserJoinedEvent,
@@ -25,7 +30,7 @@ export interface QuizContextData {
   countDown: number | null;
 
   question: Question | null;
-  setResponse: (value: string[]) => void;
+  setResponse: (questionId: string, value: string[]) => void;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -103,28 +108,32 @@ export function QuizProvider({ children }: QuizProviderProps) {
     };
   }, [navigate, user?.id, ws]);
 
-  function endSession() {
+  const endSession = useCallback(() => {
     wsSend({
       event: WsEventType.END_SESSION,
     });
-  }
+  }, [wsSend]);
 
-  function leaveSession() {
+  const leaveSession = useCallback(() => {
     ws.disconnect();
-  }
+  }, [ws]);
 
-  function startQuiz() {
+  const startQuiz = useCallback(() => {
     wsSend({
       event: WsEventType.START_SESSION,
     });
-  }
+  }, [wsSend]);
 
-  function setResponse(answers: string[]) {
-    wsSend({
-      event: WsEventType.USER_RESPONSE,
-      answers,
-    });
-  }
+  const setResponse = useCallback(
+    (questionId: string, answers: string[]) => {
+      wsSend({
+        event: WsEventType.USER_RESPONSE,
+        answers,
+        questionId,
+      });
+    },
+    [wsSend]
+  );
 
   const values: QuizContextData = {
     users,

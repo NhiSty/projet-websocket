@@ -45,7 +45,7 @@ export function Pagination({
     );
   }
 
-  if (endPage < maxPages && endPage < totalPages) {
+  if (endPage < totalPages) {
     pagesToShow.push(
       <button
         type="button"

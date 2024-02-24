@@ -15,17 +15,21 @@ function AnswersList({
   setResponse,
 }: {
   question: Question;
-  setResponse: (values: string[]) => void;
+  setResponse: (questionId: string, values: string[]) => void;
 }) {
   const [inputs, setInputs] = useState<string[]>([]);
 
   useEffect(() => {
+    if (inputs.length === 0) return;
+
     setInputs([]);
   }, [question.type]);
 
   useEffect(() => {
-    setResponse(inputs);
-  }, [inputs, setResponse]);
+    if (inputs.length === 0) return;
+
+    setResponse(question.id, [...inputs]);
+  }, [inputs, setResponse, question]);
 
   if (question.type === "BINARY") {
     return (
@@ -63,11 +67,12 @@ function AnswersList({
   if (question.type === "TEXTUAL") {
     return (
       <div className="flex flex-row">
-        <div className="card bg-base-100 border border-base-300 rounded-md">
+        <div className="card bg-base-100 border border-base-300 rounded-md w-full">
           <div className="card-body flex flex-row">
             <Input
               name="value"
-              className="flex-1"
+              placeholder="Type your answer here..."
+              className="flex-1 max-w-none"
               onChange={(event) => setInputs([event.target.value])}
             />
           </div>

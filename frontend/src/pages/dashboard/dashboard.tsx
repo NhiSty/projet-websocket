@@ -12,9 +12,6 @@ function DashboardHeader(): JSX.Element {
         role="tablist"
         className="tabs tabs-boxed mx-auto w-full md:max-w-md"
       >
-        <NavLink role="tab" end className={classNames} to="/dashboard">
-          General
-        </NavLink>
         <NavLink role="tab" className={classNames} to="/dashboard/quizzes">
           Quizzes
         </NavLink>

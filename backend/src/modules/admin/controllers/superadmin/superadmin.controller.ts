@@ -41,6 +41,7 @@ export class SuperadminController {
   }
 
   @Post()
+  @HttpCode(204)
   public async createUser(
     @Body(new ValidationPipe()) user: AdminCreateUserDto,
     @Req() request: Request,

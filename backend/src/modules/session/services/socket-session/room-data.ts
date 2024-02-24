@@ -49,8 +49,12 @@ export class RoomData {
     return array;
   }
 
-  public nextQuestion(): QuestionWithChoices {
+  public currentQuestion(): QuestionWithChoices {
+    return this.questions[this.questionIndex];
+  }
+
+  public nextQuestion(): void {
     this.usersResponses.clear();
-    return this.questions[this.questionIndex++];
+    this.questionIndex++;
   }
 }

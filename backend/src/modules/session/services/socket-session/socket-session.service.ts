@@ -13,6 +13,7 @@ import {
   ChatMessageEvent,
   ROOM_BEGIN_COUNTDOWN,
   UserInfo,
+  UserResponseEvent,
   WsEventType,
 } from '../../constants';
 import { SessionData } from 'express-session';
@@ -352,7 +353,7 @@ export class SocketSessionService {
       return;
     }
 
-    const question = roomData.nextQuestion();
+    const question = roomData.currentQuestion();
     this.eventEmitter.emit(WsEventType.QUESTION, roomId, question);
     roomData.countDown = new Countdown(question.duration, (count) => {
       if (count > 0) {
@@ -366,7 +367,15 @@ export class SocketSessionService {
 
   @OnEvent(WsEventType.QUESTION_COUNTDOWN_END, { nextTick: true })
   public async onQuestionCountdownEnd(roomId: RoomId) {
-    // TODO: Handle user responses
+    // When the question countdown ends, we send the next question
+    const roomData = this.roomData.get(roomId);
+
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    roomData.nextQuestion();
+    this.eventEmitter.emit(WsEventType.NEXT_QUESTION, roomId);
   }
 
   public sendQuestionsList(roomId: RoomId) {
@@ -394,7 +403,10 @@ export class SocketSessionService {
     });
   }
 
-  public async saveUserResponse(client: Socket, answers: string[]) {
+  public async saveUserResponse(
+    client: Socket,
+    { answers, questionId }: UserResponseEvent,
+  ) {
     const userId = this.getUserId(client);
     if (!this.usersRooms.has(userId)) {
       throw new NotFoundException();
@@ -406,19 +418,20 @@ export class SocketSessionService {
       throw new NotFoundException();
     }
 
-    console.log(roomData.status);
     if (roomData.status !== RoomStatus.STARTED) {
       throw new UnauthorizedException();
     }
 
-    console.log(roomData.questionIndex);
     if (roomData.questionIndex >= roomData.questions.length) {
       throw new UnauthorizedException();
     }
 
     const question = roomData.questions[roomData.questionIndex];
-    console.log(answers, answers.length, question.choices.length);
-    if (answers.length !== question.choices.length) {
+    if (!question) {
+      throw new NotFoundException();
+    }
+
+    if (question.id !== questionId) {
       throw new UnauthorizedException();
     }
 

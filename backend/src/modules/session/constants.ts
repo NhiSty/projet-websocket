@@ -90,6 +90,11 @@ export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
 
 export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
 
+export interface UserResponseEvent extends WsEvent<WsEventType.USER_RESPONSE> {
+  answers: string[];
+  questionId: string;
+}
+
 export type WsEventsMessages =
   | ComposingEvent
   | ComposingEnd

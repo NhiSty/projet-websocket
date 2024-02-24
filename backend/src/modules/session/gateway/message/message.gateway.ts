@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import {
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -12,6 +17,7 @@ import {
   ChatMessageEvent,
   JoinRoomEvent,
   UserInfo,
+  UserResponseEvent,
   WsErrorType,
   WsEventType,
 } from '../../constants';
@@ -284,11 +290,16 @@ export class MessageGateway
 
   @SubscribeMessage(WsEventType.USER_RESPONSE)
   @UseGuards(AuthWsGuard)
-  public async handleUserResponse(client: Socket, answers: string[]) {
+  public async handleUserResponse(client: Socket, data: UserResponseEvent) {
     try {
-      await this.socketSession.saveUserResponse(client, answers);
+      await this.socketSession.saveUserResponse(client, data);
     } catch (error) {
       if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      if (error instanceof UnauthorizedException) {
         client.emit(WsErrorType.ROOM_NOT_FOUND);
         return;
       }

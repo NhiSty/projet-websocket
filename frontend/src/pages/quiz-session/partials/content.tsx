@@ -1,15 +1,34 @@
 import { Button } from "#/components/form/Button";
 import { useQuizSession } from "#/providers/quiz";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { ContentResult } from "./contentResults";
 import { ContentQuestion } from "./contentQuestion";
+import { cn } from "#/utils/css";
 
 function CountDown({ countDown }: { countDown: number | null }) {
+  const [pulse, setPulse] = useState(false);
+
+  useEffect(() => {
+    if (!countDown || countDown > 5) return;
+    setPulse(true);
+
+    const timer = setTimeout(() => setPulse(false), 5);
+    return () => {
+      setPulse(false);
+      clearTimeout(timer);
+    };
+  }, [countDown]);
+
   return (
     countDown && (
       <p className="border bg-base-100 border-t-0 border-base-200 absolute top-0 p-2 rounded-b-lg text-center min-w-24">
         <span className="text-secondary capitalize text-xl block">Time</span>
-        <span className="text-lg font-semibold uppercase block">
+        <span
+          className={cn(
+            "text-lg font-semibold uppercase block transform-gpu transition-transform duration-75",
+            { "text-red-500": countDown <= 5, "scale-150": pulse }
+          )}
+        >
           {countDown}
         </span>
       </p>
@@ -19,7 +38,7 @@ function CountDown({ countDown }: { countDown: number | null }) {
 
 function SessionContainer({ children }: PropsWithChildren) {
   return (
-    <div className="bg-secondary/50 flex-1">
+    <div className="bg-secondary-light flex-1">
       <div className="flex items-center justify-center h-full relative">
         {children}
       </div>
@@ -60,7 +79,7 @@ export function SessionContent(): JSX.Element {
         <SessionContainer>
           <div className="card bg-base-100 rounded-lg border border-base-300">
             <div className="card-body">
-              <h2 className="card-title">Wait for the quiz to start...</h2>
+              <h2 className="card-title">Waiting for the quiz to start...</h2>
             </div>
           </div>
         </SessionContainer>

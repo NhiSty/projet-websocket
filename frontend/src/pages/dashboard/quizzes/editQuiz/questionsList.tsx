@@ -49,18 +49,20 @@ export function QuestionsList({ quiz }: QuestionsListProps): ReactElement {
             showMoveDown={index < data.length - 1}
           />
         ))}
-      {!creating ? (
-        <Button onClick={() => setCreating(true)}>
-          <PlusIcon className="w-4 h-4" />
-          Add a question
-        </Button>
-      ) : (
-        <QuestionForm
-          quizId={quiz.id}
-          onCancel={() => setCreating(false)}
-          onClose={() => setCreating(false)}
-        />
-      )}
+      <li>
+        {!creating ? (
+          <Button onClick={() => setCreating(true)}>
+            <PlusIcon className="w-4 h-4" />
+            Add a question
+          </Button>
+        ) : (
+          <QuestionForm
+            quizId={quiz.id}
+            onCancel={() => setCreating(false)}
+            onClose={() => setCreating(false)}
+          />
+        )}
+      </li>
     </ul>
   );
 }

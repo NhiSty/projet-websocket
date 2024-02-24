@@ -4,6 +4,7 @@ import * as session from 'express-session';
 import Redis from 'ioredis';
 
 let middleware: ReturnType<typeof session> | null = null;
+
 const SESSION_MAX_AGE = 1000 * 60 * 60 * 24 * 7; // 7 DAYS
 
 export function sessionMiddleware(
@@ -28,7 +29,6 @@ export function sessionMiddleware(
     cookie: {
       httpOnly: true,
       secure: configService.get<boolean>('SECURE_COOKIE'),
-
       sameSite: 'strict',
       maxAge: SESSION_MAX_AGE,
     },

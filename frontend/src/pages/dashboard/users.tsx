@@ -252,7 +252,7 @@ export function UsersList(): JSX.Element {
             <Pagination
               page={page}
               setPage={setPage}
-              maxPages={3}
+              maxPages={2}
               totalPages={paginatedList.data?.totalPages ?? 0}
             />
           </div>

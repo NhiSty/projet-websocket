@@ -34,6 +34,7 @@ export function SessionHeader({
         )}
         <Button
           className="btn-square btn-ghost"
+          title="Toggle sidebar"
           onClick={() => onExpandSidebar?.(!sidebarExpanded)}
         >
           <span

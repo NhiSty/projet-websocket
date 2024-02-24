@@ -23,7 +23,7 @@ function QuestionChoices({ question }: QuestionChoicesProps) {
           key={choices.id}
           className={cn(
             "rounded-md bg-gray-100 p-4 py-2 flex flex-row items-center gap-2 border border-gray-300",
-            { "text-success": choices.correct }
+            { "bg-success text-success-content": choices.correct }
           )}
         >
           {icon}
@@ -40,7 +40,7 @@ interface QuestionItemProps {
 
 export function QuestionItem({ question }: QuestionItemProps): JSX.Element {
   return (
-    <li className="flex flex-col p-4 border-b border-gray-200 gap-2 last:border-none">
+    <section className="flex flex-col p-4 border-b border-gray-200 gap-2 last:border-none">
       <div className="flex flex-row justify-between items-center last:border-none">
         <div>
           <h3 className="text-lg font-bold">{question.question}</h3>
@@ -54,6 +54,6 @@ export function QuestionItem({ question }: QuestionItemProps): JSX.Element {
       {(question.type === "SINGLE" || question.type === "MULTIPLE") && (
         <QuestionChoices question={question} />
       )}
-    </li>
+    </section>
   );
 }

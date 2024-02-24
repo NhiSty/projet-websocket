@@ -2,13 +2,12 @@ FROM node:20 as builder
 
 #######################################################################
 WORKDIR /app
-
-COPY . .
 RUN npm i -g pnpm
+COPY package.json pnpm-lock.yaml ./
+COPY . .
 RUN pnpm install
 ENV NODE_ENV=production
 RUN pnpm run build
-RUN pnpm prune --production
 
 #######################################################################
 FROM nginx

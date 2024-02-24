@@ -3,15 +3,15 @@ FROM node:20 as builder
 
 # Set working directory
 WORKDIR /app
-
 # Install pnpm
 RUN npm install -g pnpm
-
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm i --frozen-lockfile
 # Copy project folder
-COPY . /app
-
+COPY . .
 # Build NestJS project
-RUN pnpm i --frozen-lockfile && pnpm prisma generate && pnpm run build
+RUN pnpm prisma generate
+RUN pnpm run build
 
 
 

@@ -72,7 +72,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
       window.clearTimeout(textTimeout);
     };
-  }, [textTimeout, ws, wsSend]);
+  }, [ws, wsSend]);
 
   // Method called to send composing event
   const compose = useCallback(

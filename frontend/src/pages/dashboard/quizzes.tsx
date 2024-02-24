@@ -49,14 +49,23 @@ function QuizzesHeader({
             onChange={(event) => setSearch(event.target.value)}
           />
         </FormController>
-        <Button type="submit" className="btn-primary">
-          <SearchIcon className="w-6 h-6" />
-          Search
-        </Button>
+        <div className="tooltip tooltip-top" data-tip="Search a quiz">
+          <Button type="submit" className="btn-primary">
+            <SearchIcon className="w-6 h-6" />
+            Search
+          </Button>
+        </div>
 
-        <Button type="button" className="btn-secondary" onClick={onCreate}>
-          <FilePlus className="w-6 h-6" />
-        </Button>
+        <div className="tooltip tooltip-top" data-tip="Create a quiz">
+          <Button
+            type="button"
+            className="btn-secondary"
+            onClick={onCreate}
+            aria-label="Create a quiz"
+          >
+            <FilePlus className="w-6 h-6" />
+          </Button>
+        </div>
       </form>
     </header>
   );
@@ -198,7 +207,7 @@ export function Quizzes(): JSX.Element {
                 <tr key={quiz.id}>
                   <td>
                     <Link
-                      className="link link-hover link-primary"
+                      className="link link-hover link-neutral"
                       to={`/dashboard/quizzes/${quiz.id}`}
                     >
                       {quiz.name}
@@ -223,7 +232,7 @@ export function Quizzes(): JSX.Element {
             <Pagination
               page={page}
               setPage={setPage}
-              maxPages={3}
+              maxPages={2}
               totalPages={paginatedList.data?.totalPages ?? 0}
             />
           </div>

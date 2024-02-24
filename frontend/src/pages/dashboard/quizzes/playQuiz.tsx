@@ -85,6 +85,7 @@ export function PlayQuiz(): JSX.Element {
     onSuccess: (data) => {
       toast.success("The quiz session has been created!", {
         id: toastId,
+        position: "bottom-left",
         icon: <CheckCircleIcon className="w-4 h-4" />,
       });
       setToastId(undefined);

@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
 import Home from "./pages/home";
 import AuthLayout from "./layouts/AuthLayout";
 import { Login } from "./pages/login";
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <div>General</div>,
+            element: <Navigate to="quizzes" />,
           },
 
           {

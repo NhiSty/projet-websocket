@@ -36,7 +36,7 @@ function QuestionChoices({ question }: QuestionChoicesProps) {
           key={choices.id}
           className={cn(
             "rounded-md bg-gray-100 p-4 py-2 flex flex-row items-center gap-2",
-            { "text-success": choices.correct }
+            { "bg-success text-success-content": choices.correct }
           )}
         >
           {icon}

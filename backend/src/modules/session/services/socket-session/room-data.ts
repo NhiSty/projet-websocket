@@ -1,6 +1,6 @@
 import { QuestionWithChoices, QuizWithData } from 'src/types/quiz';
 import { Countdown } from './countdown';
-import { UserId } from 'src/types/opaque';
+import { AnswerId, UserId } from 'src/types/opaque';
 
 export enum RoomStatus {
   PENDING = 'pending',
@@ -17,8 +17,9 @@ export class RoomData {
   public quiz: QuizWithData;
   public questionIndex = 0;
   public countDown?: Countdown;
+  public owner: UserId;
 
-  public usersResponses = new Map<UserId, string[]>();
+  public usersResponses = new Map<UserId, AnswerId[]>();
 
   public set userLimit(limit: number) {
     this._usersLimit = limit > 0 ? limit : undefined;

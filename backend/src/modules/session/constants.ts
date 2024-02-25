@@ -1,4 +1,4 @@
-import { RoomId } from 'src/types/opaque';
+import { AnswerId, QuestionId, RoomId, UserId } from 'src/types/opaque';
 import { Quiz } from '@prisma/client';
 
 export enum WsEventType {
@@ -46,7 +46,7 @@ export interface WsEvent<WsEvent> {
 
 export interface UserInfo {
   username: string;
-  id: string;
+  id: UserId;
 }
 
 export interface ComposingEvent extends WsEvent<WsEventType.IS_COMPOSING> {
@@ -73,12 +73,12 @@ export interface JoinRoomEvent extends WsEvent<WsEventType.JOIN_ROOM> {
 export interface LeaveRoomEvent extends WsEvent<WsEventType.LEAVE_ROOM> {}
 
 export interface UserJoinedEvent extends WsEvent<WsEventType.USER_JOINED> {
-  userId: string;
+  userId: UserId;
   username: string;
 }
 
 export interface UserLeftEvent extends WsEvent<WsEventType.USER_LEFT> {
-  userId: string;
+  userId: UserId;
   username: string;
 }
 
@@ -92,8 +92,8 @@ export interface EndSessionEvent extends WsEvent<WsEventType.END_SESSION> {}
 export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
 
 export interface UserResponseEvent extends WsEvent<WsEventType.USER_RESPONSE> {
-  answers: string[];
-  questionId: string;
+  answers: AnswerId[];
+  questionId: QuestionId;
 }
 
 export type WsEventsMessages =

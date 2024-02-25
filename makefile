@@ -4,6 +4,10 @@ FRONTEND_ENV = frontend/.env
 # ====================================
 # Development commands
 # ====================================
+deploy-preprod: setup-dev
+	@cd backend && pnpm run db:deploy --force && pnpm run db:seed
+
+
 deploy-dev: setup-dev
 	@docker compose -f docker-compose.dev.yaml up -d
 	@echo "Adminer available at: http://localhost:8888"

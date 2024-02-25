@@ -29,7 +29,7 @@ import { UserData } from './user-data';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { QuizQuestionService } from 'src/modules/shared/services/quiz/quiz-question.service';
 import { Countdown } from './countdown';
-import { QuizWithData } from 'src/types/quiz';
+import { QuizWithData, RoomResponsesPercentage } from 'src/types/quiz';
 import { JaroWinklerDistance } from 'natural';
 
 @Injectable()
@@ -281,7 +281,7 @@ export class SocketSessionService {
       message: data.message,
       timestamp: Date.now(),
       user: {
-        id: user.id,
+        id: user.id as UserId,
         username: user.username,
       },
     } satisfies ChatMessageEvent);
@@ -457,7 +457,7 @@ export class SocketSessionService {
           // Allow only one answer that is either "true" or "false"
           if (
             answers.length !== 1 ||
-            (answers[0] !== 'true' && answers[0] !== 'false')
+            !question.choices.find((e) => e.id === answers[0])
           ) {
             throw new UnauthorizedException();
           }
@@ -468,7 +468,7 @@ export class SocketSessionService {
           // Allow only one answer that must be in the choices list
           if (
             answers.length !== 1 ||
-            !question.choices.map((c) => c.id).includes(answers[0])
+            !question.choices.find((c) => c.id == answers[0])
           ) {
             throw new UnauthorizedException();
           }
@@ -478,7 +478,7 @@ export class SocketSessionService {
         {
           // Allow multiple answers that must be in the choices list
           for (const answer of answers) {
-            if (!question.choices.map((c) => c.id).includes(answer)) {
+            if (!question.choices.find((c) => c.id === answer)) {
               throw new UnauthorizedException();
             }
           }
@@ -489,8 +489,10 @@ export class SocketSessionService {
     roomData.usersResponses.set(userId, answers);
 
     client.emit(WsEventType.USER_RESPONSE);
+    this.eventEmitter.emit(WsEventType.USER_RESPONSE, roomId);
   }
 
+  // To prevent too much computation, we're doing some caching for the next time
   private compareCache = new Map<[string, string], number>();
 
   private jaroWinkler(s1: string, s2: string): number {
@@ -532,5 +534,48 @@ export class SocketSessionService {
         id: room.id as RoomId,
         name: room.quiz.name,
       }));
+  }
+
+  public sendResponsePercentage(roomId: RoomId): void {
+    // If the room doesn't exist
+    if (!this.hasRoom(roomId)) {
+      throw new NotFoundException();
+    }
+
+    const roomData = this.roomData.get(roomId);
+    const roomUsers = this.roomUsers.get(roomId);
+
+    const percentages: RoomResponsesPercentage = {
+      total: roomUsers.size,
+    };
+
+    // For each users in the room
+    for (const [, resps] of roomData.usersResponses) {
+      // For each response of the user
+      for (const resp of resps) {
+        // If the response is not in the map, add it
+        if (!percentages[resp]) {
+          percentages[resp] = 0;
+        }
+        percentages[resp]++;
+      }
+    }
+
+    // Users that will receive the percentage
+    const destUsers: UserId[] = [];
+    destUsers.push(roomData.quiz.userId as UserId);
+
+    // Append users that did respond to the question
+    for (const [userId] of roomUsers) {
+      if (roomData.usersResponses.has(userId)) {
+        destUsers.push(userId);
+      }
+    }
+
+    // Finally, emit the percentage to all the selected users
+    for (const userId of destUsers) {
+      const user = roomUsers.get(userId);
+      user.socket.emit(WsEventType.USER_RESPONSE_RESULT, percentages);
+    }
   }
 }

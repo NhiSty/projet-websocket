@@ -314,4 +314,9 @@ export class MessageGateway
       client.emit(WsErrorType.UNKNOWN_ERROR, { message });
     }
   }
+
+  @OnEvent(WsEventType.USER_RESPONSE)
+  public handleOnUserResponse(roomId: RoomId) {
+    this.socketSession.sendResponsePercentage(roomId);
+  }
 }

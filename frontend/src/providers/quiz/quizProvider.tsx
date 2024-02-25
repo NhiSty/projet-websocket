@@ -13,7 +13,7 @@ import {
 import { useWS } from "../socketio";
 import { toast } from "sonner";
 import { InfoIcon } from "lucide-react";
-import { Question, Quiz } from "#/api/types";
+import { Question, Quiz, RoomResponsesPercentage } from "#/api/types";
 import { useUser } from "#/api/auth.queries";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +32,7 @@ export interface QuizContextData {
   question: Question | null;
   setResponse: (value: string[]) => void;
   userResponse: string[];
+  usersAnswers?: RoomResponsesPercentage;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -51,6 +52,9 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
   const [question, setQuestion] = useState<Question | null>(null);
   const [userResponse, setUserResponse] = useState<string[]>([]);
+  const [usersAnswers, setUsersAnswers] = useState<
+    RoomResponsesPercentage | undefined
+  >(undefined);
 
   useEffect(() => {
     ws.on(WsEventType.USER_JOINED, (data: UserJoinedEvent) => {
@@ -93,6 +97,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
 
     ws.on(WsEventType.QUESTION, (question: Question) => {
       setUserResponse([]);
+      setUsersAnswers(undefined);
       setQuestion(question);
     });
 
@@ -106,6 +111,10 @@ export function QuizProvider({ children }: QuizProviderProps) {
       navigate("/");
     });
 
+    ws.on(WsEventType.USER_RESPONSE_RESULT, (data: RoomResponsesPercentage) => {
+      setUsersAnswers(data);
+    });
+
     return () => {
       ws.off(WsEventType.USER_JOINED);
       ws.off(WsEventType.USER_LEFT);
@@ -116,6 +125,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ws.off(WsEventType.QUESTION);
       ws.off(WsEventType.USER_RESPONSE);
       ws.off(WsEventType.ALREADY_STARTED);
+      ws.off(WsEventType.USER_RESPONSE_RESULT);
       ws.off("disconnect");
     };
   }, [navigate, user?.id, ws]);
@@ -165,6 +175,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     question,
     setResponse,
     userResponse,
+    usersAnswers,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

@@ -2,7 +2,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { UserInfo, WsEventType } from '../../constants';
-import { RoomId } from 'src/types/opaque';
+import { RoomId, UserId } from 'src/types/opaque';
 
 export const TIME_TO_COMPOSE = 5000;
 
@@ -43,7 +43,7 @@ export class UserData {
 
   public toJSON(): UserInfo {
     return {
-      id: this.user.id,
+      id: this.user.id as UserId,
       username: this.user.username,
     };
   }

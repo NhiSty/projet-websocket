@@ -41,3 +41,7 @@ export interface Quiz {
   author: User;
   questions: Question[];
 }
+
+export type RoomResponsesPercentage = {
+  total: number;
+} & Record<string, number>;

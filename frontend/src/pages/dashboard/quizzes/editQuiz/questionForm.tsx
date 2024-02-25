@@ -2,7 +2,7 @@ import { Question, QuestionType } from "#/api/types";
 import { Button } from "#/components/form/Button";
 import { FormController } from "#/components/form/FormController";
 import { Input } from "#/components/form/Input";
-import { useState, type ReactElement, useEffect } from "react";
+import { useState, type ReactElement } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";

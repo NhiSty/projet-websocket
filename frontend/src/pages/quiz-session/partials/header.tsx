@@ -1,6 +1,7 @@
 import { Button } from "#/components/form/Button";
 import { useQuizSession } from "#/providers/quiz";
 import { cn } from "#/utils/css";
+import { AlarmClockPlusIcon } from "lucide-react";
 
 interface SessionHeaderProps {
   title: string;
@@ -13,7 +14,8 @@ export function SessionHeader({
   sidebarExpanded = false,
   onExpandSidebar,
 }: SessionHeaderProps): JSX.Element {
-  const { endSession, leaveSession, isOwner } = useQuizSession();
+  const { endSession, leaveSession, isOwner, addTime, status } =
+    useQuizSession();
 
   // On the page open, connect open the websocket session
   return (
@@ -23,9 +25,44 @@ export function SessionHeader({
       </div>
       <div className="flex-1 gap-2 justify-end">
         {isOwner ? (
-          <Button className="btn-ghost" onClick={() => endSession()}>
-            End session
-          </Button>
+          <>
+            {status === "started" && (
+              <div className="dropdown min-w-max">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn m-1 inline-flex gap-1 w-full"
+                >
+                  <AlarmClockPlusIcon className="w-5 h-5" />
+                  <span className="sr-only md:not-sr-only">Add Time</span>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content z-20 menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  <li>
+                    <button type="button" onClick={() => addTime(5)}>
+                      Add 5 seconds
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" onClick={() => addTime(10)}>
+                      Add 10 seconds
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" onClick={() => addTime(15)}>
+                      Add 15 seconds
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+
+            <Button className="btn-ghost" onClick={() => endSession()}>
+              End session
+            </Button>
+          </>
         ) : (
           <Button className="btn-ghost" onClick={() => leaveSession()}>
             Leave session

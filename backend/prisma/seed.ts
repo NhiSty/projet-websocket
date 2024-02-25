@@ -3,6 +3,8 @@ import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
+type SeedUser = Omit<User, 'id' | 'globalPoints'>;
+
 async function main() {
   await prisma.user.deleteMany({
     where: {
@@ -12,10 +14,10 @@ async function main() {
       ],
     },
   });
-  const users: Omit<User, 'id'>[] = [];
+  const users: SeedUser[] = [];
 
   // Create super admin user
-  const adminUser: Omit<User, 'id'> = {
+  const adminUser: SeedUser = {
     username: 'admin',
     password: await argon2.hash('admin'),
     role: Role.SUPERADMIN,
@@ -24,7 +26,7 @@ async function main() {
 
   // Generate 30 random users
   for (let i = 0; i < 30; i++) {
-    const user: Omit<User, 'id'> = {
+    const user: SeedUser = {
       username: `user${i}`,
       password: await argon2.hash('password'),
       role: Role.USER,
@@ -35,7 +37,7 @@ async function main() {
 
   // Generate 10 random admin
   for (let i = 0; i < 10; i++) {
-    const user: Omit<User, 'id'> = {
+    const user: SeedUser = {
       username: `admin${i}`,
       password: await argon2.hash('password'),
       role: Role.ADMIN,

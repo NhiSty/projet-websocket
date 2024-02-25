@@ -30,6 +30,9 @@ export enum WsEventType {
 
   USER_RESPONSE = 'user-response',
   USER_RESPONSE_RESULT = 'user-response-result',
+  USER_POINTS = 'user-points',
+
+  QUESTION_ADD_TIME = 'question-add-time',
 }
 
 export enum WsErrorType {
@@ -49,6 +52,7 @@ export interface WsEvent<WsEvent> {
 export interface UserInfo {
   username: string;
   id: UserId;
+  points: number;
 }
 
 export interface ComposingEvent extends WsEvent<WsEventType.IS_COMPOSING> {
@@ -96,6 +100,11 @@ export interface SessionEndedEvent extends WsEvent<WsEventType.SESSION_ENDED> {}
 export interface UserResponseEvent extends WsEvent<WsEventType.USER_RESPONSE> {
   answers: AnswerId[];
   questionId: QuestionId;
+}
+
+export interface QuestionAddTimeEvent
+  extends WsEvent<WsEventType.QUESTION_ADD_TIME> {
+  time: number;
 }
 
 export type WsEventsMessages =

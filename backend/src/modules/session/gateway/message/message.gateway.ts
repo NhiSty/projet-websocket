@@ -16,6 +16,7 @@ import { SocketSessionService } from '../../services/socket-session/socket-sessi
 import {
   ChatMessageEvent,
   JoinRoomEvent,
+  QuestionAddTimeEvent,
   UserInfo,
   UserResponseEvent,
   WsErrorType,
@@ -320,5 +321,44 @@ export class MessageGateway
   @OnEvent(WsEventType.USER_RESPONSE)
   public handleOnUserResponse(roomId: RoomId) {
     this.socketSession.sendResponsePercentage(roomId);
+  }
+
+  @OnEvent(WsEventType.USER_POINTS)
+  public handleOnUserPoints(roomId: RoomId, users: UserInfo[]) {
+    this.server.to(roomId).emit(WsEventType.USER_POINTS, { users });
+  }
+
+  @SubscribeMessage(WsEventType.QUESTION_ADD_TIME)
+  @UseGuards(AuthWsGuard)
+  public async handleAddTime(client: Socket, data: QuestionAddTimeEvent) {
+    try {
+      this.socketSession.addTime(client, data.time);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      if (error instanceof UnauthorizedException) {
+        client.emit(WsErrorType.ROOM_NOT_FOUND);
+        return;
+      }
+
+      let message: string;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = 'Unexpected error';
+        console.error(message);
+      }
+      client.emit(WsErrorType.UNKNOWN_ERROR, { message });
+    }
+  }
+
+  @OnEvent(WsEventType.QUESTION_ADD_TIME)
+  public handleOnAddTime(roomId: RoomId, seconds: number) {
+    this.server
+      .to(roomId)
+      .emit(WsEventType.QUESTION_ADD_TIME, { time: seconds });
   }
 }

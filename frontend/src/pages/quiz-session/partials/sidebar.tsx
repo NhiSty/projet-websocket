@@ -14,15 +14,18 @@ export function SessionSidebar(): JSX.Element {
   const [currentTab, setCurrentTab] = useState<"chat" | "info">("chat");
 
   return (
-    <aside className="bg-white w-96 md:max-w-md md:w-full relative flex flex-col">
-      <header className="p-4 sticky top-0 bg-white z-10">
-        <div role="tablist" className="tabs tabs-boxed">
+    <aside className="bg-white md:w-96 md:max-w-md z-10 md:z-0 md:relative flex flex-col absolute top-0 left-0 bottom-0 right-0">
+      <header className="p-4 sticky top-0 bg-white">
+        <div role="tablist" className="tabs tabs-boxed flex flex-row">
           <button
             type="button"
             role="tab"
-            className={cn("tab relative inline-flex items-center gap-2", {
-              "tab-active": currentTab === "chat",
-            })}
+            className={cn(
+              "tab flex-1 relative inline-flex items-center gap-2",
+              {
+                "tab-active": currentTab === "chat",
+              }
+            )}
             onClick={() => setCurrentTab("chat")}
           >
             {hasNewMessages > 0 && (
@@ -39,7 +42,7 @@ export function SessionSidebar(): JSX.Element {
           <button
             role="tab"
             type="button"
-            className={cn("tab inline-flex items-center gap-2", {
+            className={cn("flex-1 tab inline-flex items-center gap-2", {
               "tab-active": currentTab === "info",
             })}
             onClick={() => setCurrentTab("info")}

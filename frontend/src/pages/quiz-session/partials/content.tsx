@@ -5,6 +5,7 @@ import { ContentResult } from "./contentResults";
 import { ContentQuestion } from "./contentQuestion";
 import { cn } from "#/utils/css";
 import { ContentAdminResult } from "./contentAdminResult";
+import { ContentEnded } from "./contentEnded";
 
 function CountDown({ countDown }: { countDown: number | null }) {
   const [pulse, setPulse] = useState(false);
@@ -91,12 +92,7 @@ export function SessionContent(): JSX.Element {
   if (status === "ended") {
     return (
       <SessionContainer>
-        <div className="card bg-base-100 rounded-lg border border-base-300">
-          <div className="card-body">
-            {/* TODO: change the text and add more informations */}
-            <h2 className="card-title">The session is ended</h2>
-          </div>
-        </div>
+        <ContentEnded />
       </SessionContainer>
     );
   }

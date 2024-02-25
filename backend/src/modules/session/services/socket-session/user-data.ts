@@ -8,6 +8,7 @@ export const TIME_TO_COMPOSE = 5000;
 
 export class UserData {
   public isComposing: boolean;
+  public points: number = 0;
 
   private composingTimeout: NodeJS.Timeout;
 
@@ -45,6 +46,7 @@ export class UserData {
     return {
       id: this.user.id as UserId,
       username: this.user.username,
+      points: this.points,
     };
   }
 }

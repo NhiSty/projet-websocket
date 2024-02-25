@@ -64,6 +64,7 @@ export class UserService {
         username: true,
         password: true,
         role: true,
+        globalPoints: true,
       },
     });
   }
@@ -103,6 +104,7 @@ export class UserService {
         id: true,
         username: true,
         role: true,
+        globalPoints: true,
       },
     });
 
@@ -138,6 +140,24 @@ export class UserService {
       },
       data: {
         role: user.role,
+      },
+    });
+  }
+
+  /**
+   * Add points to user
+   * @param user - The user
+   * @param points - The points to add
+   */
+  public async addPoints(user: User, points: number): Promise<User> {
+    return await this.databaseService.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        globalPoints: {
+          increment: points,
+        },
       },
     });
   }

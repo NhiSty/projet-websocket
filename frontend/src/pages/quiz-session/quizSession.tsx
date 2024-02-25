@@ -125,7 +125,7 @@ export function QuizSession(): JSX.Element {
         sidebarExpanded={sidebarExpanded}
       />
 
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row flex-1 relative">
         <SessionContent />
         {sidebarExpanded && <SessionSidebar />}
       </div>

@@ -19,7 +19,10 @@ export class RoomData {
   public countDown?: Countdown;
   public owner: UserId;
 
-  public usersResponses = new Map<UserId, AnswerId[]>();
+  public usersResponses = new Map<
+    UserId,
+    { time: number; answers: AnswerId[] }
+  >();
 
   public set userLimit(limit: number) {
     this._usersLimit = limit > 0 ? limit : undefined;

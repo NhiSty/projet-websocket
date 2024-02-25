@@ -37,8 +37,8 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 - [x] Affichage en temps réel du nombre de clients ayant choisi chaque option de réponse. 
 
 7. Notation et résultats : 
-- [ ] Calcul des scores côté serveur basé sur la justesse et la rapidité des réponses. 
-- [ ] Affichage des scores finaux et des bonnes réponses aux clients à la fin du quiz. 
+- [x] Calcul des scores côté serveur basé sur la justesse et la rapidité des réponses. 
+- [x] Affichage des scores finaux et des bonnes réponses aux clients à la fin du quiz. 
 
 8. Dockerisation : 
 - [x] L’ensemble de l'application doit être conteneurisé à l'aide de Docker pour faciliter le déploiement et les tests (on ne parle pas des tests u mais tests user). 
@@ -58,7 +58,7 @@ Pour renforcer l'utilisation de Socket.IO et pour mettre en évidence sa flexibi
     
   * [x] Notifications en temps réel : Envoyer des annonces ou des alertes concernant les événements du quiz, comme le début du quiz, le passage à la prochaine question, ou les rappels avant la fin du temps imparti pour une question.
     
-  * [ ] Réglage du temps par question en temps réel : Permettre aux participants (vote) ou à l'administrateur de modifier le temps imparti pour les questions suivantes en cours de quiz, en affichant la mise à jour instantanément à tous les clients.
+  * [x] Réglage du temps par question en temps réel : Permettre aux participants (vote) ou à l'administrateur de modifier le temps imparti pour les questions suivantes en cours de quiz, en affichant la mise à jour instantanément à tous les clients. (Pour ce point, on a décidé d'implémenter la fonctionnalité pour modifier le temps pour la question en cours car il était plus judicieux de le faire de cette manière)
     
 Ces fonctionnalités avancées doivent non seulement démontrer l'appropriation de la technologie WebSocket, mais également ajouter de la valeur et de la richesse à l'expérience utilisateur globale du quiz en temps réel.
 La mise en œuvre de ces fonctionnalités avancées nécessitera une planification et une coordination minutieuse pour s'assurer qu'elles s'intègrent harmonieusement dans l'application sans perturber les fonctionnalités existantes.
@@ -67,14 +67,14 @@ Stockage de données persistant :
 - [x] Intégration avec une base de données (SQL ou NoSQL) pour stocker les données de quiz et les résultats historiques. 
 
 Authentification des utilisateurs : 
-- [ ] Solution pour suivre les utilisateurs et les scores au fil du temps. 
+- [x] Solution pour suivre les utilisateurs et les scores au fil du temps. 
 - [x] Différents niveaux d'accès pour les participants au quiz et les administrateurs. 
 
 Gestion avancée des salles : 
 - [x] Fonctionnalités pour gérer les salles, comme la protection par mot de passe ou les limites d'utilisateurs. 
 
 Tableau de classement en temps réel : 
-- [ ] Mise à jour et affichage continue des classements des utilisateurs en fonction des scores tout au long du quiz. 
+- [x] Mise à jour et affichage continue des classements des utilisateurs en fonction des scores tout au long du quiz. 
 
 Paramètres de quiz personnalisables : 
 - [x] Permettre diverses configurations pour les quiz (par exemple, ordre aléatoire des questions, limites de temps pour les questions). 

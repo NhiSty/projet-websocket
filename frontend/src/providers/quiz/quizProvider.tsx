@@ -5,14 +5,16 @@ import React, {
   useState,
 } from "react";
 import {
+  QuestionAddTimeEvent,
   UserInfo,
   UserJoinedEvent,
   UserLeftEvent,
+  UserPointsEvent,
   WsEventType,
 } from "../socketio/constants";
 import { useWS } from "../socketio";
 import { toast } from "sonner";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, StarsIcon } from "lucide-react";
 import { Question, Quiz, RoomResponsesPercentage } from "#/api/types";
 import { useUser } from "#/api/auth.queries";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +36,8 @@ export interface QuizContextData {
   userResponse: string[];
   usersAnswers?: RoomResponsesPercentage;
   showResults: boolean;
+
+  addTime: (seconds: number) => void;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -120,6 +124,22 @@ export function QuizProvider({ children }: QuizProviderProps) {
       setUsersAnswers(data);
     });
 
+    ws.on(WsEventType.USER_POINTS, (data: UserPointsEvent) => {
+      setUsers(data.users);
+    });
+
+    ws.on(WsEventType.FINISHED_QUESTIONS, () => {
+      setShowResults(true);
+      setStatus("ended");
+    });
+
+    ws.on(WsEventType.QUESTION_ADD_TIME, (data: QuestionAddTimeEvent) => {
+      toast.info(`Owner allowed ${data.time} extra seconds`, {
+        icon: <StarsIcon className="w-5 h-5" />,
+        position: "bottom-left",
+      });
+    });
+
     return () => {
       ws.off(WsEventType.USER_JOINED);
       ws.off(WsEventType.USER_LEFT);
@@ -131,6 +151,9 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ws.off(WsEventType.USER_RESPONSE);
       ws.off(WsEventType.ALREADY_STARTED);
       ws.off(WsEventType.USER_RESPONSE_RESULT);
+      ws.off(WsEventType.USER_POINTS);
+      ws.off(WsEventType.FINISHED_QUESTIONS);
+      ws.off(WsEventType.QUESTION_ADD_TIME);
       ws.off("disconnect");
     };
   }, [navigate, user?.id, ws]);
@@ -167,6 +190,16 @@ export function QuizProvider({ children }: QuizProviderProps) {
     [wsSend, question]
   );
 
+  const addTime = useCallback(
+    (seconds: number) => {
+      wsSend({
+        event: WsEventType.QUESTION_ADD_TIME,
+        time: seconds,
+      });
+    },
+    [wsSend]
+  );
+
   const values: QuizContextData = {
     users,
     quiz,
@@ -182,6 +215,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     userResponse,
     usersAnswers,
     showResults,
+    addTime,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

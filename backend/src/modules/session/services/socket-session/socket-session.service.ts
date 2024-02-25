@@ -167,8 +167,10 @@ export class SocketSessionService {
 
     // Join the room
     socket.join(roomId);
+    const userData = new UserData(socket, roomId, user, this.eventEmitter);
+    userData.points;
     // Then set the new one
-    users.set(userId, new UserData(socket, roomId, user, this.eventEmitter));
+    users.set(userId, userData);
     this.usersRooms.set(userId, roomId);
 
     // Emit the room information
@@ -276,16 +278,13 @@ export class SocketSessionService {
       throw new NotFoundException();
     }
 
-    const user = await this.userService.find(userId);
+    const user = roomUsers.get(userId);
 
     this.eventEmitter.emit(WsEventType.CHAT_MESSAGE, roomId, {
       event: data.event,
       message: data.message,
       timestamp: Date.now(),
-      user: {
-        id: user.id as UserId,
-        username: user.username,
-      },
+      user: user.toJSON(),
     } satisfies ChatMessageEvent);
   }
 
@@ -381,8 +380,16 @@ export class SocketSessionService {
       throw new NotFoundException();
     }
 
+    // Send the response percentage to the users
+    this.sendResponsePercentage(roomId);
+    // Compute points for each user
+    await this.computePoints(roomId);
+    // Send the points to the users
+    const usersInRoom = this.getUsersInRoom(roomId);
+    this.eventEmitter.emit(WsEventType.USER_POINTS, roomId, usersInRoom);
+
     roomData.countDown.stop();
-    roomData.countDown = new Countdown(500, (count) => {
+    roomData.countDown = new Countdown(5, (count) => {
       if (count > 0) {
         this.eventEmitter.emit(
           WsEventType.INTER_QUESTION_COUNTDOWN,
@@ -504,7 +511,10 @@ export class SocketSessionService {
         break;
     }
 
-    roomData.usersResponses.set(userId, answers);
+    roomData.usersResponses.set(userId, {
+      answers,
+      time: roomData.countDown.count,
+    });
 
     client.emit(WsEventType.USER_RESPONSE);
     this.eventEmitter.emit(WsEventType.USER_RESPONSE, roomId);
@@ -570,7 +580,7 @@ export class SocketSessionService {
     // For each users in the room
     for (const [, resps] of roomData.usersResponses) {
       // For each response of the user
-      for (const resp of resps) {
+      for (const resp of resps.answers) {
         // If the response is not in the map, add it
         if (!percentages[resp]) {
           percentages[resp] = 0;
@@ -595,5 +605,106 @@ export class SocketSessionService {
       const user = roomUsers.get(userId);
       user.socket.emit(WsEventType.USER_RESPONSE_RESULT, percentages);
     }
+  }
+
+  private async computePoints(roomId: RoomId) {
+    const roomData = this.roomData.get(roomId);
+    const roomUsers = this.roomUsers.get(roomId);
+
+    if (!roomData || !roomUsers) {
+      throw new NotFoundException();
+    }
+
+    const question = roomData.questions[roomData.questionIndex];
+    if (!question) {
+      throw new NotFoundException();
+    }
+
+    // Each correct answer gives 10 point
+    // Then, we multiply a bonus factor based on the time the user took to answer
+
+    const correctAnswers = question.choices.filter((c) => c.correct);
+
+    // For each user in the room
+    for (const [userId, resps] of roomData.usersResponses) {
+      let points = 0;
+
+      // For each response of the user
+      for (const resp of resps.answers) {
+        const answer = correctAnswers.find((c) => c.id === resp);
+
+        // If the answer is correct, compute the points
+        if (answer) {
+          points += 10;
+        }
+        // Otherwise, set the points to 0 for the whole question
+        else {
+          points = 0;
+          break;
+        }
+      }
+
+      // Multiply the points by the time factor (need to be inverted because the lower the time, the higher the points + smoothed with a 1 decimal factor)
+      const timeFactor = resps.time / question.duration;
+      points *= timeFactor;
+
+      // Prevent negative points and round the points
+      points = Math.max(0, points);
+      points = Math.round(points);
+
+      // Set the points to the user
+      roomUsers.get(userId).points += points;
+    }
+  }
+
+  @OnEvent(WsEventType.FINISHED_QUESTIONS, { nextTick: true })
+  public async onFinishedQuestions(roomId: RoomId) {
+    // When the session ends, compute the points to database
+    const roomData = this.roomData.get(roomId);
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    const roomUsers = this.roomUsers.get(roomId);
+    if (!roomUsers) {
+      throw new NotFoundException();
+    }
+
+    // For each user in the room
+    for (const [, user] of roomUsers) {
+      // Compute the points
+      await this.userService.addPoints(user.user, user.points);
+    }
+  }
+
+  public addTime(client: Socket, time: number) {
+    const userId = this.getUserId(client);
+    if (!this.usersRooms.has(userId)) {
+      throw new NotFoundException();
+    }
+
+    const roomId = this.usersRooms.get(userId);
+    const roomData = this.roomData.get(roomId);
+    // If there is no room data
+    if (!roomData) {
+      throw new NotFoundException();
+    }
+
+    if (roomData.status !== RoomStatus.STARTED) {
+      throw new UnauthorizedException();
+    }
+
+    const owner = roomData.quiz.userId as UserId;
+    if (owner !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    if (time < 0) {
+      throw new UnauthorizedException();
+    }
+
+    roomData.countDown.count = roomData.countDown.count + time;
+
+    this.eventEmitter.emit(WsEventType.QUESTION_ADD_TIME, roomId, time);
   }
 }

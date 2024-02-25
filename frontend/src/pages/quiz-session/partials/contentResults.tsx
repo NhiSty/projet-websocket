@@ -29,7 +29,7 @@ function AnswersList({
       {question.choices.map((item) => {
         const count = usersAnswers[item.id] || 0;
         return (
-          <p
+          <div
             key={item.id}
             className={cn(
               "btn group px-6 cursor-default relative overflow-clip"
@@ -65,7 +65,7 @@ function AnswersList({
                 {Math.ceil((count / usersAnswers.total) * 100)}%
               </span>
             </div>
-          </p>
+          </div>
         );
       })}
     </div>

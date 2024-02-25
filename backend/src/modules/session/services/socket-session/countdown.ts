@@ -21,4 +21,12 @@ export class Countdown {
   public stop() {
     clearInterval(this.intervalId);
   }
+
+  public get count() {
+    return this.counter;
+  }
+
+  public set count(value: number) {
+    this.counter = value > 0 ? value : 0;
+  }
 }

@@ -45,7 +45,7 @@ export function SessionSidebar(): JSX.Element {
             onClick={() => setCurrentTab("info")}
           >
             <InfoIcon className="w-5 h-5" />
-            Info
+            Participants
           </button>
         </div>
       </header>

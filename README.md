@@ -17,7 +17,7 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
  
 2. Communication en temps réel avec Socket.IO : 
 - [x] Établissement de connexions WebSocket entre le serveur et les clients pour une communication bidirectionnelle. 
-- [ ] Diffusion des questions et réception des réponses en temps réel. 
+- [x] Diffusion des questions et réception des réponses en temps réel. 
 
 3. Fonctionnalité de la salle de quiz : 
 - [x] Mécanisme permettant aux utilisateurs de participer à un quiz en utilisant un identifiant unique pour la session. 
@@ -25,7 +25,7 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 
 4. Minuteur côté serveur : 
 - [x] Un compteur à rebours géré par le serveur pour chaque question afin de garantir un timing synchronisé pour tous les clients. 
-- [ ] Progression automatique vers la prochaine question à l'expiration du minuteur.
+- [x] Progression automatique vers la prochaine question à l'expiration du minuteur.
 - [x] Affichage du minuteur sur le front
 
 5. Déroulement des questions et réponses : 
@@ -34,7 +34,7 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 
 6. Retour en direct sur les réponses : 
 - [x] Un retour immédiat aux clients après chaque question, indiquant si leur réponse était correcte ou non. 
-- [ ] Affichage en temps réel du nombre de clients ayant choisi chaque option de réponse. 
+- [x] Affichage en temps réel du nombre de clients ayant choisi chaque option de réponse. 
 
 7. Notation et résultats : 
 - [ ] Calcul des scores côté serveur basé sur la justesse et la rapidité des réponses. 
@@ -56,7 +56,7 @@ Pour renforcer l'utilisation de Socket.IO et pour mettre en évidence sa flexibi
     
   * [x] Chat en direct lors des quiz : Mettre en place un système de chat où les participants peuvent discuter pendant un quiz, avec une attention particulière à la gestion des messages en temps réel et à la prévention de la triche (optionnel).
     
-  * [ ] Notifications en temps réel : Envoyer des annonces ou des alertes concernant les événements du quiz, comme le début du quiz, le passage à la prochaine question, ou les rappels avant la fin du temps imparti pour une question.
+  * [x] Notifications en temps réel : Envoyer des annonces ou des alertes concernant les événements du quiz, comme le début du quiz, le passage à la prochaine question, ou les rappels avant la fin du temps imparti pour une question.
     
   * [ ] Réglage du temps par question en temps réel : Permettre aux participants (vote) ou à l'administrateur de modifier le temps imparti pour les questions suivantes en cours de quiz, en affichant la mise à jour instantanément à tous les clients.
     

@@ -3,6 +3,7 @@ import { CreateQuestionForm } from "./questionForm";
 import { FormController } from "#/components/form/FormController";
 import { XCircleIcon } from "lucide-react";
 import { Radio } from "#/components/form/Radio";
+import { useEffect } from "react";
 
 export function BinaryForm(): JSX.Element | null {
   const {
@@ -27,6 +28,19 @@ export function BinaryForm(): JSX.Element | null {
     setValue(`choices.${index}.correct`, value, { shouldValidate: true });
     trigger("choices");
   };
+
+  useEffect(() => {
+    if (
+      fields.length != 2 &&
+      fields[0]?.choice !== "True" &&
+      fields[1]?.choice !== "False"
+    ) {
+      setValue("choices", [
+        { choice: "True", correct: true },
+        { choice: "False", correct: false },
+      ]);
+    }
+  }, [fields, setValue]);
 
   return (
     <section className="p-4 border-t border-gray-300 mt-4 flex flex-col gap-4">

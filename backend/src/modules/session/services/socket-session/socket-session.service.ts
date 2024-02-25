@@ -146,8 +146,10 @@ export class SocketSessionService {
         }
       }
 
+      // Get the user count: total users - 1 owner
+      const usersCount = users.size - 1;
       // If there is a user limit on the room and the limit is reached, return
-      if (data.userLimit && users.size >= data.userLimit) {
+      if (data.userLimit && usersCount >= data.userLimit) {
         throw new RoomFullExceptions();
       }
     }
@@ -379,8 +381,24 @@ export class SocketSessionService {
       throw new NotFoundException();
     }
 
-    roomData.nextQuestion();
-    this.eventEmitter.emit(WsEventType.NEXT_QUESTION, roomId);
+    roomData.countDown.stop();
+    roomData.countDown = new Countdown(500, (count) => {
+      if (count > 0) {
+        this.eventEmitter.emit(
+          WsEventType.INTER_QUESTION_COUNTDOWN,
+          roomId,
+          count,
+        );
+      } else {
+        this.eventEmitter.emit(
+          WsEventType.INTER_QUESTION_COUNTDOWN_END,
+          roomId,
+        );
+        roomData.nextQuestion();
+        this.eventEmitter.emit(WsEventType.NEXT_QUESTION, roomId);
+      }
+    });
+    roomData.countDown.start();
   }
 
   public sendQuestionsList(roomId: RoomId) {

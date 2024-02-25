@@ -63,7 +63,7 @@ export function CreateUserModal({
     mutationKey: QueryConstants.DELETE_USER,
     mutationFn: (data: CreateUser) => createUser(data),
     onSuccess: () => {
-      toast.success("User updated", {
+      toast.success("User Created", {
         icon: <CheckCircleIcon className="w-4 h-4" />,
         id: toastId,
       });

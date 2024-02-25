@@ -15,14 +15,10 @@ function AnswersList({ question }: { question: Question }) {
   const Icon = question.type === "MULTIPLE" ? SquareIcon : CircleIcon;
   const CheckIcon = question.type === "MULTIPLE" ? CheckSquare : CircleDotIcon;
 
-  if (!usersAnswers) {
-    return null;
-  }
-
   return (
     <div className="flex flex-col gap-2 justify-around">
       {question.choices.map((item) => {
-        const count = usersAnswers[item.id] || 0;
+        const count = usersAnswers?.[item.id] || 0;
         return (
           <p
             key={item.id}
@@ -32,7 +28,7 @@ function AnswersList({ question }: { question: Question }) {
           >
             <progress
               value={count}
-              max={usersAnswers.total}
+              max={usersAnswers?.total || 0}
               className={cn(
                 "absolute inset-0 w-full h-full progress bg-transparent appearance-none rounded-none",
                 "[&::-webkit-progress-bar]:rounded-l-none [&::-webkit-progress-value]:rounded-l-none",
@@ -56,7 +52,7 @@ function AnswersList({ question }: { question: Question }) {
               </div>
               <span className="flex-1">{item.choice}</span>
               <span className="text-sm">
-                {Math.ceil((count / usersAnswers.total) * 100)}%
+                {Math.ceil((count / (usersAnswers?.total || 1)) * 100)}%
               </span>
             </div>
           </p>

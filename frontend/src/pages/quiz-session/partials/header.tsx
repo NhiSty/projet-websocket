@@ -1,7 +1,6 @@
 import { Button } from "#/components/form/Button";
 import { useQuizSession } from "#/providers/quiz";
 import { cn } from "#/utils/css";
-import { MenuIcon, XIcon } from "lucide-react";
 
 interface SessionHeaderProps {
   title: string;
@@ -24,27 +23,21 @@ export function SessionHeader({
       </div>
       <div className="flex-1 gap-2 justify-end">
         {isOwner ? (
-          <Button className="btn btn-ghost" onClick={() => endSession()}>
+          <Button className="btn-ghost" onClick={() => endSession()}>
             End session
           </Button>
         ) : (
-          <Button className="btn btn-ghost" onClick={() => leaveSession()}>
+          <Button className="btn-ghost" onClick={() => leaveSession()}>
             Leave session
           </Button>
         )}
         <Button
-          className="btn-square btn-ghost"
-          title="Toggle sidebar"
+          role="switch"
+          aria-checked={sidebarExpanded}
+          className={cn("btn-ghost", { "btn-active": sidebarExpanded })}
           onClick={() => onExpandSidebar?.(!sidebarExpanded)}
         >
-          <span
-            className={cn("swap swap-rotate", {
-              "swap-active": sidebarExpanded,
-            })}
-          >
-            <MenuIcon className="w-5 h-5 swap-off" />
-            <XIcon className="w-5 h-5 swap-on" />
-          </span>
+          Conversation
         </Button>
       </div>
     </header>

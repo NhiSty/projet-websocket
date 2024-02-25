@@ -33,6 +33,7 @@ export interface QuizContextData {
   setResponse: (value: string[]) => void;
   userResponse: string[];
   usersAnswers?: RoomResponsesPercentage;
+  showResults: boolean;
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -55,6 +56,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const [usersAnswers, setUsersAnswers] = useState<
     RoomResponsesPercentage | undefined
   >(undefined);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     ws.on(WsEventType.USER_JOINED, (data: UserJoinedEvent) => {
@@ -85,18 +87,21 @@ export function QuizProvider({ children }: QuizProviderProps) {
       setStatus("started");
       setUserResponse([]);
       setCountDown(null);
+      setUsersAnswers(undefined);
     });
 
     ws.on(WsEventType.QUESTION_COUNTDOWN, (count: number) => {
       setCountDown(count);
     });
     ws.on(WsEventType.QUESTION_COUNTDOWN_END, () => {
+      setShowResults(true);
       setCountDown(null);
-      setQuestion(null);
     });
 
     ws.on(WsEventType.QUESTION, (question: Question) => {
+      setShowResults(false);
       setUserResponse([]);
+      setStatus("started");
       setUsersAnswers(undefined);
       setQuestion(question);
     });
@@ -176,6 +181,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     setResponse,
     userResponse,
     usersAnswers,
+    showResults,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

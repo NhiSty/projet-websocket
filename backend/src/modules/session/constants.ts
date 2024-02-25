@@ -22,6 +22,8 @@ export enum WsEventType {
 
   QUESTION_COUNTDOWN = 'question-countdown',
   QUESTION_COUNTDOWN_END = 'question-countdown-end',
+  INTER_QUESTION_COUNTDOWN = 'inter-question-countdown',
+  INTER_QUESTION_COUNTDOWN_END = 'inter-question-countdown-end',
   QUESTION = 'question',
   NEXT_QUESTION = 'next-question',
   FINISHED_QUESTIONS = 'finished-questions',

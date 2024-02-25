@@ -16,7 +16,7 @@ function AnswersList({
   question: Question;
   response: string[];
 }) {
-  const { usersAnswers } = useQuizSession();
+  const { usersAnswers, showResults } = useQuizSession();
   const Icon = question.type === "MULTIPLE" ? SquareIcon : CircleIcon;
   const CheckIcon = question.type === "MULTIPLE" ? CheckSquare : CircleDotIcon;
 
@@ -39,11 +39,12 @@ function AnswersList({
               value={count}
               max={usersAnswers.total}
               className={cn(
-                "absolute inset-0 w-full h-full progress bg-transparent appearance-none",
+                "absolute inset-0 w-full h-full progress bg-transparent appearance-none rounded-none",
                 "[&::-webkit-progress-bar]:rounded-l-none [&::-webkit-progress-value]:rounded-l-none",
                 {
-                  "progress-success": item.correct,
-                  "progress-error": !item.correct,
+                  "progress-primary": !showResults,
+                  "progress-success": item.correct && showResults,
+                  "progress-error": !item.correct && showResults,
                 }
               )}
             />

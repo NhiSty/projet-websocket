@@ -15,7 +15,7 @@ type ErrorState = "password-required" | "ok" | "invalid-password" | "room-full";
 export function QuizSession(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { ws, send: wsSend, isConnected } = useWS();
-  const [sidebarExpanded, setExpandedSidebar] = useState<boolean>(false);
+  const [sidebarExpanded, setExpandedSidebar] = useState<boolean>(true);
   const { setQuiz, quiz } = useQuizSession();
 
   const [errorState, setErrorState] = useState<ErrorState>("ok");

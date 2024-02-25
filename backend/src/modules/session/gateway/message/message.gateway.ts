@@ -269,11 +269,13 @@ export class MessageGateway
   }
 
   @OnEvent(WsEventType.QUESTION_COUNTDOWN)
+  @OnEvent(WsEventType.INTER_QUESTION_COUNTDOWN)
   public handleOnQuestionCountdown(roomId: RoomId, count: number): void {
     this.server.to(roomId).emit(WsEventType.QUESTION_COUNTDOWN, count);
   }
 
   @OnEvent(WsEventType.QUESTION_COUNTDOWN_END)
+  @OnEvent(WsEventType.INTER_QUESTION_COUNTDOWN_END)
   public handleOnQuestionCountdownEnd(roomId: RoomId): void {
     this.server.to(roomId).emit(WsEventType.QUESTION_COUNTDOWN_END);
   }

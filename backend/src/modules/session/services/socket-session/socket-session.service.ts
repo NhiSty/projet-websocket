@@ -355,6 +355,7 @@ export class SocketSessionService {
     }
 
     if (roomData.questionIndex >= roomData.questions.length) {
+      roomData.countDown?.stop();
       this.eventEmitter.emit(WsEventType.FINISHED_QUESTIONS, roomId);
       return;
     }

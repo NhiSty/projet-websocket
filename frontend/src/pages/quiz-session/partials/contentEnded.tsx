@@ -16,8 +16,8 @@ export function ContentEnded(): JSX.Element {
     <div className="flex flex-col gap-8 w-full">
       <div className="card bg-base-100 rounded-lg border border-base-300 w-full max-w-96 sm:max-w-screen-sm mx-auto">
         <div className="card-body">
-          <h2 className="card-title">The session is ended</h2>
-
+          <h2 className="card-title">The session is over</h2>
+          
           <p className="uppercase text-sm text-gray-600">Scores</p>
           <table className="table bg-base-200">
             <thead>

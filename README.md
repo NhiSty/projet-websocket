@@ -1,9 +1,15 @@
 ## Plateforme de quiz en temps réel avec Socket.IO 
 ### Faire un clone / semblant de kahoot avec Socket.IO
 
-Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale liberté de proposer des fonctionnalités innovantes en expliquant les démarches dans le README du projet.
+Projet interessant pour apprendre à utiliser Socket.IO et pour comprendre comment fonctionne la communication en temps réel. <br />
+Tout les points du cahier des charges ont été respecté en plus des fonctionnalités avancées de Socket.IO.
 
-- Voir le fichier `instructions.md` pour les instructions permettant de lancer.
+- Voir le fichier [`instructions.md`](instructions.md)
+ pour les instructions permettant de lancer le projet. <br />
+
+- Pour tester, le projet a été déployé (à l'aide d'un makefile) sur un vps et est accessible à l'adresse suivante : http://158.178.207.4/
+
+- Voir le fichier [`scenario.md`](scenario.md) pour avoir un scénario admin/user complet.
 
 ### Exigences : 
 
@@ -104,6 +110,6 @@ Les réflexions devraient inclure les défis rencontrés, les points d'apprentis
 En répartissant et documentant clairement le travail ainsi qu'en se soutenant activement les uns les autres dans le processus de développement, les équipes peuvent produire une application complète qui reflète les compétences collectives de ses membres. Cette responsabilité partagée favorise l'apprentissage, la responsabilité et la réussite du projet.
 
 ### Contributions de l'équipe (à compléter au fur et à mesure du projet) :
-- Kanoute Hamidou : [Brève description du travail et réflexion] 
-- Jallu Thomas : [Brève description du travail et réflexion] 
-- Deveci Serkan : [Brève description du travail et réflexion]
+- Kanoute Hamidou : configuration déploiment, gestion users, gestion de quiz, timer pour le début du questionnaire, gestion des scores, accessibilité, tableau classement
+- Jallu Thomas : configuration déploiement, gestion du quiz, gestion du système de chat, gestion users, ajout temps supplémentaire pour chaque question, accessibilité
+- Deveci Serkan : configuration déploiement, gestion du quiz, gestion du système de chat, gestion users, ajout temps supplémentaire pour chaque question, gestion des scores, gestion connexion au salle, système de notification, accessibilité, tableau classement

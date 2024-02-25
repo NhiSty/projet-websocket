@@ -23,5 +23,5 @@
       - `pnpm run start:dev`
     - Frontend :
       - `pnpm run dev`
-      aller sur `http://localhost:3000`
+      aller sur `http://localhost:5173`
     - Lancer la commande `make down-dev` pour arrêter le projet

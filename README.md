@@ -94,21 +94,6 @@ Améliorations de l'accessibilité :
 - Scripting côté serveur : Choix du langage de backend (Python, Java, C#, etc.) qui supporte Socket.IO
 - Stockage temporaire : Structures de données volatiles pour l'état actif du quiz (par exemple, des maps, des dictionnaires)
 
-### Contribution et documentation de l'équipe :
-Afin de favoriser la collaboration et la responsabilité au sein de l'équipe, chaque membre est attendu pour contribuer à une partie distincte du projet. La répartition des tâches doit être décidée collectivement par l'équipe en fonction des forces et des objectifs d'apprentissage de chacun. Pour assurer une collaboration claire, les étapes suivantes doivent être prises :
-1. Répartition des Tâches :
-Diviser les exigences du projet et les bonus en tâches claires et gérables.
-Assigner les tâches aux membres de l'équipe, en garantissant une distribution équitable du travail et des opportunités d'apprentissage.
-
-2. Suivi des Contributions :
-Utiliser un contrôle de version (par exemple, Git) pour suivre les contributions individuelles au projet. Effectuer des commits réguliers sur le dépôt avec des messages de commit descriptifs qui détaillent les progrès sur les tâches assignées.
-
-3. Documentation et Réflexion :
-Chaque membre de l'équipe doit inclure un résumé de ses contributions dans le fichier README.md sous la section 'Contributions de l'équipe'.
-Les réflexions devraient inclure les défis rencontrés, les points d'apprentissage et comment le travail du membre de l'équipe s'intègre dans le projet plus large.
-
-En répartissant et documentant clairement le travail ainsi qu'en se soutenant activement les uns les autres dans le processus de développement, les équipes peuvent produire une application complète qui reflète les compétences collectives de ses membres. Cette responsabilité partagée favorise l'apprentissage, la responsabilité et la réussite du projet.
-
 ### Contributions de l'équipe (à compléter au fur et à mesure du projet) :
 - Kanoute Hamidou : configuration déploiment, gestion users, gestion de quiz, timer pour le début du questionnaire, gestion des scores, accessibilité, tableau classement
 - Jallu Thomas : configuration déploiement, gestion du quiz, gestion du système de chat, gestion users, ajout temps supplémentaire pour chaque question, accessibilité

@@ -50,12 +50,26 @@ export class QuizQuestionService {
     });
   }
 
-  public async deleteQuestion(question: Question): Promise<Question> {
-    return this.databaseService.question.delete({
-      where: {
-        id: question.id,
-      },
-    });
+  public async deleteQuestion(question: Question): Promise<void> {
+    this.databaseService.$transaction([
+      this.databaseService.question.delete({
+        where: { id: question.id },
+      }),
+      // Update the position of the questions
+      this.databaseService.question.updateMany({
+        where: {
+          quizId: question.quizId,
+          position: {
+            gt: question.position,
+          },
+        },
+        data: {
+          position: {
+            decrement: 1,
+          },
+        },
+      }),
+    ]);
   }
 
   public async updateQuestion(

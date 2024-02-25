@@ -37,7 +37,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
   };
 
   return (
-    <ul className="p-4 border-t border-gray-300 mt-4 flex flex-col gap-4">
+    <section className="p-4 border-t border-gray-300 mt-4 flex flex-col gap-4">
       {errors.choices?.root && (
         <div className="alert alert-error">
           <XCircleIcon className="w-4 h-4" />
@@ -46,7 +46,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
       )}
 
       {fields.map((field, index) => (
-        <li key={field.id} className="flex flex-col gap-2">
+        <div key={field.id || field.choice} className="flex flex-col gap-2">
           <p>Choice {index + 1}</p>
           <div className="flex flex-row items-center gap-2">
             <FormController
@@ -100,10 +100,10 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
               <TrashIcon className="w-4 h-4" />
             </Button>
           </div>
-        </li>
+        </div>
       ))}
 
-      <li>
+      <div>
         <Button
           onClick={() => append({ choice: "", correct: false })}
           className="w-full"
@@ -111,7 +111,7 @@ export function ChoiceForm({ type }: ChoiceFormProps): JSX.Element {
           <PlusIcon className="w-4 h-4" />
           Add a choice
         </Button>
-      </li>
-    </ul>
+      </div>
+    </section>
   );
 }

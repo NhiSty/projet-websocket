@@ -1,5 +1,4 @@
-import { Quiz } from '@prisma/client';
-import { QuestionWithChoices } from 'src/types/quiz';
+import { QuestionWithChoices, QuizWithData } from 'src/types/quiz';
 import { Countdown } from './countdown';
 import { UserId } from 'src/types/opaque';
 
@@ -10,11 +9,12 @@ export enum RoomStatus {
 }
 
 export class RoomData {
+  public id: string;
   public hashedPass?: string;
   private _usersLimit?: number;
   public questions: QuestionWithChoices[] = [];
   public status: RoomStatus = RoomStatus.PENDING;
-  public quiz: Quiz;
+  public quiz: QuizWithData;
   public questionIndex = 0;
   public countDown?: Countdown;
 

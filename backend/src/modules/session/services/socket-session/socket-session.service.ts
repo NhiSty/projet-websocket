@@ -27,9 +27,10 @@ import {
 import { RoomId, UserId } from 'src/types/opaque';
 import { UserData } from './user-data';
 import { UserService } from 'src/modules/user/services/user/user.service';
-import { Quiz } from '@prisma/client';
 import { QuizQuestionService } from 'src/modules/shared/services/quiz/quiz-question.service';
 import { Countdown } from './countdown';
+import { QuizWithData } from 'src/types/quiz';
+import { JaroWinklerDistance } from 'natural';
 
 @Injectable()
 export class SocketSessionService {
@@ -51,7 +52,7 @@ export class SocketSessionService {
    * Create a new room with the given settings. This will store the room state in memory.   * @returns
    */
   public async createRoom(
-    quiz: Quiz,
+    quiz: QuizWithData,
     { sessionPassword, userCountLimit, randomizeQuestions }: CreateRoomDto,
   ): Promise<string> {
     // Generate a random room ID
@@ -63,6 +64,7 @@ export class SocketSessionService {
 
     // Append the room data
     const data = new RoomData();
+    data.id = roomId;
     data.quiz = quiz;
 
     // If a password is provided, hash it and store it
@@ -131,14 +133,17 @@ export class SocketSessionService {
     const ownerId = data.quiz.userId;
 
     if (ownerId !== userId) {
-      // If there is a password on the room, but the user did not provide one, return
-      if (data.hashedPass && !password) {
-        throw new RoomRequirePasswords();
-      }
+      // If there is a password to access the room
+      if (data.hashedPass) {
+        // If the user did not provide one, return
+        if (!password) {
+          throw new RoomRequirePasswords();
+        }
 
-      // If there is a password on the room and the user provided one, but it is incorrect, return
-      if (!(await this.hashService.verify(password, data.hashedPass))) {
-        throw new RoomInvalidPassword();
+        // If the user provided a password, but it is incorrect, return
+        if (!(await this.hashService.verify(password, data.hashedPass))) {
+          throw new RoomInvalidPassword();
+        }
       }
 
       // If there is a user limit on the room and the limit is reached, return
@@ -190,7 +195,7 @@ export class SocketSessionService {
     const userId = this.getUserId(socket);
     const user = await this.userService.find(userId);
     // If the user is in the room
-    if (users.has(userId)) {
+    if (users.has(userId) && users.get(userId).socket.id === socket.id) {
       // Remove the user from the room
       users.delete(userId);
       this.usersRooms.delete(userId);
@@ -414,24 +419,34 @@ export class SocketSessionService {
 
     const roomId = this.usersRooms.get(userId);
     const roomData = this.roomData.get(roomId);
+    // If there is no room data
     if (!roomData) {
       throw new NotFoundException();
     }
 
+    // If the room isn't started
     if (roomData.status !== RoomStatus.STARTED) {
       throw new UnauthorizedException();
     }
 
+    // If the question index is out of bounds
     if (roomData.questionIndex >= roomData.questions.length) {
       throw new UnauthorizedException();
     }
 
     const question = roomData.questions[roomData.questionIndex];
+    // If the question doesn't exists
     if (!question) {
       throw new NotFoundException();
     }
 
+    // If the user answer a question that is not the current one
     if (question.id !== questionId) {
+      throw new UnauthorizedException();
+    }
+
+    // If the user already answered the question
+    if (roomData.usersResponses.has(userId)) {
       throw new UnauthorizedException();
     }
 
@@ -469,16 +484,53 @@ export class SocketSessionService {
           }
         }
         break;
-      case 'TEXTUAL':
-        {
-          // Allow only one answer
-          if (answers.length !== 1) {
-            throw new UnauthorizedException();
-          }
-        }
-        break;
     }
 
     roomData.usersResponses.set(userId, answers);
+
+    client.emit(WsEventType.USER_RESPONSE);
+  }
+
+  private compareCache = new Map<[string, string], number>();
+
+  private jaroWinkler(s1: string, s2: string): number {
+    if (this.compareCache.has([s1, s2])) {
+      return this.compareCache.get([s1, s2]);
+    }
+
+    const dist = JaroWinklerDistance(s1, s2, { ignoreCase: true });
+    this.compareCache.set([s1, s2], dist);
+    return dist;
+  }
+
+  public searchRooms(search: string): {
+    id: RoomId;
+    name: string;
+  }[] {
+    if (search.length === 0) {
+      return [];
+    }
+
+    const rooms = Array.from(this.roomData.values());
+
+    return rooms
+      .filter((room) => room.status === RoomStatus.PENDING)
+      .map((room) => {
+        const data = [
+          room,
+          Math.min(
+            this.jaroWinkler(room.quiz.name, search),
+            this.jaroWinkler(room.quiz.author.username, search),
+            this.jaroWinkler(room.quiz.id, search),
+          ),
+        ] as const;
+        return data;
+      })
+      .sort(([, a], [, b]) => a - b)
+      .filter((_, i) => i < 5)
+      .map(([room]) => ({
+        id: room.id as RoomId,
+        name: room.quiz.name,
+      }));
   }
 }

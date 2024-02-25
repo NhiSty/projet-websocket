@@ -27,6 +27,7 @@ export enum WsEventType {
   FINISHED_QUESTIONS = 'finished-questions',
 
   USER_RESPONSE = 'user-response',
+  USER_RESPONSE_RESULT = 'user-response-result',
 }
 
 export enum WsErrorType {

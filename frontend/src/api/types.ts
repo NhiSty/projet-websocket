@@ -23,7 +23,7 @@ export interface Choices {
   correct: boolean;
 }
 
-export type QuestionType = "SINGLE" | "MULTIPLE" | "TEXTUAL" | "BINARY";
+export type QuestionType = "SINGLE" | "MULTIPLE" | "BINARY";
 
 export interface Question {
   id: string;

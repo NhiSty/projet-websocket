@@ -4,6 +4,7 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { ContentResult } from "./contentResults";
 import { ContentQuestion } from "./contentQuestion";
 import { cn } from "#/utils/css";
+import { ContentAdminResult } from "./contentAdminResult";
 
 function CountDown({ countDown }: { countDown: number | null }) {
   const [pulse, setPulse] = useState(false);
@@ -101,8 +102,29 @@ export function SessionContent(): JSX.Element {
   }
 
   // FROM HERE, THE STATUS IS "STARTED" OR "STARTING"
+  if (status === "starting") {
+    return (
+      <SessionContainer>
+        <div className="card bg-base-100 rounded-lg border border-base-300 in">
+          <div className="card-body">
+            <p className="text-center text-4xl text-primary-content flex flex-col gap-2">
+              <span>Starting in</span>
+              <span className="font-bold">{countDown}</span>
+            </p>
+          </div>
+        </div>
+      </SessionContainer>
+    );
+  }
 
-  if (!isOwner) {
+  if (isOwner) {
+    return (
+      <SessionContainer>
+        <CountDown countDown={countDown} />
+        <ContentAdminResult />
+      </SessionContainer>
+    );
+  } else if (status === "answered") {
     return (
       <SessionContainer>
         <CountDown countDown={countDown} />
@@ -110,26 +132,11 @@ export function SessionContent(): JSX.Element {
       </SessionContainer>
     );
   } else {
-    if (status === "starting") {
-      return (
-        <SessionContainer>
-          <div className="card bg-base-100 rounded-lg border border-base-300 in">
-            <div className="card-body">
-              <p className="text-center text-4xl text-primary-content flex flex-col gap-2">
-                <span>Starting in</span>
-                <span className="font-bold">{countDown}</span>
-              </p>
-            </div>
-          </div>
-        </SessionContainer>
-      );
-    } else {
-      return (
-        <SessionContainer>
-          <CountDown countDown={countDown} />
-          <ContentQuestion />
-        </SessionContainer>
-      );
-    }
+    return (
+      <SessionContainer>
+        <CountDown countDown={countDown} />
+        <ContentQuestion />
+      </SessionContainer>
+    );
   }
 }

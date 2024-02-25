@@ -9,13 +9,7 @@ import {
   SquareIcon,
 } from "lucide-react";
 
-function AnswersList({
-  question,
-  response,
-}: {
-  question: Question;
-  response: string[];
-}) {
+function AnswersList({ question }: { question: Question }) {
   const Icon = question.type === "MULTIPLE" ? SquareIcon : CircleIcon;
   const CheckIcon = question.type === "MULTIPLE" ? CheckSquare : CircleDotIcon;
 
@@ -28,26 +22,35 @@ function AnswersList({
           <p
             key={item.id}
             className={cn(
-              "btn group w-full inline-flex gap-4 justify-center px-6 cursor-default",
-              {
-                "btn-success": response.includes(item.id) && item.correct,
-                "btn-error": response.includes(item.id) && !item.correct,
-              }
+              "btn group px-6 cursor-default relative overflow-clip"
             )}
           >
-            <div
-              className={cn("swap", {
-                "swap-active": response.includes(item.id),
-              })}
-            >
-              <Icon
-                aria-hidden="true"
-                className="w-5 h-5 text-gray-600 group-hover:text-current swap-off"
-              />
-              <CheckIcon className="w-5 h-5 text-current swap-on" />
+            <progress
+              value={count}
+              max={max}
+              className={cn(
+                "absolute inset-0 w-full h-full progress bg-transparent appearance-none rounded-lg",
+                {
+                  "progress-success": item.correct,
+                  "progress-error": !item.correct,
+                }
+              )}
+            />
+            <div className="z-[1] inline-flex gap-4 justify-center w-full h-full items-center">
+              <div
+                className={cn("swap", {
+                  "swap-active": item.correct,
+                })}
+              >
+                <Icon
+                  aria-hidden="true"
+                  className="w-5 h-5 text-current swap-off"
+                />
+                <CheckIcon className="w-5 h-5 text-current swap-on" />
+              </div>
+              <span className="flex-1">{item.choice}</span>
+              <span className="text-sm">{Math.ceil((count / max) * 100)}%</span>
             </div>
-            <span className="flex-1">{item.choice}</span>
-            <span className="text-sm">{Math.ceil((count / max) * 100)}%</span>
           </p>
         );
       })}
@@ -55,8 +58,8 @@ function AnswersList({
   );
 }
 
-export function ContentResult(): JSX.Element {
-  const { question, userResponse } = useQuizSession();
+export function ContentAdminResult(): JSX.Element {
+  const { question } = useQuizSession();
 
   if (!question) {
     return (
@@ -75,7 +78,7 @@ export function ContentResult(): JSX.Element {
       </div>
 
       <div className="mx-auto max-w-screen-lg w-full">
-        <AnswersList question={question} response={userResponse} />
+        <AnswersList question={question} />
       </div>
     </div>
   );

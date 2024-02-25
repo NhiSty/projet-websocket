@@ -17,7 +17,7 @@ import { Question, Quiz } from "#/api/types";
 import { useUser } from "#/api/auth.queries";
 import { useNavigate } from "react-router-dom";
 
-type QuizStatus = "pending" | "starting" | "started" | "ended";
+type QuizStatus = "pending" | "starting" | "started" | "ended" | "answered";
 export interface QuizContextData {
   users: UserInfo[];
   quiz: Quiz | null;
@@ -30,7 +30,8 @@ export interface QuizContextData {
   countDown: number | null;
 
   question: Question | null;
-  setResponse: (questionId: string, value: string[]) => void;
+  setResponse: (value: string[]) => void;
+  userResponse: string[];
 }
 
 export const QuizContext = React.createContext<QuizContextData | undefined>(
@@ -49,6 +50,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const [countDown, setCountDown] = useState<number | null>(null);
 
   const [question, setQuestion] = useState<Question | null>(null);
+  const [userResponse, setUserResponse] = useState<string[]>([]);
 
   useEffect(() => {
     ws.on(WsEventType.USER_JOINED, (data: UserJoinedEvent) => {
@@ -77,6 +79,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     });
     ws.on(WsEventType.START_SESSION, () => {
       setStatus("started");
+      setUserResponse([]);
       setCountDown(null);
     });
 
@@ -89,10 +92,17 @@ export function QuizProvider({ children }: QuizProviderProps) {
     });
 
     ws.on(WsEventType.QUESTION, (question: Question) => {
+      setUserResponse([]);
       setQuestion(question);
     });
 
+    ws.on(WsEventType.USER_RESPONSE, () => setStatus("answered"));
+
     ws.on("disconnect", () => {
+      navigate("/");
+    });
+
+    ws.on(WsEventType.ALREADY_STARTED, () => {
       navigate("/");
     });
 
@@ -104,6 +114,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
       ws.off(WsEventType.QUESTION_COUNTDOWN);
       ws.off(WsEventType.QUESTION_COUNTDOWN_END);
       ws.off(WsEventType.QUESTION);
+      ws.off(WsEventType.USER_RESPONSE);
+      ws.off(WsEventType.ALREADY_STARTED);
       ws.off("disconnect");
     };
   }, [navigate, user?.id, ws]);
@@ -119,20 +131,25 @@ export function QuizProvider({ children }: QuizProviderProps) {
   }, [ws]);
 
   const startQuiz = useCallback(() => {
+    setUserResponse([]);
     wsSend({
       event: WsEventType.START_SESSION,
     });
   }, [wsSend]);
 
   const setResponse = useCallback(
-    (questionId: string, answers: string[]) => {
+    (answers: string[]) => {
+      if (!question) return;
+
+      setUserResponse(answers);
+
       wsSend({
         event: WsEventType.USER_RESPONSE,
         answers,
-        questionId,
+        questionId: question.id,
       });
     },
-    [wsSend]
+    [wsSend, question]
   );
 
   const values: QuizContextData = {
@@ -147,6 +164,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     countDown,
     question,
     setResponse,
+    userResponse,
   };
   return <QuizContext.Provider value={values}>{children}</QuizContext.Provider>;
 }

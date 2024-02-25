@@ -5,7 +5,6 @@ import { QuestionsList } from "./editQuiz/questionsList";
 
 export function EditQuiz(): JSX.Element {
   const quiz = useRouteLoaderData("editQuiz") as Quiz;
-  // Refresh the current route loader
 
   return (
     <div>

@@ -37,7 +37,7 @@ type ChatProviderProps = PropsWithChildren<object>;
 const TIME_TO_COMPOSE = 4500;
 
 export function ChatProvider({ children }: ChatProviderProps) {
-  const { ws, send: wsSend } = useWS();
+  const { ws, send: wsSend, isConnected } = useWS();
   const [history, setHistory] = useState<MessageData[]>([]);
   const [text, setText] = useState<string>("");
   const [composingUsers, setComposingUsers] = useState<UserInfo[]>([]);
@@ -64,9 +64,11 @@ export function ChatProvider({ children }: ChatProviderProps) {
     });
 
     return () => {
-      wsSend({
-        event: WsEventType.COMPOSING_END,
-      });
+      if (isConnected) {
+        wsSend({
+          event: WsEventType.COMPOSING_END,
+        });
+      }
       ws.off(WsEventType.CHAT_MESSAGE);
       ws.off(WsEventType.IS_COMPOSING);
 
@@ -92,6 +94,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
     if (textTimeout) {
       window.clearTimeout(textTimeout);
+      setTextTimeout(undefined);
     }
     // If the the text is empty, the user is not composing
     if (value.length === 0) {
@@ -102,13 +105,14 @@ export function ChatProvider({ children }: ChatProviderProps) {
     }
 
     // Send the event that the user is still composing
-    if (lastCheck + TIME_TO_COMPOSE < Date.now()) {
+    if (lastCheck + TIME_TO_COMPOSE < Date.now() || !isComposing) {
       compose(true);
     }
 
     // The user is composing, set a timeout to send the composing event
     const timeout = window.setTimeout(() => {
       compose(false);
+      setTextTimeout(undefined);
     }, TIME_TO_COMPOSE);
     setTextTimeout(timeout);
   }
@@ -124,6 +128,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
       message: text,
     });
     setText("");
+    compose(false);
   }
 
   const values: ChatContextData = {

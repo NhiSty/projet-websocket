@@ -1,4 +1,5 @@
 import { Question } from "#/api/types";
+import { Button } from "#/components/form/Button";
 import { Input } from "#/components/form/Input";
 import { useQuizSession } from "#/providers/quiz";
 import {
@@ -6,6 +7,7 @@ import {
   CircleDotIcon,
   CircleIcon,
   Loader2,
+  SendHorizonalIcon,
   Square,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -15,77 +17,26 @@ function AnswersList({
   setResponse,
 }: {
   question: Question;
-  setResponse: (questionId: string, values: string[]) => void;
+  setResponse: (values: string[]) => void;
 }) {
   const [inputs, setInputs] = useState<string[]>([]);
 
   useEffect(() => {
-    if (inputs.length === 0) return;
-
     setInputs([]);
-  }, [question.type]);
+  }, [question]);
 
-  useEffect(() => {
-    if (inputs.length === 0) return;
+  const handleSend = () => {
+    setResponse(inputs);
+  };
 
-    setResponse(question.id, [...inputs]);
-  }, [inputs, setResponse, question]);
-
-  if (question.type === "BINARY") {
-    return (
-      <div className="flex flex-col justify-between">
-        {[
-          { label: "Yes", value: "yes" },
-          { label: "No", value: "no" },
-        ].map((item) => (
-          <label className="btn group hover:btn-accent w-full inline-flex gap-4 justify-center px-6 has-[:checked]:btn-accent">
-            <input
-              type="radio"
-              name={question.id}
-              value={item.value}
-              className="hidden peer"
-              onChange={(event) => {
-                if (event.target.checked) {
-                  setInputs([item.value]);
-                }
-              }}
-            />
-            <div className="swap peer-checked:swap-active">
-              <CircleIcon
-                aria-hidden="true"
-                className="w-5 h-5 text-gray-600 group-hover:text-current swap-off"
-              />
-              <CircleDotIcon className="w-5 h-5 text-current swap-on" />
-            </div>
-            <span className="flex-1">{item.label}</span>
-          </label>
-        ))}
-      </div>
-    );
-  }
-
-  if (question.type === "TEXTUAL") {
-    return (
-      <div className="flex flex-row">
-        <div className="card bg-base-100 border border-base-300 rounded-md w-full">
-          <div className="card-body flex flex-row">
-            <Input
-              name="value"
-              placeholder="Type your answer here..."
-              className="flex-1 max-w-none"
-              onChange={(event) => setInputs([event.target.value])}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (question.type === "SINGLE") {
+  if (question.type === "SINGLE" || question.type === "BINARY") {
     return (
       <div className="flex flex-col gap-2 justify-around">
         {question.choices.map((item) => (
-          <label className="btn group hover:btn-accent w-full inline-flex gap-4 justify-center px-6 has-[:checked]:btn-accent">
+          <label
+            key={item.id}
+            className="btn group hover:btn-accent w-full inline-flex gap-4 justify-center px-6 has-[:checked]:btn-accent"
+          >
             <input
               type="radio"
               name={question.id}
@@ -103,6 +54,15 @@ function AnswersList({
             <span className="flex-1">{item.choice}</span>
           </label>
         ))}
+
+        <Button
+          className="inline-flex gap-4 btn-primary"
+          disabled={!inputs?.[0]?.length}
+          onClick={handleSend}
+        >
+          <SendHorizonalIcon className="w-5 h-5" />
+          Send
+        </Button>
       </div>
     );
   }
@@ -111,7 +71,10 @@ function AnswersList({
     return (
       <div className="flex flex-col gap-2 justify-around">
         {question.choices.map((item) => (
-          <label className="btn group hover:btn-accent w-full inline-flex gap-4 justify-center px-6 has-[:checked]:btn-accent">
+          <label
+            key={item.id}
+            className="btn group hover:btn-accent w-full inline-flex gap-4 justify-center px-6 has-[:checked]:btn-accent"
+          >
             <input
               type="checkbox"
               name={question.id}
@@ -137,6 +100,15 @@ function AnswersList({
             <span className="flex-1">{item.choice}</span>
           </label>
         ))}
+
+        <Button
+          className="inline-flex gap-4 btn-primary"
+          disabled={!inputs?.[0]?.length}
+          onClick={handleSend}
+        >
+          <SendHorizonalIcon className="w-5 h-5" />
+          Send
+        </Button>
       </div>
     );
   }

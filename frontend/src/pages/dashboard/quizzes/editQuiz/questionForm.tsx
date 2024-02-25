@@ -14,6 +14,7 @@ import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { UnprocessableContentError } from "#/api/api";
 import { ChoiceForm } from "./choiceForm";
 import { Select } from "#/components/form/Select";
+import { BinaryForm } from "./binaryForm";
 
 interface QuestionFormProps {
   quizId: string;
@@ -33,15 +34,10 @@ const schema = yup
   .object({
     // Accepts only strings that are not empty
     question: yup.string().required().min(1),
-    // Accepts only strings that are "SINGLE", "MULTIPLE", "BINARY", or "TEXTUAL"
+    // Accepts only strings that are "SINGLE", "MULTIPLE" or "BINARY"
     type: yup
       .mixed<QuestionType>()
-      .oneOf([
-        "SINGLE",
-        "MULTIPLE",
-        "BINARY",
-        "TEXTUAL",
-      ] satisfies QuestionType[])
+      .oneOf(["SINGLE", "MULTIPLE", "BINARY"] satisfies QuestionType[])
       .required(),
     // Accepts only numbers that are not empty, greater than or equal to 0, and less than or equal to 60
     duration: yup.number().required().min(0).max(60).default(15),
@@ -190,12 +186,6 @@ export function QuestionForm({
 
   const questionType = formHook.watch("type");
 
-  useEffect(() => {
-    if (questionType !== "SINGLE" && questionType !== "MULTIPLE") {
-      formHook.setValue("choices", []);
-    }
-  }, [formHook, questionType]);
-
   return (
     <div className="card bg-base-100 shadow-xl border border-gray-100">
       <FormProvider {...formHook}>
@@ -237,7 +227,6 @@ export function QuestionForm({
                 <option value="SINGLE">Single Choice</option>
                 <option value="MULTIPLE">Multiple Choice</option>
                 <option value="BINARY">True/False</option>
-                <option value="TEXTUAL">Short Answer</option>
               </Select>
             </FormController>
 
@@ -264,6 +253,8 @@ export function QuestionForm({
           {(questionType === "SINGLE" || questionType === "MULTIPLE") && (
             <ChoiceForm type={questionType} />
           )}
+
+          {questionType === "BINARY" && <BinaryForm />}
 
           <div className="card-actions justify-end gap-2">
             <Button className="btn-sm btn-ghost" onClick={() => onCancel?.()}>

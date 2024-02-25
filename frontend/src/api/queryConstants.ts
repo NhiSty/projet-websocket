@@ -12,4 +12,6 @@ export const QueryConstants = {
   DELETE_QUESTION: ["quizzes", "question", "delete"],
   MOVE_QUESTION: ["quizzes", "question", "move"],
   START_QUIZ: ["quizzes", "start"],
+
+  SEARCH_ROOM: ["quizzes", "search"],
 };

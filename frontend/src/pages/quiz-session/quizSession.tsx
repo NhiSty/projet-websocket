@@ -56,7 +56,9 @@ export function QuizSession(): JSX.Element {
     ws.on(WsErrorType.ROOM_FULL, () => setErrorState("room-full"));
 
     return () => {
-      wsSend({ event: WsEventType.LEAVE_ROOM });
+      if (isConnected) {
+        wsSend({ event: WsEventType.LEAVE_ROOM });
+      }
 
       ws.off(WsErrorType.ROOM_FULL);
       ws.off(WsEventType.ROOM_INFO);
@@ -65,7 +67,7 @@ export function QuizSession(): JSX.Element {
       ws.off(WsErrorType.ROOM_NOT_FOUND);
       ws.off(WsEventType.SESSION_ENDED);
     };
-  }, [id, navigate, setQuiz, ws, wsSend]);
+  }, [id, isConnected, navigate, setQuiz, ws, wsSend]);
 
   if (!id) {
     return <div>Invalid session</div>;

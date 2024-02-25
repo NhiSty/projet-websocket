@@ -23,7 +23,7 @@ interface QuestionChoicesProps {
 function QuestionChoices({ question }: QuestionChoicesProps) {
   let icon: JSX.Element | null = null;
 
-  if (question.type === "SINGLE") {
+  if (question.type === "SINGLE" || question.type === "BINARY") {
     icon = <CircleDotIcon className="w-4 h-4" />;
   } else if (question.type === "MULTIPLE") {
     icon = <CheckSquareIcon className="w-4 h-4" />;
@@ -139,9 +139,7 @@ export function QuestionItem({
         </div>
       </div>
 
-      {(question.type === "SINGLE" || question.type === "MULTIPLE") && (
-        <QuestionChoices question={question} />
-      )}
+      <QuestionChoices question={question} />
     </li>
   );
 }

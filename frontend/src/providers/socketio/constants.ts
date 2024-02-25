@@ -18,6 +18,7 @@ export enum WsEventType {
   START_SESSION = "start-session",
   END_SESSION = "end-session",
   SESSION_ENDED = "session-ended",
+  ALREADY_STARTED = "already-started",
 
   QUESTION_COUNTDOWN = "question-countdown",
   QUESTION_COUNTDOWN_END = "question-countdown-end",

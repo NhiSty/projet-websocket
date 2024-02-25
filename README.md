@@ -12,7 +12,6 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 - [x] La capacité d'ajouter des questions.
   - [x] Question choix multiples avec 1,2,3 ou 4 options
   - [x] Question choix unique
-  - [x] Question rédactionnel (Exemple : Quel est la capitale de la France ? (format de réponse attendu : lisbonne) -> pour dire que tout en minuscule)
   - [x] Question Vrai faux
 
  
@@ -31,11 +30,10 @@ Avant de lire la suite, il est bon de rappeler qu'on a le droit et la totale lib
 
 5. Déroulement des questions et réponses : 
 - [x] Présentation des questions à tous les clients dans une salle lorsque le quiz commence.
-- [ ] Collecte des réponses des clients et verrouillage des réponses à la fin du temps imparti. 
+- [x] Collecte des réponses des clients et verrouillage des réponses à la fin du temps imparti. 
 
 6. Retour en direct sur les réponses : 
-- [ ] Un retour immédiat aux clients après chaque question, indiquant si leur réponse était correcte ou non. 
-- [ ] (non demandé) Affichage feedback en cas de mauvaise réponse
+- [x] Un retour immédiat aux clients après chaque question, indiquant si leur réponse était correcte ou non. 
 - [ ] Affichage en temps réel du nombre de clients ayant choisi chaque option de réponse. 
 
 7. Notation et résultats : 
@@ -82,7 +80,7 @@ Paramètres de quiz personnalisables :
 - [x] Permettre diverses configurations pour les quiz (par exemple, ordre aléatoire des questions, limites de temps pour les questions). 
 
 Améliorations de l'accessibilité :
-- [ ] S’assurer que l'interface est utilisable par les personnes handicapées, en suivant les normes d'accessibilité. 
+- [x] S’assurer que l'interface est utilisable par les personnes handicapées, en suivant les normes d'accessibilité. 
 
 ### Technologies : 
 - Communication en temps réel : Socket.IO 
